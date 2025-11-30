@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import InventoryPage from './pages/InventoryPage.jsx';
 import AppLayout from './components/layout/AppLayout.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import BottlesPage from './pages/BottlesPage.jsx';
 
 function App() {
   return (
@@ -20,8 +21,8 @@ function App() {
       >
         <Route index element={<InventoryPage />} />
         <Route path="inventory" element={<InventoryPage />} />
-        {/* stubs for future routes */}
-        <Route path="bottles" element={<div>TODO: Bottles</div>} />
+        <Route path="bottles" element={<BottlesPage />} />
+                {/* stubs for future routes */}
         <Route path="tastings" element={<div>TODO: Tastings</div>} />
         <Route path="wishlists" element={<div>TODO: Wishlists</div>} />
         <Route path="tags" element={<div>TODO: Tags</div>} />
