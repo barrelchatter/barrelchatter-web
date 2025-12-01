@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api/client';
 import styles from '../styles/BottlesPage.module.scss';
 
@@ -504,7 +505,14 @@ function BottlesPage() {
                 return (
                   <React.Fragment key={bottle.id}>
                     <tr>
-                      <td>{bottle.name}</td>
+                      <td>
+                        <Link
+                          to={`/app/bottles/${bottle.id}`}
+                          className={styles.nameLink}
+                        >
+                          {bottle.name}
+                        </Link>
+                      </td>
                       <td>{bottle.brand || '—'}</td>
                       <td>{bottle.distillery || '—'}</td>
                       <td>{bottle.type || '—'}</td>

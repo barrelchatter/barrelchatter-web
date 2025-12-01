@@ -1,0 +1,275 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.backLink {
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.8;
+}
+
+.backLink:hover {
+  opacity: 1;
+}
+
+.headerTitleBlock {
+  text-align: right;
+}
+
+.headerBreadcrumb {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.breadcrumbLink {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.breadcrumbLink:hover {
+  text-decoration: underline;
+}
+
+.message {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.error {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(185, 71, 62, 0.16);
+  border: 1px solid var(--color-danger);
+  font-size: 13px;
+}
+
+.topRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.mainCard {
+  flex: 2;
+  min-width: 260px;
+  background: var(--color-bg-alt);
+  border-radius: 20px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-soft);
+}
+
+.sideCard {
+  flex: 1;
+  min-width: 250px;
+  background: var(--color-bg-alt);
+  border-radius: 20px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-soft);
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.subtitle {
+  margin-top: 2px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.releaseName {
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.infoGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px 16px;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.infoLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+.infoValue {
+  font-size: 13px;
+}
+
+/* side card */
+
+.sideTitle {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.wishlistBlock {
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wishlistStatus {
+  font-weight: 500;
+}
+
+.wishlistField {
+  opacity: 0.9;
+}
+
+.wishlistNotes {
+  opacity: 0.9;
+}
+
+.wishlistError {
+  margin-top: 4px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(185, 71, 62, 0.16);
+  border: 1px solid var(--color-danger);
+  font-size: 12px;
+}
+
+.sideActions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.sidePrimaryButton,
+.sideLinkButton {
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidePrimaryButton {
+  border: none;
+  background: linear-gradient(
+    135deg,
+    var(--color-accent),
+    var(--color-accent-deep)
+  );
+  color: #120e0b;
+}
+
+.sideLinkButton {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.sideNote {
+  margin-top: 10px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* sections (inventory + tastings) */
+
+.sectionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.section {
+  flex: 1;
+  min-width: 260px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.sectionCount {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.tableWrapper {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: var(--shadow-soft);
+  background: rgba(12, 12, 12, 0.95);
+  padding: 4px 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table thead {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.table th,
+.table td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: top;
+}
+
+.table th {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.notesCell {
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

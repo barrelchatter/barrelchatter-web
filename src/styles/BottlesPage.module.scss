@@ -248,6 +248,15 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
+.nameLink {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.nameLink:hover {
+  text-decoration: underline;
+}
+
 .table th {
   font-weight: 600;
   font-size: 12px;
