@@ -10,6 +10,7 @@ import WishlistPage from './pages/WishlistPage.jsx';
 import TagsPage from './pages/TagsPage.jsx';
 import AdminTagsPage from './pages/AdminTagsPage.jsx';
 import BottleDetailPage from './pages/BottleDetailPage.jsx';
+import InventoryDetailPage from './pages/InventoryDetailPage.jsx';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
       >
         <Route index element={<InventoryPage />} />
         <Route path="inventory" element={<InventoryPage />} />
+        <Route path="inventory/:id" element={<InventoryDetailPage />} />
         <Route path="bottles" element={<BottlesPage />} />
         <Route path="bottles/:id" element={<BottleDetailPage />} />
         <Route path="tastings" element={<TastingsPage />} />

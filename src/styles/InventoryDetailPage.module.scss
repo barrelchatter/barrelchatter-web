@@ -1,0 +1,421 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.backLink {
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.8;
+}
+
+.backLink:hover {
+  opacity: 1;
+}
+
+.headerTitleBlock {
+  text-align: right;
+}
+
+.headerBreadcrumb {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.breadcrumbLink {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.breadcrumbLink:hover {
+  text-decoration: underline;
+}
+
+.message {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.error {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(185, 71, 62, 0.16);
+  border: 1px solid var(--color-danger);
+  font-size: 13px;
+}
+
+.topRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.mainCard {
+  flex: 2;
+  min-width: 260px;
+  background: var(--color-bg-alt);
+  border-radius: 20px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-soft);
+}
+
+.sideCard {
+  flex: 1;
+  min-width: 250px;
+  background: var(--color-bg-alt);
+  border-radius: 20px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-soft);
+}
+
+/* main card header + edit */
+
+.mainCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.mainCardHeaderTitle {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.editButton,
+.editButtonSecondary {
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.editButton {
+  border: none;
+  background: var(--color-accent);
+  color: #120e0b;
+}
+
+.editButtonSecondary {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: var(--color-text);
+}
+
+/* Hero row */
+
+.heroRow {
+  display: flex;
+  gap: 12px;
+}
+
+.heroImageWrap {
+  width: 96px;
+  min-width: 96px;
+  height: 140px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #222;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.heroPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+}
+
+.heroPlaceholder span {
+  font-size: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 6px 10px;
+}
+
+.heroText {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.subtitle {
+  margin-top: 2px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.releaseName {
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.heroLinks {
+  margin-top: 6px;
+}
+
+.bottleLink {
+  font-size: 12px;
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.bottleLink:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* info grid */
+
+.infoGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px 16px;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.infoLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+.infoValue {
+  font-size: 13px;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.identityBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* edit form */
+
+.editForm {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editError {
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(185, 71, 62, 0.16);
+  border: 1px solid var(--color-danger);
+  font-size: 12px;
+}
+
+.editRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.editLabel {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.editInput,
+.editSelect {
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(10, 10, 10, 0.9);
+  color: var(--color-text);
+  padding: 6px 9px;
+  font-size: 13px;
+}
+
+.editInput:focus,
+.editSelect:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.editActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.editSaveButton {
+  border-radius: var(--radius-md);
+  border: none;
+  background: linear-gradient(
+    135deg,
+    var(--color-accent),
+    var(--color-accent-deep)
+  );
+  color: #120e0b;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* side card */
+
+.sideTitle {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.sideStat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.sideStatLabel {
+  opacity: 0.8;
+}
+
+.sideStatValue {
+  font-weight: 500;
+}
+
+.sideActions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.sideButton {
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: var(--color-text);
+  padding: 6px 12px;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sideNote {
+  margin-top: 10px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* tastings section */
+
+.section {
+  margin-top: 8px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.sectionCount {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.tableWrapper {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: var(--shadow-soft);
+  background: rgba(12, 12, 12, 0.95);
+  padding: 4px 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table thead {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.table th,
+.table td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: top;
+}
+
+.table th {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.notesCell {
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

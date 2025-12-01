@@ -1,283 +1,337 @@
 import React, { useEffect, useState } from 'react';
-import api from '../api/client';
+import { Link } from 'react-router-dom';
+import api, { API_BASE_URL } from '../api/client';
 import styles from '../styles/InventoryPage.module.scss';
 
-function formatIdentity(item) {
-  const serial =
-    item.bottle_serial_label && String(item.bottle_serial_label).trim();
-  const number = item.bottle_number;
-  const total = item.bottle_total;
-
-  if (serial) {
-    return serial;
+const apiBase = (API_BASE_URL || '').replace(/\/$/, '');
+function resolveImageUrl(path) {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
   }
-
-  if (number != null && total != null) {
-    return `Bottle ${number} / ${total}`;
-  }
-
-  if (number != null) {
-    return `Bottle ${number}`;
-  }
-
-  return null;
+  return `${apiBase}${path}`;
 }
 
-function formatAcquisition(item) {
-  const type = item.acquisition_type && String(item.acquisition_type).trim();
-  const from = item.acquired_from && String(item.acquired_from).trim();
-
-  if (!type && !from) return null;
-
-  const label = type
-    ? type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()
-    : 'Acquired';
-
-  if (from) return `${label} — ${from}`;
-  return label;
+function formatStatus(status) {
+  if (!status) return '—';
+  return status.charAt(0).toUpperCase() + status.slice(1);
 }
 
-function formatDisposition(item) {
-  const type =
-    item.disposition_type && String(item.disposition_type).trim();
-  const to = item.disposed_to && String(item.disposed_to).trim();
-  const at = item.disposed_at;
-
-  if (!type && !to && !at) return null;
-
-  let label =
-    type &&
-    type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
-
-  if (!label) label = 'Disposition';
-
-  const parts = [];
-
-  if (to) parts.push(`to ${to}`);
-  if (at) {
-    try {
-      const d = new Date(at);
-      parts.push(d.toLocaleDateString());
-    } catch {
-      // ignore parse errors
-    }
-  }
-
-  if (parts.length > 0) {
-    return `${label} ${parts.join(' · ')}`;
-  }
-
-  return label;
+function formatPrice(value) {
+  if (value == null) return '—';
+  const num = Number(value);
+  if (Number.isNaN(num)) return '—';
+  return `$${num.toFixed(2)}`;
 }
 
-function formatReleaseFlags(bottle) {
-  if (!bottle) return [];
-  const flags = [];
-
-  if (bottle.is_single_barrel) {
-    flags.push('Single barrel');
+function formatIdentity(inv) {
+  if (!inv) return '—';
+  if (inv.bottle_serial_label) return inv.bottle_serial_label;
+  if (inv.bottle_number != null && inv.bottle_total != null) {
+    return `Bottle ${inv.bottle_number}/${inv.bottle_total}`;
   }
-  if (bottle.is_limited_release) {
-    if (bottle.limited_bottle_count != null) {
-      flags.push(`Limited run (${bottle.limited_bottle_count})`);
-    } else {
-      flags.push('Limited run');
-    }
+  if (inv.bottle_number != null) {
+    return `Bottle ${inv.bottle_number}`;
   }
-  if (bottle.finish_description) {
-    flags.push(bottle.finish_description);
-  }
-
-  return flags;
+  return '—';
 }
 
 function InventoryPage() {
   const [items, setItems] = useState([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [wishlistByBottle, setWishlistByBottle] = useState({});
+  const [viewMode, setViewMode] = useState('list'); // list | cards | gallery
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function fetchInventory() {
+    async function load() {
       setLoading(true);
       setError('');
       try {
-        const response = await api.get('/v1/inventory?limit=100&offset=0');
-        if (!isMounted) return;
-        setItems(response.data.inventory || []);
+        const res = await api.get('/v1/inventory?limit=500&offset=0');
+        const data = res.data || {};
+        const list = data.inventory || [];
+        setItems(list);
+        setTotal(
+          typeof data.total === 'number' ? data.total : list.length
+        );
       } catch (err) {
         console.error(err);
-        if (!isMounted) return;
-        const message =
+        const msg =
           err?.response?.data?.error ||
           'Failed to load inventory. Is the API running?';
-        setError(message);
+        setError(msg);
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     }
-
-    fetchInventory();
-    return () => {
-      isMounted = false;
-    };
+    load();
   }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function fetchWishlist() {
-      try {
-        const res = await api.get('/v1/wishlists?limit=500&offset=0');
-        if (!isMounted) return;
-        const map = {};
-        (res.data.wishlists || []).forEach((wl) => {
-          const bottleId = wl.bottle_id || wl.bottle?.id;
-          if (bottleId) map[bottleId] = wl;
-        });
-        setWishlistByBottle(map);
-      } catch (err) {
-        console.error('Failed to load wishlist', err);
-      }
-    }
-
-    fetchWishlist();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  async function handleWishlistAdd(bottleId) {
-    if (!bottleId) return;
-    try {
-      const res = await api.post('/v1/wishlists', {
-        bottle_id: bottleId,
-        alert_enabled: true,
-      });
-      const wl = res.data?.wishlist;
-      if (wl) {
-        const id = wl.bottle_id || bottleId;
-        setWishlistByBottle((prev) => ({ ...prev, [id]: wl }));
-      }
-    } catch (err) {
-      console.error('Failed to add wishlist item', err);
-    }
-  }
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <h1>My Inventory</h1>
+      <div className={styles.headerRow}>
+        <div>
+          <h1>Inventory</h1>
+          <p className={styles.subtitle}>
+            Your physical bottles across all locations.
+          </p>
+        </div>
+        <div className={styles.headerRight}>
+          <span className={styles.count}>
+            {total} item{total === 1 ? '' : 's'}
+          </span>
+          <div className={styles.viewToggle}>
+            <button
+              type="button"
+              className={
+                viewMode === 'list'
+                  ? styles.viewModeButtonActive
+                  : styles.viewModeButton
+              }
+              onClick={() => setViewMode('list')}
+            >
+              List
+            </button>
+            <button
+              type="button"
+              className={
+                viewMode === 'cards'
+                  ? styles.viewModeButtonActive
+                  : styles.viewModeButton
+              }
+              onClick={() => setViewMode('cards')}
+            >
+              Cards
+            </button>
+            <button
+              type="button"
+              className={
+                viewMode === 'gallery'
+                  ? styles.viewModeButtonActive
+                  : styles.viewModeButton
+              }
+              onClick={() => setViewMode('gallery')}
+            >
+              Gallery
+            </button>
+          </div>
+        </div>
       </div>
 
-      {loading && <div className={styles.message}>Loading inventory...</div>}
-      {error && <div className={styles.error}>{error}</div>}
+      {loading && (
+        <div className={styles.message}>Loading inventory...</div>
+      )}
+      {error && !loading && (
+        <div className={styles.error}>{error}</div>
+      )}
 
       {!loading && !error && items.length === 0 && (
         <div className={styles.message}>
-          No bottles yet. Time to fix that problem.
+          No inventory items yet. Add bottles from the Bottles page.
         </div>
       )}
 
-      <div className={styles.grid}>
-        {items.map((item) => {
-          const bottle = item.bottle || {};
-          const identity = formatIdentity(item);
-          const acquisition = formatAcquisition(item);
-          const disposition = formatDisposition(item);
-          const releaseFlags = formatReleaseFlags(bottle);
-          const wishlisted =
-            bottle.id && wishlistByBottle[bottle.id];
-
-          return (
-            <div key={item.id} className={styles.card}>
-              <div className={styles.cardHeader}>
-                <div>
-                  <div className={styles.cardTitle}>
-                    {bottle.name || 'Unknown Bottle'}
-                  </div>
-                  <div className={styles.cardSubtitle}>
-                    {bottle.brand || 'Unknown Brand'}
-                    {bottle.type ? ` • ${bottle.type}` : ''}
-                  </div>
-                  {bottle.release_name && (
-                    <div className={styles.releaseName}>
-                      {bottle.release_name}
-                    </div>
-                  )}
-                </div>
-                <div className={styles.chipColumn}>
-                  <span className={styles.statusChip}>{item.status}</span>
-                  {releaseFlags.length > 0 && (
-                    <div className={styles.releaseChips}>
-                      {releaseFlags.map((flag) => (
-                        <span
-                          key={flag}
-                          className={styles.releaseChip}
-                        >
-                          {flag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className={styles.metaRow}>
-                <span className={styles.location}>
-                  {item.location_label}
-                </span>
-                {identity && (
-                  <span className={styles.identity}>{identity}</span>
-                )}
-              </div>
-
-              <div className={styles.metaRow}>
-                {item.price_paid != null && (
-                  <span className={styles.pricePaid}>
-                    Paid ${Number(item.price_paid).toFixed(2)}
-                  </span>
-                )}
-                {item.msrp != null && (
-                  <span className={styles.msrp}>
-                    MSRP ${Number(item.msrp).toFixed(2)}
-                  </span>
-                )}
-              </div>
-
-              {(acquisition || disposition) && (
-                <div className={styles.detailBlock}>
-                  {acquisition && (
-                    <div className={styles.detailLine}>{acquisition}</div>
-                  )}
-                  {disposition && (
-                    <div className={styles.detailLineMuted}>
-                      {disposition}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className={styles.actionsRow}>
-                <button
-                  type="button"
-                  className={
-                    wishlisted
-                      ? styles.wishlistButtonOn
-                      : styles.wishlistButton
-                  }
-                  onClick={() => handleWishlistAdd(bottle.id)}
-                  disabled={!bottle.id || wishlisted}
-                >
-                  {wishlisted ? 'On Wishlist' : 'Add to Wishlist'}
-                </button>
-              </div>
+      {!loading && !error && items.length > 0 && (
+        <>
+          {viewMode === 'list' && (
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Bottle</th>
+                    <th>Status</th>
+                    <th>Location</th>
+                    <th>Identity</th>
+                    <th>Price Paid</th>
+                    <th>Links</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((inv) => {
+                    const bottle = inv.bottle || {};
+                    return (
+                      <tr key={inv.id}>
+                        <td>
+                          <Link
+                            to={`/app/inventory/${inv.id}`}
+                            className={styles.nameLink}
+                          >
+                            {bottle.name || 'Unknown bottle'}
+                          </Link>
+                          <div className={styles.subRow}>
+                            {bottle.brand || 'Unknown Brand'}
+                            {bottle.type
+                              ? ` • ${bottle.type}`
+                              : ''}
+                          </div>
+                        </td>
+                        <td>{formatStatus(inv.status)}</td>
+                        <td>{inv.location_label || '—'}</td>
+                        <td>{formatIdentity(inv)}</td>
+                        <td>{formatPrice(inv.price_paid)}</td>
+                        <td>
+                          <div className={styles.rowActions}>
+                            <Link
+                              to={`/app/inventory/${inv.id}`}
+                              className={styles.smallLinkButton}
+                            >
+                              Inventory
+                            </Link>
+                            {bottle.id && (
+                              <Link
+                                to={`/app/bottles/${bottle.id}`}
+                                className={styles.smallLinkButton}
+                              >
+                                Bottle
+                              </Link>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
-          );
-        })}
-      </div>
+          )}
+
+          {viewMode === 'cards' && (
+            <div className={styles.cardGrid}>
+              {items.map((inv) => {
+                const bottle = inv.bottle || {};
+                const identity = formatIdentity(inv);
+                return (
+                  <div key={inv.id} className={styles.card}>
+                    <div className={styles.cardHeader}>
+                      <div>
+                        <div className={styles.cardTitle}>
+                          <Link
+                            to={`/app/inventory/${inv.id}`}
+                            className={styles.nameLink}
+                          >
+                            {bottle.name || 'Unknown bottle'}
+                          </Link>
+                        </div>
+                        <div className={styles.cardSubtitle}>
+                          {bottle.brand || 'Unknown Brand'}
+                          {bottle.type
+                            ? ` • ${bottle.type}`
+                            : ''}
+                        </div>
+                      </div>
+                      <div className={styles.statusPill}>
+                        {formatStatus(inv.status)}
+                      </div>
+                    </div>
+                    <div className={styles.cardMetaRow}>
+                      <span>
+                        <strong>Location:</strong>{' '}
+                        {inv.location_label || '—'}
+                      </span>
+                    </div>
+                    <div className={styles.cardMetaRow}>
+                      <span>
+                        <strong>Identity:</strong> {identity}
+                      </span>
+                    </div>
+                    <div className={styles.cardMetaRow}>
+                      <span>
+                        <strong>Price:</strong>{' '}
+                        {formatPrice(inv.price_paid)}
+                      </span>
+                    </div>
+                    <div className={styles.cardActions}>
+                      <Link
+                        to={`/app/inventory/${inv.id}`}
+                        className={styles.smallLinkButton}
+                      >
+                        Inventory details
+                      </Link>
+                      {bottle.id && (
+                        <Link
+                          to={`/app/bottles/${bottle.id}`}
+                          className={styles.smallLinkButton}
+                        >
+                          Bottle details
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {viewMode === 'gallery' && (
+            <div className={styles.galleryGrid}>
+              {items.map((inv) => {
+                const bottle = inv.bottle || {};
+                const img = bottle.primary_photo_url
+                  ? resolveImageUrl(bottle.primary_photo_url)
+                  : null;
+
+                return (
+                  <div
+                    key={inv.id}
+                    className={styles.galleryCard}
+                  >
+                    <div className={styles.galleryImageWrap}>
+                      {img ? (
+                        <img
+                          src={img}
+                          alt={bottle.name || 'Bottle'}
+                          className={styles.galleryImage}
+                        />
+                      ) : (
+                        <div
+                          className={styles.galleryPlaceholder}
+                        >
+                          <span>
+                            {(bottle.name || 'B')
+                              .charAt(0)
+                              .toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      <div className={styles.galleryStatusChip}>
+                        {formatStatus(inv.status)}
+                      </div>
+                    </div>
+                    <div className={styles.galleryBody}>
+                      <div className={styles.galleryTitle}>
+                        <Link
+                          to={`/app/inventory/${inv.id}`}
+                          className={styles.nameLink}
+                        >
+                          {bottle.name || 'Unknown bottle'}
+                        </Link>
+                      </div>
+                      <div className={styles.gallerySubtitle}>
+                        {inv.location_label || 'No location set'}
+                      </div>
+                      <div className={styles.galleryMetaRow}>
+                        <span>{formatIdentity(inv)}</span>
+                        {bottle.type && (
+                          <span>{bottle.type}</span>
+                        )}
+                      </div>
+                      <div className={styles.galleryLinkRow}>
+                        <Link
+                          to={`/app/inventory/${inv.id}`}
+                          className={styles.galleryDetailsLink}
+                        >
+                          View inventory →
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
