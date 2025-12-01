@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api/client';
+import api, { API_BASE_URL } from '../api/client';
 import styles from '../styles/BottlesPage.module.scss';
+
+const apiBase = (API_BASE_URL || '').replace(/\/$/, '');
+
+function resolveImageUrl(path) {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  return `${apiBase}${path}`;
+}
 
 const INITIAL_FORM = {
   name: '',
@@ -17,6 +27,8 @@ const INITIAL_FORM = {
   limited_bottle_count: '',
   finish_description: '',
   mash_bill: '',
+  // long description
+  description: '',
 };
 
 function BottlesPage() {
@@ -46,6 +58,9 @@ function BottlesPage() {
   });
   const [invSubmitting, setInvSubmitting] = useState(false);
   const [invError, setInvError] = useState('');
+
+  // view mode: 'list' | 'cards' | 'gallery'
+  const [viewMode, setViewMode] = useState('list');
 
   function formatSingleLimited(bottle) {
     const flags = [];
@@ -145,7 +160,6 @@ function BottlesPage() {
         type: form.type.trim() || undefined,
         proof: form.proof ? Number(form.proof) : undefined,
         age_statement: form.age_statement.trim() || undefined,
-        // release details
         release_name: form.release_name.trim() || undefined,
         is_single_barrel: form.is_single_barrel,
         is_limited_release: form.is_limited_release,
@@ -154,6 +168,7 @@ function BottlesPage() {
           : undefined,
         finish_description: form.finish_description.trim() || undefined,
         mash_bill: form.mash_bill.trim() || undefined,
+        description: form.description.trim() || undefined,
       };
 
       const response = await api.post('/v1/bottles', payload);
@@ -260,8 +275,8 @@ function BottlesPage() {
         <div>
           <h1>Bottles</h1>
           <p className={styles.subtitle}>
-            Canonical bottle catalog &mdash; shared across inventory, tastings,
-            wishlists, and tags.
+            Canonical bottle catalog &mdash; shared across inventory,
+            tastings, wishlists, and tags.
           </p>
         </div>
         <button
@@ -297,8 +312,45 @@ function BottlesPage() {
             {loadingList ? 'Searching...' : 'Search'}
           </button>
         </form>
-        <div className={styles.count}>
-          {total} bottle{total === 1 ? '' : 's'}
+        <div className={styles.toolbarRight}>
+          <div className={styles.count}>
+            {total} bottle{total === 1 ? '' : 's'}
+          </div>
+          <div className={styles.viewToggle}>
+            <button
+              type="button"
+              className={
+                viewMode === 'list'
+                  ? styles.viewModeButtonActive
+                  : styles.viewModeButton
+              }
+              onClick={() => setViewMode('list')}
+            >
+              List
+            </button>
+            <button
+              type="button"
+              className={
+                viewMode === 'cards'
+                  ? styles.viewModeButtonActive
+                  : styles.viewModeButton
+              }
+              onClick={() => setViewMode('cards')}
+            >
+              Cards
+            </button>
+            <button
+              type="button"
+              className={
+                viewMode === 'gallery'
+                  ? styles.viewModeButtonActive
+                  : styles.viewModeButton
+              }
+              onClick={() => setViewMode('gallery')}
+            >
+              Gallery
+            </button>
+          </div>
         </div>
       </div>
 
@@ -460,6 +512,20 @@ function BottlesPage() {
               </label>
             </div>
 
+            <div className={styles.formRow}>
+              <label className={styles.label}>
+                Description
+                <textarea
+                  className={`${styles.input} ${styles.textarea}`}
+                  name="description"
+                  rows={4}
+                  value={form.description}
+                  onChange={handleFormChange}
+                  placeholder="Detailed product description, tasting notes, etc."
+                />
+              </label>
+            </div>
+
             <div className={styles.formActions}>
               <button
                 type="submit"
@@ -481,159 +547,338 @@ function BottlesPage() {
       )}
 
       {!loading && !error && bottles.length > 0 && (
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Brand</th>
-                <th>Distillery</th>
-                <th>Type</th>
-                <th>Proof</th>
-                <th>Age</th>
-                <th>Release</th>
-                <th>Single / Limited</th>
-                <th>Finish</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+        <>
+          {viewMode === 'list' && (
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Brand</th>
+                    <th>Distillery</th>
+                    <th>Type</th>
+                    <th>Proof</th>
+                    <th>Age</th>
+                    <th>Release</th>
+                    <th>Single / Limited</th>
+                    <th>Finish</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bottles.map((bottle) => {
+                    const wishlisted =
+                      bottle.id && wishlistByBottle[bottle.id];
+
+                    return (
+                      <React.Fragment key={bottle.id}>
+                        <tr>
+                          <td>
+                            <Link
+                              to={`/app/bottles/${bottle.id}`}
+                              className={styles.nameLink}
+                            >
+                              {bottle.name}
+                            </Link>
+                          </td>
+                          <td>{bottle.brand || '—'}</td>
+                          <td>{bottle.distillery || '—'}</td>
+                          <td>{bottle.type || '—'}</td>
+                          <td>
+                            {bottle.proof != null
+                              ? bottle.proof
+                              : '—'}
+                          </td>
+                          <td>{bottle.age_statement || '—'}</td>
+                          <td>{bottle.release_name || '—'}</td>
+                          <td>{formatSingleLimited(bottle)}</td>
+                          <td>{bottle.finish_description || '—'}</td>
+                          <td>
+                            <div className={styles.rowActions}>
+                              <button
+                                type="button"
+                                className={styles.smallButton}
+                                onClick={() =>
+                                  handleOpenInventoryForm(bottle.id)
+                                }
+                              >
+                                Add to Inventory
+                              </button>
+                              <button
+                                type="button"
+                                className={
+                                  wishlisted
+                                    ? styles.wishlistButtonOn
+                                    : styles.wishlistButton
+                                }
+                                onClick={() =>
+                                  handleWishlistAdd(bottle)
+                                }
+                                disabled={!!wishlisted}
+                              >
+                                {wishlisted
+                                  ? 'On Wishlist'
+                                  : 'Add to Wishlist'}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        {invFormOpenFor === bottle.id && (
+                          <tr className={styles.invFormRow}>
+                            <td colSpan={10}>
+                              <form
+                                className={styles.invForm}
+                                onSubmit={handleInventorySubmit}
+                              >
+                                <div
+                                  className={styles.invFormFields}
+                                >
+                                  <label className={styles.invLabel}>
+                                    Location *
+                                    <input
+                                      className={styles.input}
+                                      type="text"
+                                      name="location_label"
+                                      value={invForm.location_label}
+                                      onChange={
+                                        handleInvFormChange
+                                      }
+                                      placeholder="e.g. Home - Cabinet A / Shelf 2"
+                                    />
+                                  </label>
+                                  <label className={styles.invLabel}>
+                                    Status
+                                    <select
+                                      className={styles.input}
+                                      name="status"
+                                      value={invForm.status}
+                                      onChange={
+                                        handleInvFormChange
+                                      }
+                                    >
+                                      <option value="sealed">
+                                        Sealed
+                                      </option>
+                                      <option value="open">
+                                        Open
+                                      </option>
+                                      <option value="finished">
+                                        Finished
+                                      </option>
+                                      <option value="sample">
+                                        Sample
+                                      </option>
+                                    </select>
+                                  </label>
+                                  <label className={styles.invLabel}>
+                                    Price Paid
+                                    <input
+                                      className={styles.input}
+                                      type="number"
+                                      step="0.01"
+                                      name="price_paid"
+                                      value={invForm.price_paid}
+                                      onChange={
+                                        handleInvFormChange
+                                      }
+                                      placeholder="e.g. 60.00"
+                                    />
+                                  </label>
+                                </div>
+                                {invError && (
+                                  <div className={styles.invError}>
+                                    {invError}
+                                  </div>
+                                )}
+                                <div className={styles.invActions}>
+                                  <button
+                                    type="button"
+                                    className={
+                                      styles.invCancelButton
+                                    }
+                                    onClick={() =>
+                                      setInvFormOpenFor(null)
+                                    }
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    className={
+                                      styles.invSaveButton
+                                    }
+                                    disabled={invSubmitting}
+                                  >
+                                    {invSubmitting
+                                      ? 'Adding...'
+                                      : 'Add to Inventory'}
+                                  </button>
+                                </div>
+                              </form>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {viewMode === 'cards' && (
+            <div className={styles.cardGrid}>
               {bottles.map((bottle) => {
                 const wishlisted =
                   bottle.id && wishlistByBottle[bottle.id];
+                const flags = [];
+                if (bottle.is_single_barrel) flags.push('Single barrel');
+                if (bottle.is_limited_release) {
+                  if (bottle.limited_bottle_count != null) {
+                    flags.push(
+                      `Limited (${bottle.limited_bottle_count})`
+                    );
+                  } else {
+                    flags.push('Limited');
+                  }
+                }
+                if (bottle.finish_description) {
+                  flags.push(bottle.finish_description);
+                }
 
                 return (
-                  <React.Fragment key={bottle.id}>
-                    <tr>
-                      <td>
-                        <Link
-                          to={`/app/bottles/${bottle.id}`}
-                          className={styles.nameLink}
-                        >
-                          {bottle.name}
-                        </Link>
-                      </td>
-                      <td>{bottle.brand || '—'}</td>
-                      <td>{bottle.distillery || '—'}</td>
-                      <td>{bottle.type || '—'}</td>
-                      <td>
-                        {bottle.proof != null ? bottle.proof : '—'}
-                      </td>
-                      <td>{bottle.age_statement || '—'}</td>
-                      <td>{bottle.release_name || '—'}</td>
-                      <td>{formatSingleLimited(bottle)}</td>
-                      <td>{bottle.finish_description || '—'}</td>
-                      <td>
-                        <div className={styles.rowActions}>
-                          <button
-                            type="button"
-                            className={styles.smallButton}
-                            onClick={() =>
-                              handleOpenInventoryForm(bottle.id)
-                            }
+                  <div key={bottle.id} className={styles.card}>
+                    <div className={styles.cardHeader}>
+                      <div>
+                        <div className={styles.cardTitle}>
+                          <Link
+                            to={`/app/bottles/${bottle.id}`}
+                            className={styles.nameLink}
                           >
-                            Add to Inventory
-                          </button>
-                          <button
-                            type="button"
-                            className={
-                              wishlisted
-                                ? styles.wishlistButtonOn
-                                : styles.wishlistButton
-                            }
-                            onClick={() => handleWishlistAdd(bottle)}
-                            disabled={!!wishlisted}
-                          >
-                            {wishlisted
-                              ? 'On Wishlist'
-                              : 'Add to Wishlist'}
-                          </button>
+                            {bottle.name}
+                          </Link>
                         </div>
-                      </td>
-                    </tr>
-                    {invFormOpenFor === bottle.id && (
-                      <tr className={styles.invFormRow}>
-                        <td colSpan={10}>
-                          <form
-                            className={styles.invForm}
-                            onSubmit={handleInventorySubmit}
+                        <div className={styles.cardSubtitle}>
+                          {bottle.brand || 'Unknown Brand'}
+                          {bottle.type ? ` • ${bottle.type}` : ''}
+                        </div>
+                        {bottle.release_name && (
+                          <div className={styles.releaseName}>
+                            {bottle.release_name}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className={styles.metaRow}>
+                      <span className={styles.metaLeft}>
+                        {bottle.proof != null
+                          ? `${bottle.proof} proof`
+                          : ''}
+                        {bottle.age_statement
+                          ? ` · ${bottle.age_statement}`
+                          : ''}
+                      </span>
+                    </div>
+
+                    {flags.length > 0 && (
+                      <div className={styles.releaseChips}>
+                        {flags.map((flag) => (
+                          <span
+                            key={flag}
+                            className={styles.releaseChip}
                           >
-                            <div className={styles.invFormFields}>
-                              <label className={styles.invLabel}>
-                                Location *
-                                <input
-                                  className={styles.input}
-                                  type="text"
-                                  name="location_label"
-                                  value={invForm.location_label}
-                                  onChange={handleInvFormChange}
-                                  placeholder="e.g. Home - Cabinet A / Shelf 2"
-                                />
-                              </label>
-                              <label className={styles.invLabel}>
-                                Status
-                                <select
-                                  className={styles.input}
-                                  name="status"
-                                  value={invForm.status}
-                                  onChange={handleInvFormChange}
-                                >
-                                  <option value="sealed">Sealed</option>
-                                  <option value="open">Open</option>
-                                  <option value="finished">
-                                    Finished
-                                  </option>
-                                  <option value="sample">Sample</option>
-                                </select>
-                              </label>
-                              <label className={styles.invLabel}>
-                                Price Paid
-                                <input
-                                  className={styles.input}
-                                  type="number"
-                                  step="0.01"
-                                  name="price_paid"
-                                  value={invForm.price_paid}
-                                  onChange={handleInvFormChange}
-                                  placeholder="e.g. 60.00"
-                                />
-                              </label>
-                            </div>
-                            {invError && (
-                              <div className={styles.invError}>
-                                {invError}
-                              </div>
-                            )}
-                            <div className={styles.invActions}>
-                              <button
-                                type="button"
-                                className={styles.invCancelButton}
-                                onClick={() =>
-                                  setInvFormOpenFor(null)
-                                }
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                type="submit"
-                                className={styles.invSaveButton}
-                                disabled={invSubmitting}
-                              >
-                                {invSubmitting
-                                  ? 'Adding...'
-                                  : 'Add to Inventory'}
-                              </button>
-                            </div>
-                          </form>
-                        </td>
-                      </tr>
+                            {flag}
+                          </span>
+                        ))}
+                      </div>
                     )}
-                  </React.Fragment>
+
+                    <div className={styles.cardActions}>
+                      <button
+                        type="button"
+                        className={styles.smallButton}
+                        onClick={() =>
+                          handleOpenInventoryForm(bottle.id)
+                        }
+                      >
+                        Add to Inventory
+                      </button>
+                      <button
+                        type="button"
+                        className={
+                          wishlisted
+                            ? styles.wishlistButtonOn
+                            : styles.wishlistButton
+                        }
+                        onClick={() => handleWishlistAdd(bottle)}
+                        disabled={!!wishlisted}
+                      >
+                        {wishlisted
+                          ? 'On Wishlist'
+                          : 'Add to Wishlist'}
+                      </button>
+                    </div>
+                  </div>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          )}
+
+          {viewMode === 'gallery' && (
+            <div className={styles.galleryGrid}>
+              {bottles.map((bottle) => (
+                <div
+                  key={bottle.id}
+                  className={styles.galleryCard}
+                >
+                  <div className={styles.galleryImageWrap}>
+                    {bottle.primary_photo_url ? (
+                      <img
+                        src={resolveImageUrl(bottle.primary_photo_url)}
+                        alt={bottle.name}
+                        className={styles.galleryImage}
+                      />
+                    ) : (
+                      <div className={styles.galleryPlaceholder}>
+                        <span>{bottle.name.charAt(0)}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className={styles.galleryBody}>
+                    <div className={styles.galleryTitle}>
+                      <Link
+                        to={`/app/bottles/${bottle.id}`}
+                        className={styles.nameLink}
+                      >
+                        {bottle.name}
+                      </Link>
+                    </div>
+                    <div className={styles.gallerySubtitle}>
+                      {bottle.brand || 'Unknown Brand'}
+                    </div>
+                    <div className={styles.galleryMetaRow}>
+                      {bottle.type && (
+                        <span>{bottle.type}</span>
+                      )}
+                      {bottle.proof != null && (
+                        <span>{bottle.proof} proof</span>
+                      )}
+                    </div>
+                    <div className={styles.galleryLinkRow}>
+                      <Link
+                        to={`/app/bottles/${bottle.id}`}
+                        className={styles.galleryDetailsLink}
+                      >
+                        View details →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
