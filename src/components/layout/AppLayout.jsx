@@ -19,28 +19,35 @@ function AppLayout() {
     <div className={styles.appShell}>
       <aside className={styles.sidebar}>
         <div className={styles.logo}>BarrelChatter</div>
-        <nav className={styles.nav}>
-          <NavLink to="/app/inventory" className={navClass}>
-            Inventory
-          </NavLink>
-          <NavLink to="/app/bottles" className={navClass}>
-            Bottles
-          </NavLink>
-          <NavLink to="/app/tastings" className={navClass}>
-            Tastings
-          </NavLink>
-          <NavLink to="/app/wishlists" className={navClass}>
-            Wishlist
-          </NavLink>
-          <NavLink to="/app/tags" className={navClass}>
-            Tags
-          </NavLink>
-          {user?.role === 'admin' && (
-            <NavLink to="/app/admin/tags" className={navClass}>
-              Admin Tags
+          <nav className={styles.nav}>
+            {/* Core user flow */}
+            <NavLink to="/app/bottles" className={navClass}>
+              Bottles
             </NavLink>
-          )}
-        </nav>
+            <NavLink to="/app/inventory" className={navClass}>
+              Inventory
+            </NavLink>
+            <NavLink to="/app/tastings" className={navClass}>
+              Tastings
+            </NavLink>
+            <NavLink to="/app/wishlists" className={navClass}>
+              Wishlist
+            </NavLink>
+            <NavLink to="/app/tags" className={navClass}>
+              Tags
+            </NavLink>
+
+            {/* Admin section */}
+            {user?.role === 'admin' && (
+              <>
+                <div className={styles.navSectionDivider} />
+                <div className={styles.navSectionLabel}>Admin</div>
+                <NavLink to="/app/admin/tags" className={navClass}>
+                  Admin Tags
+                </NavLink>
+              </>
+            )}
+          </nav>
       </aside>
 
       <div className={styles.mainArea}>

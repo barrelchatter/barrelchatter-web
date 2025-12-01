@@ -28,6 +28,19 @@
   gap: 6px;
 }
 
+.navSectionDivider {
+  margin: 12px 0 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.navSectionLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+  margin: 2px 0 6px;
+}
+
 .navItem,
 .navItemActive {
   padding: 8px 12px;

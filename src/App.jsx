@@ -6,6 +6,9 @@ import AppLayout from './components/layout/AppLayout.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import BottlesPage from './pages/BottlesPage.jsx';
 import TastingsPage from './pages/TastingsPage.jsx';
+import WishlistPage from './pages/WishlistPage.jsx';
+import TagsPage from './pages/TagsPage.jsx';
+import AdminTagsPage from './pages/AdminTagsPage.jsx';
 
 function App() {
   return (
@@ -24,10 +27,9 @@ function App() {
         <Route path="inventory" element={<InventoryPage />} />
         <Route path="bottles" element={<BottlesPage />} />
         <Route path="tastings" element={<TastingsPage />} />
-                        {/* stubs for future routes */}
-        <Route path="wishlists" element={<div>TODO: Wishlists</div>} />
-        <Route path="tags" element={<div>TODO: Tags</div>} />
-        <Route path="admin/tags" element={<div>TODO: Admin Tags</div>} />
+        <Route path="wishlists" element={<WishlistPage />} />
+        <Route path="tags" element={<TagsPage />} />
+        <Route path="admin/tags" element={<AdminTagsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/app" replace />} />

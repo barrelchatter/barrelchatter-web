@@ -45,62 +45,8 @@
   transform: translateY(-1px);
 }
 
-.addButton:active {
-  transform: translateY(0);
-}
-
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.searchRow {
-  display: flex;
-  gap: 8px;
-  flex: 1;
-}
-
-.searchInput,
-.typeInput {
-  flex: 1;
-  min-width: 0;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(10, 10, 10, 0.9);
-  color: var(--color-text);
-  padding: 6px 10px;
-  font-size: 13px;
-}
-
-.typeInput {
-  max-width: 200px;
-}
-
-.searchInput:focus,
-.typeInput:focus {
-  outline: none;
-  border-color: var(--color-accent);
-}
-
-.searchButton {
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: var(--color-bg-alt);
-  color: var(--color-text);
-  padding: 6px 12px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.searchButton:hover {
-  background: #333;
-}
-
-.count {
-  font-size: 13px;
+.smallNote {
+  font-size: 12px;
   opacity: 0.8;
 }
 
@@ -113,8 +59,14 @@
 }
 
 .formTitle {
-  margin: 0 0 10px;
+  margin: 0 0 4px;
   font-size: 16px;
+}
+
+.formHint {
+  margin: 0 0 8px;
+  font-size: 12px;
+  opacity: 0.8;
 }
 
 .formError {
@@ -147,6 +99,14 @@
   gap: 4px;
 }
 
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  margin-top: 20px;
+}
+
 .input {
   border-radius: var(--radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -161,26 +121,8 @@
   border-color: var(--color-accent);
 }
 
-.sectionTitle {
-  margin: 10px 0 4px;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.75;
-}
-
-.checkboxRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-
-.checkboxLabel {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
+.textarea {
+  resize: vertical;
 }
 
 .formActions {
@@ -246,6 +188,7 @@
   padding: 8px 10px;
   text-align: left;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: top;
 }
 
 .table th {
@@ -260,115 +203,47 @@
   background: rgba(255, 255, 255, 0.02);
 }
 
-/* row-level actions (Inventory / Wishlist) */
-
-.rowActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+.notesCell {
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.smallButton {
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: var(--color-bg);
-  color: var(--color-text);
-  padding: 4px 8px;
-  font-size: 11px;
-  cursor: pointer;
+.actionsCell {
+  white-space: nowrap;
 }
 
-.smallButton:hover {
-  background: #333;
-}
-
-.wishlistButton,
-.wishlistButtonOn {
+.alertButtonOn,
+.alertButtonOff {
   border-radius: 999px;
   padding: 3px 10px;
   font-size: 11px;
   border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: var(--color-text);
   cursor: pointer;
 }
 
-.wishlistButton {
-  background: transparent;
-  color: var(--color-text);
-}
-
-.wishlistButtonOn {
+.alertButtonOn {
   background: rgba(181, 142, 88, 0.2);
-  color: var(--color-accent);
-  cursor: default;
 }
 
-/* inline inventory quick-add row */
-
-.invFormRow td {
-  background: rgba(0, 0, 0, 0.4);
-  padding: 8px 10px;
+.alertButtonOff {
+  opacity: 0.6;
 }
 
-.invForm {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.invFormFields {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.invLabel {
-  flex: 1;
-  min-width: 0;
-  font-size: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.invError {
-  font-size: 12px;
-  padding: 6px 8px;
-  border-radius: var(--radius-sm);
-  background: rgba(185, 71, 62, 0.16);
-  border: 1px solid var(--color-danger);
-}
-
-.invActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.invCancelButton,
-.invSaveButton {
-  border-radius: var(--radius-sm);
-  padding: 5px 10px;
-  font-size: 12px;
-  border: none;
+.deleteButton {
+  border-radius: 999px;
+  border: 1px solid rgba(185, 71, 62, 0.7);
+  background: transparent;
+  color: var(--color-danger);
+  padding: 3px 10px;
+  font-size: 11px;
   cursor: pointer;
 }
 
-.invCancelButton {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--color-text);
-}
-
-.invSaveButton {
-  background: linear-gradient(
-    135deg,
-    var(--color-accent),
-    var(--color-accent-deep)
-  );
-  color: #120e0b;
-}
-
-.invSaveButton:disabled {
-  opacity: 0.6;
-  cursor: default;
+.count {
+  font-size: 13px;
+  opacity: 0.8;
 }

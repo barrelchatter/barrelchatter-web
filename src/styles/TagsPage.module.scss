@@ -1,0 +1,267 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.headerRow h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.scanCard {
+  background: var(--color-bg-alt);
+  border-radius: 20px;
+  padding: 14px 16px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-soft);
+}
+
+.scanTitle {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.scanHint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.scanForm {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.scanInput {
+  flex: 1;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 10, 10, 0.9);
+  color: var(--color-text);
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.scanInput:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.scanButton {
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.scanButton:hover {
+  background: #333;
+}
+
+.lookupResult {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lookupHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.lookupUid {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.lookupState {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.lookupTagLabel {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.lookupActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.lookupColumn {
+  flex: 1;
+  min-width: 220px;
+}
+
+.lookupTitle {
+  margin: 0 0 6px;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.lookupField {
+  margin-bottom: 8px;
+}
+
+.label {
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input {
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 10, 10, 0.9);
+  color: var(--color-text);
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.primaryButton,
+.secondaryButton {
+  border-radius: var(--radius-md);
+  border: none;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+}
+
+.primaryButton {
+  background: linear-gradient(
+    135deg,
+    var(--color-accent),
+    var(--color-accent-deep)
+  );
+  color: #120e0b;
+}
+
+.secondaryButton {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.lookupLinkedInfo {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.lookupLinkedLabel {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.lookupLinkedBottle {
+  font-weight: 600;
+}
+
+.lookupLinkedLocation {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.lookupWarning {
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(185, 71, 62, 0.16);
+  border: 1px solid var(--color-danger);
+}
+
+.smallNote {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.listHeader {
+  margin-top: 4px;
+}
+
+.listTitle {
+  margin: 0;
+  font-size: 16px;
+}
+
+.message {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.error {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(185, 71, 62, 0.16);
+  border: 1px solid var(--color-danger);
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.tableWrapper {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: var(--shadow-soft);
+  background: rgba(12, 12, 12, 0.95);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table thead {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.table th,
+.table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.table th {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}

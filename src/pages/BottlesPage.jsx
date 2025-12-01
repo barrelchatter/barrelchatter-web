@@ -9,6 +9,13 @@ const INITIAL_FORM = {
   type: '',
   proof: '',
   age_statement: '',
+  // release details
+  release_name: '',
+  is_single_barrel: false,
+  is_limited_release: false,
+  limited_bottle_count: '',
+  finish_description: '',
+  mash_bill: '',
 };
 
 function BottlesPage() {
@@ -25,6 +32,33 @@ function BottlesPage() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [formError, setFormError] = useState('');
   const [formSubmitting, setFormSubmitting] = useState(false);
+
+  // wishlist state: bottle_id -> wishlist row
+  const [wishlistByBottle, setWishlistByBottle] = useState({});
+
+  // quick add-to-inventory state
+  const [invFormOpenFor, setInvFormOpenFor] = useState(null); // bottle_id
+  const [invForm, setInvForm] = useState({
+    status: 'sealed',
+    location_label: '',
+    price_paid: '',
+  });
+  const [invSubmitting, setInvSubmitting] = useState(false);
+  const [invError, setInvError] = useState('');
+
+  function formatSingleLimited(bottle) {
+    const flags = [];
+    if (bottle.is_single_barrel) flags.push('Single barrel');
+    if (bottle.is_limited_release) {
+      if (bottle.limited_bottle_count != null) {
+        flags.push(`Limited (${bottle.limited_bottle_count})`);
+      } else {
+        flags.push('Limited');
+      }
+    }
+    if (!flags.length) return '—';
+    return flags.join(' • ');
+  }
 
   async function loadBottles({ showSpinner = true } = {}) {
     if (showSpinner) {
@@ -49,7 +83,8 @@ function BottlesPage() {
     } catch (err) {
       console.error(err);
       const message =
-        err?.response?.data?.error || 'Failed to load bottles. Is the API running?';
+        err?.response?.data?.error ||
+        'Failed to load bottles. Is the API running?';
       setError(message);
     } finally {
       setLoading(false);
@@ -57,8 +92,23 @@ function BottlesPage() {
     }
   }
 
+  async function loadWishlists() {
+    try {
+      const res = await api.get('/v1/wishlists?limit=500&offset=0');
+      const map = {};
+      (res.data.wishlists || []).forEach((wl) => {
+        const bottleId = wl.bottle_id || wl.bottle?.id;
+        if (bottleId) map[bottleId] = wl;
+      });
+      setWishlistByBottle(map);
+    } catch (err) {
+      console.error('Failed to load wishlist', err);
+    }
+  }
+
   useEffect(() => {
     loadBottles();
+    loadWishlists();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -68,10 +118,10 @@ function BottlesPage() {
   }
 
   function handleFormChange(e) {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   }
 
@@ -94,16 +144,23 @@ function BottlesPage() {
         type: form.type.trim() || undefined,
         proof: form.proof ? Number(form.proof) : undefined,
         age_statement: form.age_statement.trim() || undefined,
+        // release details
+        release_name: form.release_name.trim() || undefined,
+        is_single_barrel: form.is_single_barrel,
+        is_limited_release: form.is_limited_release,
+        limited_bottle_count: form.limited_bottle_count
+          ? Number(form.limited_bottle_count)
+          : undefined,
+        finish_description: form.finish_description.trim() || undefined,
+        mash_bill: form.mash_bill.trim() || undefined,
       };
 
       const response = await api.post('/v1/bottles', payload);
       const created = response.data?.bottle;
 
-      // Optimistically add to list
       setBottles((prev) => {
         if (!created) return prev;
         const next = [created, ...prev];
-        // naive de-dupe by id
         const seen = new Set();
         return next.filter((b) => {
           if (seen.has(b.id)) return false;
@@ -125,13 +182,85 @@ function BottlesPage() {
     }
   }
 
+  async function handleWishlistAdd(bottle) {
+    if (!bottle?.id) return;
+    try {
+      const res = await api.post('/v1/wishlists', {
+        bottle_id: bottle.id,
+        alert_enabled: true,
+      });
+      const wl = res.data?.wishlist;
+      if (wl) {
+        const id = wl.bottle_id || bottle.id;
+        setWishlistByBottle((prev) => ({ ...prev, [id]: wl }));
+      }
+    } catch (err) {
+      console.error('Failed to add wishlist item', err);
+    }
+  }
+
+  function handleOpenInventoryForm(bottleId) {
+    setInvError('');
+    setInvFormOpenFor(bottleId);
+    setInvForm((prev) => ({
+      status: prev.status || 'sealed',
+      location_label: prev.location_label || '',
+      price_paid: prev.price_paid || '',
+    }));
+  }
+
+  function handleInvFormChange(e) {
+    const { name, value } = e.target;
+    setInvForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  async function handleInventorySubmit(e) {
+    e.preventDefault();
+    if (!invFormOpenFor) return;
+    setInvSubmitting(true);
+    setInvError('');
+
+    try {
+      const payload = {
+        bottle_id: invFormOpenFor,
+        status: invForm.status || 'sealed',
+        location_label:
+          invForm.location_label.trim() || 'My Collection',
+        price_paid: invForm.price_paid
+          ? Number(invForm.price_paid)
+          : undefined,
+      };
+
+      await api.post('/v1/inventory', payload);
+
+      setInvFormOpenFor(null);
+      setInvForm({
+        status: 'sealed',
+        location_label: '',
+        price_paid: '',
+      });
+    } catch (err) {
+      console.error(err);
+      const message =
+        err?.response?.data?.error ||
+        'Failed to add inventory item.';
+      setInvError(message);
+    } finally {
+      setInvSubmitting(false);
+    }
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.headerRow}>
         <div>
           <h1>Bottles</h1>
           <p className={styles.subtitle}>
-            Canonical bottle catalog &mdash; shared across inventory, tastings, and wishlists.
+            Canonical bottle catalog &mdash; shared across inventory, tastings,
+            wishlists, and tags.
           </p>
         </div>
         <button
@@ -254,6 +383,82 @@ function BottlesPage() {
               </label>
             </div>
 
+            <div className={styles.sectionTitle}>Release details</div>
+
+            <div className={styles.formRow}>
+              <label className={styles.label}>
+                Release Name
+                <input
+                  className={styles.input}
+                  type="text"
+                  name="release_name"
+                  value={form.release_name}
+                  onChange={handleFormChange}
+                  placeholder='e.g. "Mr. Dean" or "Spring 2024 Single Barrel"'
+                />
+              </label>
+            </div>
+
+            <div className={styles.formRow}>
+              <div className={styles.checkboxRow}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    name="is_single_barrel"
+                    checked={form.is_single_barrel}
+                    onChange={handleFormChange}
+                  />
+                  Single barrel
+                </label>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    name="is_limited_release"
+                    checked={form.is_limited_release}
+                    onChange={handleFormChange}
+                  />
+                  Limited release
+                </label>
+                <label className={styles.label}>
+                  Total bottles
+                  <input
+                    className={styles.input}
+                    type="number"
+                    min="1"
+                    name="limited_bottle_count"
+                    value={form.limited_bottle_count}
+                    onChange={handleFormChange}
+                    placeholder="e.g. 150"
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className={styles.formRow}>
+              <label className={styles.label}>
+                Finish
+                <input
+                  className={styles.input}
+                  type="text"
+                  name="finish_description"
+                  value={form.finish_description}
+                  onChange={handleFormChange}
+                  placeholder="e.g. Apple brandy barrel finish"
+                />
+              </label>
+              <label className={styles.label}>
+                Mash Bill
+                <input
+                  className={styles.input}
+                  type="text"
+                  name="mash_bill"
+                  value={form.mash_bill}
+                  onChange={handleFormChange}
+                  placeholder="e.g. 95/5 rye/malted barley"
+                />
+              </label>
+            </div>
+
             <div className={styles.formActions}>
               <button
                 type="submit"
@@ -285,19 +490,139 @@ function BottlesPage() {
                 <th>Type</th>
                 <th>Proof</th>
                 <th>Age</th>
+                <th>Release</th>
+                <th>Single / Limited</th>
+                <th>Finish</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {bottles.map((bottle) => (
-                <tr key={bottle.id}>
-                  <td>{bottle.name}</td>
-                  <td>{bottle.brand || '—'}</td>
-                  <td>{bottle.distillery || '—'}</td>
-                  <td>{bottle.type || '—'}</td>
-                  <td>{bottle.proof != null ? bottle.proof : '—'}</td>
-                  <td>{bottle.age_statement || '—'}</td>
-                </tr>
-              ))}
+              {bottles.map((bottle) => {
+                const wishlisted =
+                  bottle.id && wishlistByBottle[bottle.id];
+
+                return (
+                  <React.Fragment key={bottle.id}>
+                    <tr>
+                      <td>{bottle.name}</td>
+                      <td>{bottle.brand || '—'}</td>
+                      <td>{bottle.distillery || '—'}</td>
+                      <td>{bottle.type || '—'}</td>
+                      <td>
+                        {bottle.proof != null ? bottle.proof : '—'}
+                      </td>
+                      <td>{bottle.age_statement || '—'}</td>
+                      <td>{bottle.release_name || '—'}</td>
+                      <td>{formatSingleLimited(bottle)}</td>
+                      <td>{bottle.finish_description || '—'}</td>
+                      <td>
+                        <div className={styles.rowActions}>
+                          <button
+                            type="button"
+                            className={styles.smallButton}
+                            onClick={() =>
+                              handleOpenInventoryForm(bottle.id)
+                            }
+                          >
+                            Add to Inventory
+                          </button>
+                          <button
+                            type="button"
+                            className={
+                              wishlisted
+                                ? styles.wishlistButtonOn
+                                : styles.wishlistButton
+                            }
+                            onClick={() => handleWishlistAdd(bottle)}
+                            disabled={!!wishlisted}
+                          >
+                            {wishlisted
+                              ? 'On Wishlist'
+                              : 'Add to Wishlist'}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {invFormOpenFor === bottle.id && (
+                      <tr className={styles.invFormRow}>
+                        <td colSpan={10}>
+                          <form
+                            className={styles.invForm}
+                            onSubmit={handleInventorySubmit}
+                          >
+                            <div className={styles.invFormFields}>
+                              <label className={styles.invLabel}>
+                                Location *
+                                <input
+                                  className={styles.input}
+                                  type="text"
+                                  name="location_label"
+                                  value={invForm.location_label}
+                                  onChange={handleInvFormChange}
+                                  placeholder="e.g. Home - Cabinet A / Shelf 2"
+                                />
+                              </label>
+                              <label className={styles.invLabel}>
+                                Status
+                                <select
+                                  className={styles.input}
+                                  name="status"
+                                  value={invForm.status}
+                                  onChange={handleInvFormChange}
+                                >
+                                  <option value="sealed">Sealed</option>
+                                  <option value="open">Open</option>
+                                  <option value="finished">
+                                    Finished
+                                  </option>
+                                  <option value="sample">Sample</option>
+                                </select>
+                              </label>
+                              <label className={styles.invLabel}>
+                                Price Paid
+                                <input
+                                  className={styles.input}
+                                  type="number"
+                                  step="0.01"
+                                  name="price_paid"
+                                  value={invForm.price_paid}
+                                  onChange={handleInvFormChange}
+                                  placeholder="e.g. 60.00"
+                                />
+                              </label>
+                            </div>
+                            {invError && (
+                              <div className={styles.invError}>
+                                {invError}
+                              </div>
+                            )}
+                            <div className={styles.invActions}>
+                              <button
+                                type="button"
+                                className={styles.invCancelButton}
+                                onClick={() =>
+                                  setInvFormOpenFor(null)
+                                }
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="submit"
+                                className={styles.invSaveButton}
+                                disabled={invSubmitting}
+                              >
+                                {invSubmitting
+                                  ? 'Adding...'
+                                  : 'Add to Inventory'}
+                              </button>
+                            </div>
+                          </form>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>
