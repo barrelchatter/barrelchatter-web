@@ -407,6 +407,24 @@
   opacity: 0.75;
 }
 
+.statusBanner {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+}
+
+.statusBannerWarning {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(185, 71, 62, 0.7);
+  background: rgba(185, 71, 62, 0.16);
+  font-size: 12px;
+}
+
 /* side card */
 
 .sideTitle {

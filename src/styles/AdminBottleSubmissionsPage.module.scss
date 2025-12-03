@@ -1,0 +1,150 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.headerRow h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filterLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.filterSelect {
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(10, 10, 10, 0.9);
+  color: var(--color-text);
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.count {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.message {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.error {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(185, 71, 62, 0.16);
+  border: 1px solid var(--color-danger);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.tableWrapper {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: var(--shadow-soft);
+  background: rgba(12, 12, 12, 0.95);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table thead {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.table th,
+.table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: top;
+}
+
+.table th {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.nameLink {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.nameLink:hover {
+  text-decoration: underline;
+}
+
+.statusPending,
+.statusRejected {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+.statusPending {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.statusRejected {
+  border: 1px solid rgba(185, 71, 62, 0.7);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.smallButton {
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: var(--color-text);
+  padding: 3px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.smallButton:hover {
+  background: rgba(255, 255, 255, 0.06);
+}

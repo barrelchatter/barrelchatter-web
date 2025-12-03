@@ -11,12 +11,14 @@ import TagsPage from './pages/TagsPage.jsx';
 import AdminTagsPage from './pages/AdminTagsPage.jsx';
 import BottleDetailPage from './pages/BottleDetailPage.jsx';
 import InventoryDetailPage from './pages/InventoryDetailPage.jsx';
+import AdminBottleSubmissionsPage from './pages/AdminBottleSubmissionsPage.jsx';
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
 
+      {/* Top-level: must be authenticated for anything under /app */}
       <Route
         path="/app"
         element={
@@ -25,7 +27,10 @@ function App() {
           </ProtectedRoute>
         }
       >
+        {/* Default landing */}
         <Route index element={<InventoryPage />} />
+
+        {/* Normal user routes */}
         <Route path="inventory" element={<InventoryPage />} />
         <Route path="inventory/:id" element={<InventoryDetailPage />} />
         <Route path="bottles" element={<BottlesPage />} />
@@ -33,9 +38,29 @@ function App() {
         <Route path="tastings" element={<TastingsPage />} />
         <Route path="wishlists" element={<WishlistPage />} />
         <Route path="tags" element={<TagsPage />} />
-        <Route path="admin/tags" element={<AdminTagsPage />} />
+
+        {/* Moderator/Admin: Bottle Submissions */}
+        <Route
+          path="admin/bottles-submissions"
+          element={
+            <ProtectedRoute requireRoles={['moderator', 'admin']}>
+              <AdminBottleSubmissionsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin-only: Admin Tags */}
+        <Route
+          path="admin/tags"
+          element={
+            <ProtectedRoute requireRoles={['admin']}>
+              <AdminTagsPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
+      {/* Fallback */}
       <Route path="*" element={<Navigate to="/app" replace />} />
     </Routes>
   );

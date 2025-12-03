@@ -5,6 +5,9 @@ import styles from '../../styles/AppLayout.module.scss';
 
 function AppLayout() {
   const { user, logout } = useAuth();
+  const isModeratorOrAdmin =
+    user?.role === 'moderator' || user?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -37,16 +40,34 @@ function AppLayout() {
               Tags
             </NavLink>
 
-            {/* Admin section */}
-            {user?.role === 'admin' && (
-              <>
-                <div className={styles.navSectionDivider} />
-                <div className={styles.navSectionLabel}>Admin</div>
-                <NavLink to="/app/admin/tags" className={navClass}>
+            {(isModeratorOrAdmin || isAdmin) && (
+            <>
+              <div className={styles.navSeparator} />
+              <div className={styles.navSectionLabel}>Admin</div>
+
+              {isModeratorOrAdmin && (
+                <NavLink
+                  to="/app/admin/bottles-submissions"
+                  className={({ isActive }) =>
+                    isActive ? styles.navItemActive : styles.navItem
+                  }
+                >
+                  Bottle Submissions
+                </NavLink>
+              )}
+
+              {isAdmin && (
+                <NavLink
+                  to="/app/admin/tags"
+                  className={({ isActive }) =>
+                    isActive ? styles.navItemActive : styles.navItem
+                  }
+                >
                   Admin Tags
                 </NavLink>
-              </>
-            )}
+              )}
+            </>
+          )}
           </nav>
       </aside>
 

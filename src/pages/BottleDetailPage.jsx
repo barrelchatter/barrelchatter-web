@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api, { API_BASE_URL } from '../api/client';
+import { useAuth } from '../context/AuthContext.jsx';
 import styles from '../styles/BottleDetailPage.module.scss';
 
 const apiBase = (API_BASE_URL || '').replace(/\/$/, '');
@@ -50,6 +51,9 @@ function formatRating(t) {
 function BottleDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isModeratorOrAdmin =
+    user?.role === 'moderator' || user?.role === 'admin';
 
   const [bottle, setBottle] = useState(null);
   const [inventory, setInventory] = useState([]);
@@ -117,9 +121,7 @@ function BottleDetailPage() {
 
         const allTastings = tastingsRes.data?.tastings || [];
         setTastings(
-          allTastings.filter(
-            (t) => t.bottle && t.bottle.id === id
-          )
+          allTastings.filter((t) => t.bottle && t.bottle.id === id)
         );
 
         const allWish = wishlistRes.data?.wishlists || [];
@@ -365,11 +367,10 @@ function BottleDetailPage() {
   }
 
   async function handleRemovePhoto(photoId) {
-    // optional: simple confirmation
-    const confirm = window.confirm(
+    const confirmRemove = window.confirm(
       'Remove this photo? This cannot be undone.'
     );
-    if (!confirm) return;
+    if (!confirmRemove) return;
 
     try {
       const res = await api.delete(
@@ -384,7 +385,6 @@ function BottleDetailPage() {
       }));
     } catch (err) {
       console.error('Failed to remove photo', err);
-      // If you want, you can set a photo-specific error here
       setUploadError(
         err?.response?.data?.error || 'Failed to remove photo.'
       );
@@ -457,6 +457,22 @@ function BottleDetailPage() {
                   )}
                 </div>
               </div>
+
+              {bottle.status === 'pending' && (
+                <div className={styles.statusBanner}>
+                  This bottle has been submitted for catalog review.
+                  You can still use it in your inventory and tastings,
+                  but details may be updated by moderators.
+                </div>
+              )}
+
+              {bottle.status === 'rejected' && isModeratorOrAdmin && (
+                <div className={styles.statusBannerWarning}>
+                  This bottle is currently rejected from the public
+                  catalog. Review moderation details and consider
+                  merging it into another bottle entry.
+                </div>
+              )}
 
               {!editMode && (
                 <>
@@ -752,7 +768,9 @@ function BottleDetailPage() {
                               <button
                                 type="button"
                                 className={styles.photoPrimaryButton}
-                                onClick={() => handleMakePrimary(photo.id)}
+                                onClick={() =>
+                                  handleMakePrimary(photo.id)
+                                }
                               >
                                 Make primary
                               </button>
@@ -760,7 +778,9 @@ function BottleDetailPage() {
                             <button
                               type="button"
                               className={styles.photoRemoveButton}
-                              onClick={() => handleRemovePhoto(photo.id)}
+                              onClick={() =>
+                                handleRemovePhoto(photo.id)
+                              }
                             >
                               Remove
                             </button>

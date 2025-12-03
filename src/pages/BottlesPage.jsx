@@ -13,6 +13,24 @@ function resolveImageUrl(path) {
   return `${apiBase}${path}`;
 }
 
+function renderStatusChip(bottle, styles) {
+  if (!bottle.status) return null;
+  if (bottle.status === 'approved') return null;
+
+  const label =
+    bottle.status === 'pending'
+      ? 'Pending review'
+      : bottle.status === 'rejected'
+      ? 'Rejected'
+      : bottle.status;
+
+  return (
+    <span className={styles.statusChip}>
+      {label}
+    </span>
+  );
+}
+
 const INITIAL_FORM = {
   name: '',
   brand: '',
@@ -578,8 +596,13 @@ function BottlesPage() {
                               to={`/app/bottles/${bottle.id}`}
                               className={styles.nameLink}
                             >
-                              {bottle.name}
+                              {bottle.name || 'Unknown bottle'}
                             </Link>
+                            <div className={styles.subRow}>
+                              {bottle.brand || 'Unknown Brand'}
+                              {bottle.type ? ` • ${bottle.type}` : ''}
+                            </div>
+                            {renderStatusChip(bottle, styles)}
                           </td>
                           <td>{bottle.brand || '—'}</td>
                           <td>{bottle.distillery || '—'}</td>

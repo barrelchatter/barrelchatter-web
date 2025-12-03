@@ -142,6 +142,15 @@
   opacity: 1;
 }
 
+.statusChip {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  opacity: 0.85;
+}
 
 /* form */
 
