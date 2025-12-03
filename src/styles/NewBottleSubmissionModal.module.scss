@@ -1,0 +1,157 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  z-index: 999;
+}
+
+.modal {
+  width: 100%;
+  max-width: 640px;
+  border-radius: 18px;
+  background: rgba(18, 18, 18, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+  padding: 16px 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.closeButton {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+}
+
+.subtitle {
+  font-size: 13px;
+  opacity: 0.85;
+  margin: 0;
+}
+
+.error {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(185, 71, 62, 0.16);
+  border: 1px solid #b9473e;
+  font-size: 13px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.input {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 8px;
+  color: inherit;
+  font-size: 13px;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.sectionTitle {
+  margin-top: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+}
+
+.checkboxRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.footer {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.secondaryButton {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.primaryActions {
+  display: flex;
+  gap: 8px;
+}
+
+.primaryButton,
+.primaryButtonOutline {
+  border-radius: 999px;
+  font-size: 13px;
+  padding: 6px 14px;
+  cursor: pointer;
+  border: 1px solid #b58e58;
+}
+
+.primaryButton {
+  background: #5a3e36;
+  color: #e4d6c3;
+}
+
+.primaryButtonOutline {
+  background: transparent;
+  color: #e4d6c3;
+}

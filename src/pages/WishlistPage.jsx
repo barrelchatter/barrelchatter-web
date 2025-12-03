@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/client';
+import NewBottleSubmissionModal from '../components/NewBottleSubmissionModal';
 import styles from '../styles/WishlistPage.module.scss';
 
 const INITIAL_FORM = {
@@ -24,6 +25,9 @@ function WishlistPage() {
   const [formError, setFormError] = useState('');
   const [formSubmitting, setFormSubmitting] = useState(false);
 
+  // New: modal for submitting a new bottle from wishlist context
+  const [showNewBottleModal, setShowNewBottleModal] = useState(false);
+
   async function loadBottles() {
     setBottlesLoading(true);
     setBottlesError('');
@@ -33,7 +37,8 @@ function WishlistPage() {
     } catch (err) {
       console.error(err);
       const message =
-        err?.response?.data?.error || 'Failed to load bottles for wishlist.';
+        err?.response?.data?.error ||
+        'Failed to load bottles for wishlist.';
       setBottlesError(message);
     } finally {
       setBottlesLoading(false);
@@ -111,7 +116,8 @@ function WishlistPage() {
     } catch (err) {
       console.error(err);
       const message =
-        err?.response?.data?.error || 'Failed to save wishlist item.';
+        err?.response?.data?.error ||
+        'Failed to save wishlist item.';
       setFormError(message);
     } finally {
       setFormSubmitting(false);
@@ -136,10 +142,10 @@ function WishlistPage() {
   }
 
   async function handleDelete(wl) {
-    const confirm = window.confirm(
+    const confirmRemove = window.confirm(
       `Remove "${wl.bottle?.name || 'this bottle'}" from your wishlist?`
     );
-    if (!confirm) return;
+    if (!confirmRemove) return;
 
     try {
       await api.delete(`/v1/wishlists/${wl.id}`);
@@ -180,10 +186,12 @@ function WishlistPage() {
         <div className={styles.formCard}>
           <h2 className={styles.formTitle}>Add or Update Wishlist Item</h2>
           <p className={styles.formHint}>
-            Selecting a bottle that’s already on your wishlist will update its
-            price/notes instead of creating a duplicate.
+            Selecting a bottle that’s already on your wishlist will
+            update its price/notes instead of creating a duplicate.
           </p>
-          {formError && <div className={styles.formError}>{formError}</div>}
+          {formError && (
+            <div className={styles.formError}>{formError}</div>
+          )}
 
           <form className={styles.form} onSubmit={handleFormSubmit}>
             <div className={styles.formRow}>
@@ -209,6 +217,21 @@ function WishlistPage() {
                   ))}
                 </select>
               </label>
+            </div>
+
+            {/* Helper to submit a new bottle from here */}
+            <div className={styles.formRow}>
+              <div className={styles.smallNote}>
+                Don&apos;t see your bottle in the list?{' '}
+                <button
+                  type="button"
+                  className={styles.linkLikeButton}
+                  onClick={() => setShowNewBottleModal(true)}
+                >
+                  Submit a new bottle for review
+                </button>
+                .
+              </div>
             </div>
 
             <div className={styles.formRow}>
@@ -262,7 +285,9 @@ function WishlistPage() {
         </div>
       )}
 
-      {loading && <div className={styles.message}>Loading wishlist...</div>}
+      {loading && (
+        <div className={styles.message}>Loading wishlist...</div>
+      )}
       {error && <div className={styles.error}>{error}</div>}
 
       {!loading && !error && wishlists.length === 0 && (
@@ -293,7 +318,9 @@ function WishlistPage() {
                   <td>{wl.bottle?.type || '—'}</td>
                   <td>
                     {wl.preferred_price != null
-                      ? `$${Number(wl.preferred_price).toFixed(2)}`
+                      ? `$${Number(
+                          wl.preferred_price
+                        ).toFixed(2)}`
                       : '—'}
                   </td>
                   <td>
@@ -333,6 +360,29 @@ function WishlistPage() {
           {total} wishlist item{total === 1 ? '' : 's'}
         </div>
       )}
+
+      {/* New bottle submission modal for wishlist context */}
+      <NewBottleSubmissionModal
+        isOpen={showNewBottleModal}
+        initialName=""
+        onClose={() => setShowNewBottleModal(false)}
+        onCreated={({ bottle }) => {
+          // Refresh bottle list so the new bottle appears in the select
+          loadBottles();
+
+          // If we got a bottle back, pre-select it and show the form
+          if (bottle?.id) {
+            setShowForm(true);
+            setForm((prev) => ({
+              ...prev,
+              bottle_id: bottle.id,
+            }));
+          }
+
+          // Close modal
+          setShowNewBottleModal(false);
+        }}
+      />
     </div>
   );
 }

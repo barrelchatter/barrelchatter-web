@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import NewBottleSubmissionModal from '../components/NewBottleSubmissionModal';
 import { Link } from 'react-router-dom';
 import api, { API_BASE_URL } from '../api/client';
 import styles from '../styles/InventoryPage.module.scss';
 
 const apiBase = (API_BASE_URL || '').replace(/\/$/, '');
+
 function resolveImageUrl(path) {
   if (!path) return '';
   if (path.startsWith('http://') || path.startsWith('https://')) {
@@ -43,30 +45,58 @@ function InventoryPage() {
   const [error, setError] = useState('');
   const [viewMode, setViewMode] = useState('list'); // list | cards | gallery
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
-      setError('');
-      try {
-        const res = await api.get('/v1/inventory?limit=500&offset=0');
-        const data = res.data || {};
-        const list = data.inventory || [];
-        setItems(list);
-        setTotal(
-          typeof data.total === 'number' ? data.total : list.length
-        );
-      } catch (err) {
-        console.error(err);
-        const msg =
-          err?.response?.data?.error ||
-          'Failed to load inventory. Is the API running?';
-        setError(msg);
-      } finally {
-        setLoading(false);
-      }
+  // For simple client-side search + initial name for "Submit new bottle"
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showNewBottleModal, setShowNewBottleModal] = useState(false);
+
+  async function loadInventory() {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await api.get('/v1/inventory?limit=500&offset=0');
+      const data = res.data || {};
+      const list = data.inventory || [];
+      setItems(list);
+      setTotal(
+        typeof data.total === 'number' ? data.total : list.length
+      );
+    } catch (err) {
+      console.error(err);
+      const msg =
+        err?.response?.data?.error ||
+        'Failed to load inventory. Is the API running?';
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
-    load();
+  }
+
+  useEffect(() => {
+    loadInventory();
   }, []);
+
+  // Filter inventory client-side for quick search
+  const filteredItems = items.filter((inv) => {
+    if (!searchTerm.trim()) return true;
+    const term = searchTerm.trim().toLowerCase();
+    const bottle = inv.bottle || {};
+    const identity = formatIdentity(inv);
+    const haystack =
+      [
+        bottle.name,
+        bottle.brand,
+        bottle.type,
+        inv.location_label,
+        identity,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase() || '';
+    return haystack.includes(term);
+  });
+
+  const hasAnyItems = items.length > 0;
+  const hasVisibleItems = filteredItems.length > 0;
 
   return (
     <div className={styles.page}>
@@ -81,6 +111,49 @@ function InventoryPage() {
           <span className={styles.count}>
             {total} item{total === 1 ? '' : 's'}
           </span>
+
+          {/* Quick search + submit-new-bottle CTA */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginLeft: '12px',
+            }}
+          >
+            <input
+              type="text"
+              placeholder="Search your inventory…"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                borderRadius: 9999,
+                border: '1px solid rgba(255,255,255,0.16)',
+                background: 'rgba(0,0,0,0.4)',
+                padding: '4px 10px',
+                color: 'inherit',
+                fontSize: '13px',
+                minWidth: '180px',
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowNewBottleModal(true)}
+              style={{
+                borderRadius: 9999,
+                border: '1px solid rgba(181,142,88,0.9)',
+                background: '#5a3e36',
+                color: '#e4d6c3',
+                fontSize: '13px',
+                padding: '4px 10px',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Submit new bottle
+            </button>
+          </div>
+
           <div className={styles.viewToggle}>
             <button
               type="button"
@@ -122,17 +195,27 @@ function InventoryPage() {
       {loading && (
         <div className={styles.message}>Loading inventory...</div>
       )}
+
       {error && !loading && (
         <div className={styles.error}>{error}</div>
       )}
 
-      {!loading && !error && items.length === 0 && (
+      {!loading && !error && !hasAnyItems && (
         <div className={styles.message}>
-          No inventory items yet. Add bottles from the Bottles page.
+          No inventory items yet. Add bottles from the Bottles page, or
+          submit a new bottle to start tracking your collection.
         </div>
       )}
 
-      {!loading && !error && items.length > 0 && (
+      {!loading && !error && hasAnyItems && !hasVisibleItems && (
+        <div className={styles.message}>
+          No inventory items matched this search. Try a different term,
+          or submit a new bottle if you&apos;re trying to track something
+          new.
+        </div>
+      )}
+
+      {!loading && !error && hasAnyItems && hasVisibleItems && (
         <>
           {viewMode === 'list' && (
             <div className={styles.tableWrapper}>
@@ -148,7 +231,7 @@ function InventoryPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((inv) => {
+                  {filteredItems.map((inv) => {
                     const bottle = inv.bottle || {};
                     return (
                       <tr key={inv.id}>
@@ -161,9 +244,7 @@ function InventoryPage() {
                           </Link>
                           <div className={styles.subRow}>
                             {bottle.brand || 'Unknown Brand'}
-                            {bottle.type
-                              ? ` • ${bottle.type}`
-                              : ''}
+                            {bottle.type ? ` • ${bottle.type}` : ''}
                           </div>
                         </td>
                         <td>{formatStatus(inv.status)}</td>
@@ -198,7 +279,7 @@ function InventoryPage() {
 
           {viewMode === 'cards' && (
             <div className={styles.cardGrid}>
-              {items.map((inv) => {
+              {filteredItems.map((inv) => {
                 const bottle = inv.bottle || {};
                 const identity = formatIdentity(inv);
                 return (
@@ -215,9 +296,7 @@ function InventoryPage() {
                         </div>
                         <div className={styles.cardSubtitle}>
                           {bottle.brand || 'Unknown Brand'}
-                          {bottle.type
-                            ? ` • ${bottle.type}`
-                            : ''}
+                          {bottle.type ? ` • ${bottle.type}` : ''}
                         </div>
                       </div>
                       <div className={styles.statusPill}>
@@ -265,7 +344,7 @@ function InventoryPage() {
 
           {viewMode === 'gallery' && (
             <div className={styles.galleryGrid}>
-              {items.map((inv) => {
+              {filteredItems.map((inv) => {
                 const bottle = inv.bottle || {};
                 const img = bottle.primary_photo_url
                   ? resolveImageUrl(bottle.primary_photo_url)
@@ -312,9 +391,7 @@ function InventoryPage() {
                       </div>
                       <div className={styles.galleryMetaRow}>
                         <span>{formatIdentity(inv)}</span>
-                        {bottle.type && (
-                          <span>{bottle.type}</span>
-                        )}
+                        {bottle.type && <span>{bottle.type}</span>}
                       </div>
                       <div className={styles.galleryLinkRow}>
                         <Link
@@ -332,6 +409,17 @@ function InventoryPage() {
           )}
         </>
       )}
+
+      {/* New bottle submission modal */}
+      <NewBottleSubmissionModal
+        isOpen={showNewBottleModal}
+        initialName={searchTerm}
+        onClose={() => setShowNewBottleModal(false)}
+        onCreated={() => {
+          // Bottle (and possibly inventory) were created – refresh list
+          loadInventory();
+        }}
+      />
     </div>
   );
 }
