@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import NewBottleSubmissionModal from '../components/NewBottleSubmissionModal';
 import { Link } from 'react-router-dom';
+import NewBottleSubmissionModal from '../components/NewBottleSubmissionModal';
+import LogTastingModal from '../components/LogTastingModal';
 import api, { API_BASE_URL } from '../api/client';
 import styles from '../styles/InventoryPage.module.scss';
 
@@ -45,9 +46,12 @@ function InventoryPage() {
   const [error, setError] = useState('');
   const [viewMode, setViewMode] = useState('list'); // list | cards | gallery
 
-  // For simple client-side search + initial name for "Submit new bottle"
   const [searchTerm, setSearchTerm] = useState('');
   const [showNewBottleModal, setShowNewBottleModal] = useState(false);
+
+  // log tasting modal
+  const [showLogModal, setShowLogModal] = useState(false);
+  const [logInventoryId, setLogInventoryId] = useState(null);
 
   async function loadInventory() {
     setLoading(true);
@@ -75,7 +79,6 @@ function InventoryPage() {
     loadInventory();
   }, []);
 
-  // Filter inventory client-side for quick search
   const filteredItems = items.filter((inv) => {
     if (!searchTerm.trim()) return true;
     const term = searchTerm.trim().toLowerCase();
@@ -98,6 +101,16 @@ function InventoryPage() {
   const hasAnyItems = items.length > 0;
   const hasVisibleItems = filteredItems.length > 0;
 
+  function openLogModal(inv) {
+    setLogInventoryId(inv.id);
+    setShowLogModal(true);
+  }
+
+  function closeLogModal() {
+    setShowLogModal(false);
+    setLogInventoryId(null);
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.headerRow}>
@@ -112,7 +125,6 @@ function InventoryPage() {
             {total} item{total === 1 ? '' : 's'}
           </span>
 
-          {/* Quick search + submit-new-bottle CTA */}
           <div
             style={{
               display: 'flex',
@@ -267,6 +279,13 @@ function InventoryPage() {
                                 Bottle
                               </Link>
                             )}
+                            <button
+                              type="button"
+                              className={styles.smallLinkButton}
+                              onClick={() => openLogModal(inv)}
+                            >
+                              Log tasting
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -335,6 +354,13 @@ function InventoryPage() {
                           Bottle details
                         </Link>
                       )}
+                      <button
+                        type="button"
+                        className={styles.smallLinkButton}
+                        onClick={() => openLogModal(inv)}
+                      >
+                        Log tasting
+                      </button>
                     </div>
                   </div>
                 );
@@ -394,12 +420,13 @@ function InventoryPage() {
                         {bottle.type && <span>{bottle.type}</span>}
                       </div>
                       <div className={styles.galleryLinkRow}>
-                        <Link
-                          to={`/app/inventory/${inv.id}`}
+                        <button
+                          type="button"
                           className={styles.galleryDetailsLink}
+                          onClick={() => openLogModal(inv)}
                         >
-                          View inventory →
-                        </Link>
+                          Log tasting →
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -410,14 +437,22 @@ function InventoryPage() {
         </>
       )}
 
-      {/* New bottle submission modal */}
       <NewBottleSubmissionModal
         isOpen={showNewBottleModal}
         initialName={searchTerm}
         onClose={() => setShowNewBottleModal(false)}
         onCreated={() => {
-          // Bottle (and possibly inventory) were created – refresh list
           loadInventory();
+        }}
+      />
+
+      <LogTastingModal
+        isOpen={showLogModal}
+        initialInventoryId={logInventoryId}
+        onClose={closeLogModal}
+        onCreated={() => {
+          // Tastings live on another page; no inventory refresh needed here
+          closeLogModal();
         }}
       />
     </div>

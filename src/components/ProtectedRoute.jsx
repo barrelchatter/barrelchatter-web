@@ -3,10 +3,9 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function ProtectedRoute({ children, requireRoles }) {
-  const { user, loading } = useAuth();
+  const { user, initializing } = useAuth();
 
-  if (loading) {
-    // You can swap this for a nicer spinner component
+  if (initializing) {
     return <div>Loading...</div>;
   }
 
@@ -21,7 +20,6 @@ function ProtectedRoute({ children, requireRoles }) {
     return <Navigate to="/app/inventory" replace />;
   }
 
-  // All good
   return children;
 }
 

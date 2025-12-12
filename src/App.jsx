@@ -9,6 +9,7 @@ import TastingsPage from './pages/TastingsPage.jsx';
 import WishlistPage from './pages/WishlistPage.jsx';
 import TagsPage from './pages/TagsPage.jsx';
 import AdminTagsPage from './pages/AdminTagsPage.jsx';
+import AdminUsersPage from './pages/AdminUsersPage.jsx';
 import BottleDetailPage from './pages/BottleDetailPage.jsx';
 import InventoryDetailPage from './pages/InventoryDetailPage.jsx';
 import AdminBottleSubmissionsPage from './pages/AdminBottleSubmissionsPage.jsx';
@@ -55,6 +56,14 @@ function App() {
           element={
             <ProtectedRoute requireRoles={['admin']}>
               <AdminTagsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/users"
+          element={
+            <ProtectedRoute requireRoles={['admin']}>
+              <AdminUsersPage />
             </ProtectedRoute>
           }
         />

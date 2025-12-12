@@ -1,39 +1,35 @@
 # BarrelChatter Web
 
-React + Vite single-page app for the BarrelChatter platform.  
-It talks to the **barrelchatter-api** over HTTP and provides a collector-facing UI plus a small admin area.
+React + Vite single-page app for BarrelChatter. Collector UI + admin tools (tags, bottle moderation, and now **user + invite management**).
 
-> Theme: dark, lounge-y, and judgmental (but in a classy way).
+> Theme: dark, lounge-y, and quietly judging your “daily drinker” choices.
+
+README refresh: 2025-12-12
 
 ---
 
 ## Tech Stack
 
-- **React 19** (`react`, `react-dom`)
-- **React Router 7** (`react-router-dom`)
-- **Vite 7** (dev server + build)
-- **Axios** for API calls
-- **SCSS Modules** + global SCSS (`sass`)
+- **React 19**
+- **React Router 7**
+- **Vite 7**
+- **Axios**
+- **SCSS Modules** + global SCSS
 - **ESLint 9** (flat config)
-
-See `package.json` for exact versions.
 
 ---
 
 ## Quick Start
 
 ### 1) Prereqs
-
-- **Node.js**: use a modern LTS (recommended **Node 20+**).
-- A running **BarrelChatter API** (the UI expects the API routes described below).
+- Node.js LTS (recommended **Node 20+**)
+- Running **BarrelChatter API**
 
 ### 2) Configure env
 
 This app reads:
 
 - `VITE_API_BASE_URL` — base URL of the API **without** `/v1`
-
-Create a local `.env`:
 
 ```bash
 cp .env.example .env
@@ -45,9 +41,6 @@ cp .env.example .env
 VITE_API_BASE_URL=http://localhost:4000
 ```
 
-> Why “without `/v1`”?  
-> The frontend calls endpoints like `/v1/auth/login`. If you include `/v1` in `VITE_API_BASE_URL`, you’ll end up with `/v1/v1/...` and everyone will be sad.
-
 ### 3) Install + run
 
 ```bash
@@ -55,96 +48,54 @@ npm install
 npm run dev
 ```
 
-Vite will print the local URL (typically `http://localhost:5173`).
-
----
-
-## NPM Scripts
-
-- `npm run dev` — start Vite dev server
-- `npm run build` — build production assets into `dist/`
-- `npm run preview` — serve `dist/` locally
-- `npm run lint` — run ESLint
+Vite will print the URL (typically `http://localhost:5173`).
 
 ---
 
 ## App Routes
 
-Top-level routes:
-
+Top-level:
 - `/login` — sign in
-- `/app/*` — authenticated area (wrapped in `ProtectedRoute` + `AppLayout`)
-- `*` — fallback redirects to `/app`
+- `/app/*` — authenticated app
+- `*` — fallback redirect
 
-App area routes (nested under `/app`):
-
-- `/app/inventory` — inventory list
-- `/app/inventory/:id` — inventory detail
-- `/app/bottles` — bottle catalog list
-- `/app/bottles/:id` — bottle detail
-- `/app/tastings` — tastings list + create tasting
-- `/app/wishlists` — wishlist list + create wishlist entry
-- `/app/tags` — tag tools (lookup / claim / assign)
-- `/app/admin/bottles-submissions` — **moderator/admin** bottle submission queue
-- `/app/admin/tags` — **admin** tag administration
+App routes (nested under `/app`):
+- `/app/inventory`
+- `/app/inventory/:id`
+- `/app/bottles`
+- `/app/bottles/:id`
+- `/app/tastings`
+- `/app/wishlists`
+- `/app/tags`
+- `/app/admin/bottles-submissions` — **moderator/admin**
+- `/app/admin/tags` — **admin**
+- `/app/admin/users` — **admin** ✅ NEW (user + invite management)
 
 Routing is defined in `src/App.jsx`. Layout/nav is in `src/components/layout/AppLayout.jsx`.
 
 ---
 
-## Features by Page
+## New: Admin Users page
 
-### Login (`src/pages/LoginPage.jsx`)
-- Uses `AuthContext.login(email, password)`
-- Dev defaults are pre-filled:
-  - `admin@barrelchatter.local`
-  - `ChangeMe123!`
+`/app/admin/users` provides an admin console to manage the private instance:
 
-> These are convenience defaults. If you ship them to production as-is, the internet will thank you for the free pen test.
+### User management
+- List/search users (by name/email/role/status)
+- Create a user (optionally set a temporary password)
+- Edit user data:
+  - name
+  - email
+  - role (`collector`, `moderator`, `admin`)
+- Lock/unlock a user (disables login without deleting data)
+- Trigger password reset (generates a reset token or temp password per API behavior)
 
-### Inventory (`src/pages/InventoryPage.jsx`)
-- Loads inventory list
-- Opens **NewBottleSubmissionModal** to:
-  - create a bottle entry (catalog) and/or
-  - create an inventory entry
+### Invite management
+- Create invite (email + role + expiry)
+- View invite status: pending/accepted/expired/revoked
+- Revoke unused invites
+- Copy invite token for sharing (Phase 1 “out-of-band” delivery)
 
-### Inventory Detail (`src/pages/InventoryDetailPage.jsx`)
-- Shows an inventory item and related tastings (client-side aggregation)
-
-### Bottles (`src/pages/BottlesPage.jsx`)
-- Loads bottle catalog list
-- Can:
-  - submit a new bottle (`POST /v1/bottles`)
-  - add bottle to wishlist (`POST /v1/wishlists`)
-  - add bottle to inventory (`POST /v1/inventory`)
-
-### Bottle Detail (`src/pages/BottleDetailPage.jsx`)
-- Bottle-centric view that also pulls inventory / tastings / wishlists and filters client-side
-
-### Tastings (`src/pages/TastingsPage.jsx`)
-- Loads tastings
-- Create tasting (`POST /v1/tastings`)
-
-### Wishlists (`src/pages/WishlistPage.jsx`)
-- Loads wishlists
-- Create wishlist entry (`POST /v1/wishlists`)
-
-### Tags (`src/pages/TagsPage.jsx`)
-- Tag utilities:
-  - lookup by NFC UID (`POST /v1/tags/lookup`)
-  - claim (`POST /v1/tags/claim`)
-  - assign (`POST /v1/tags/assign`)
-
-### Admin: Bottle Submissions (`src/pages/AdminBottleSubmissionsPage.jsx`)
-- Queue view of submitted bottles
-- Actions:
-  - approve (`POST /v1/admin/bottles/submissions/:id/approve`)
-  - reject (`POST /v1/admin/bottles/submissions/:id/reject`)
-  - merge (`POST /v1/admin/bottles/submissions/:id/merge`)
-
-### Admin: Tags (`src/pages/AdminTagsPage.jsx`)
-- Lists tags (`GET /v1/admin/tags`)
-- Create/register a tag (`POST /v1/admin/tags` with `nfc_uid`, optional `label`)
+> Phase 1 UX: admin creates invite → copies token → sends it to the user (text/email/smoke signal).
 
 ---
 
@@ -152,53 +103,38 @@ Routing is defined in `src/App.jsx`. Layout/nav is in `src/components/layout/App
 
 Auth is handled in `src/context/AuthContext.jsx`:
 
-- On login, stores:
-  - `authToken` in `localStorage`
-  - `authUser` in `localStorage`
-- `src/api/client.js` attaches `Authorization: Bearer <token>` automatically via Axios interceptor.
+- Stores `authToken` + `authUser` in `localStorage`
+- Axios interceptor in `src/api/client.js` adds `Authorization: Bearer <token>`
 
-`ProtectedRoute` guards `/app/*` and optionally checks roles.
+`ProtectedRoute` guards `/app/*` and can enforce role access.
 
 ### Roles used in the UI
-
-- `user` — regular access
-- `moderator` — can access bottle submissions page
-- `admin` — can access admin tags page (and also submissions)
-
-> Note: the layout checks `moderator` or `admin` for some admin nav. Ensure the API is consistent with these role strings.
+- `collector` — normal access
+- `moderator` — bottle submission moderation
+- `admin` — tags + users/invites + everything moderator can do
 
 ---
 
-## API Expectations
+## API expectations (new endpoints)
 
-The UI currently calls (non-exhaustive but accurate to repo):
+The UI expects these admin endpoints to exist on the API:
 
-### Auth
+### Admin Users
+- `GET /v1/admin/users`
+- `POST /v1/admin/users`
+- `PATCH /v1/admin/users/:id`
+- `POST /v1/admin/users/:id/lock`
+- `POST /v1/admin/users/:id/unlock`
+- `POST /v1/admin/users/:id/reset-password`
+
+### Admin Invites
+- `GET /v1/admin/invites`
+- `POST /v1/admin/invites`
+- `POST /v1/admin/invites/:id/revoke`
+
+### Auth (invite-only registration)
+- `POST /v1/auth/register` (requires invite token)
 - `POST /v1/auth/login`
-
-### Bottles / Inventory / Tastings / Wishlists
-- `GET /v1/bottles?limit=200&offset=0`
-- `POST /v1/bottles`
-- `GET /v1/inventory?limit=500&offset=0` (sometimes `limit=200`)
-- `POST /v1/inventory`
-- `GET /v1/tastings?limit=500&offset=0` (sometimes `limit=200`)
-- `POST /v1/tastings`
-- `GET /v1/wishlists?limit=500&offset=0` (sometimes `limit=100`)
-- `POST /v1/wishlists`
-
-### Tags
-- `GET /v1/tags`
-- `POST /v1/tags/lookup`
-- `POST /v1/tags/claim`
-- `POST /v1/tags/assign`
-
-### Admin
-- `GET /v1/admin/bottles/submissions`
-- `POST /v1/admin/bottles/submissions/:id/approve`
-- `POST /v1/admin/bottles/submissions/:id/reject`
-- `POST /v1/admin/bottles/submissions/:id/merge`
-- `GET /v1/admin/tags`
-- `POST /v1/admin/tags`
 
 ---
 
@@ -212,19 +148,31 @@ The UI currently calls (non-exhaustive but accurate to repo):
 ├─ .env.example
 ├─ public/
 └─ src/
-   ├─ main.jsx                # app bootstrap + BrowserRouter + AuthProvider
-   ├─ App.jsx                 # route definitions
+   ├─ main.jsx
+   ├─ App.jsx
    ├─ api/
-   │  └─ client.js            # axios instance + auth header interceptor
+   │  └─ client.js
    ├─ context/
-   │  └─ AuthContext.jsx      # login/logout + persisted user
+   │  └─ AuthContext.jsx
    ├─ components/
    │  ├─ ProtectedRoute.jsx
-   │  ├─ NewBottleSubmissionModal.jsx
    │  └─ layout/
-   │     └─ AppLayout.jsx     # sidebar/topbar shell
-   ├─ pages/                  # route pages
-   └─ styles/                 # SCSS modules + global theme
+   │     └─ AppLayout.jsx
+   ├─ pages/
+   │  ├─ LoginPage.jsx
+   │  ├─ InventoryPage.jsx
+   │  ├─ InventoryDetailPage.jsx
+   │  ├─ BottlesPage.jsx
+   │  ├─ BottleDetailPage.jsx
+   │  ├─ TastingsPage.jsx
+   │  ├─ WishlistPage.jsx
+   │  ├─ TagsPage.jsx
+   │  ├─ AdminBottleSubmissionsPage.jsx
+   │  ├─ AdminTagsPage.jsx
+   │  └─ AdminUsersPage.jsx        # NEW
+   └─ styles/
+      ├─ global.scss
+      └─ theme.scss
 ```
 
 ---
@@ -233,22 +181,20 @@ The UI currently calls (non-exhaustive but accurate to repo):
 
 - Global styles: `src/styles/global.scss`
 - Theme tokens: `src/styles/theme.scss`
-- Per-page/component styling: `*.module.scss`
+- Per-component/page styling: `*.module.scss`
 
 ---
 
 ## Production Build & Deploy
-
-### Build
 
 ```bash
 npm ci
 npm run build
 ```
 
-Output goes to `dist/`.
+Assets output to `dist/`.
 
-### Serve with Nginx (example)
+Nginx SPA routing example:
 
 ```nginx
 server {
@@ -264,42 +210,21 @@ server {
 }
 ```
 
-> SPA routing note: `try_files ... /index.html;` is required so `/app/...` works on refresh.
-
 ---
 
 ## Troubleshooting
 
-### `vite: command not found`
-Install dependencies (Vite is a devDependency):
+- **API calls hitting `/v1/v1/...`**
+  - Your `VITE_API_BASE_URL` includes `/v1`. Remove it.
 
-```bash
-npm install
-```
+- **403 on `/app/admin/users`**
+  - You’re not an admin (or the token user role doesn’t match DB).
 
-or clean install:
-
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-### API calls hitting `/v1/v1/...`
-Your `VITE_API_BASE_URL` includes `/v1`. Remove it.
-
-### Auth guard shows “Loading...” forever
-`ProtectedRoute` currently reads `{ user, loading }` from `useAuth()`, but `AuthContext` exposes `initializing`.  
-If you see this, update `ProtectedRoute` to use `initializing` (or update the context to export `loading`).
-
----
-
-## Notes / Known Gaps
-
-- Several pages fetch large lists and filter client-side (fast enough for Phase 1, but we’ll likely want server-side filtering/pagination later).
-- Error handling is pragmatic and UI-focused (we can standardize error shapes once the API stabilizes).
+- **User can’t sign up**
+  - Instance is invite-only; create an invite and use the token at registration.
 
 ---
 
 ## License
 
-Private project (for now). If you’re reading this in the far future after we go public: hello, lawyers.
+Private project (for now).

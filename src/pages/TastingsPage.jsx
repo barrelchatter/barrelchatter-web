@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api/client';
+import LogTastingModal from '../components/LogTastingModal';
 import styles from '../styles/TastingsPage.module.scss';
 
-const INITIAL_FORM = {
-  inventory_id: '',
-  pour_amount_oz: '',
-  rating: '',
-  notes: '',
-  shared_scope: 'private',
-};
-
-function formatDate(value) {
+function formatDateTime(value) {
   if (!value) return '—';
   try {
     return new Date(value).toLocaleString();
@@ -19,135 +13,145 @@ function formatDate(value) {
   }
 }
 
+function formatPour(oz) {
+  if (oz == null) return '—';
+  const num = Number(oz);
+  if (Number.isNaN(num)) return '—';
+  return `${num} oz`;
+}
+
+function formatRating(r) {
+  if (r == null) return '—';
+  const num = Number(r);
+  if (Number.isNaN(num)) return '—';
+  return num;
+}
+
+const INITIAL_EDIT_FORM = {
+  pour_amount_oz: '',
+  rating: '',
+  notes: '',
+};
+
 function TastingsPage() {
   const [tastings, setTastings] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [loadingList, setLoadingList] = useState(false);
   const [error, setError] = useState('');
 
-  const [inventoryOptions, setInventoryOptions] = useState([]);
-  const [inventoryLoading, setInventoryLoading] = useState(true);
-  const [inventoryError, setInventoryError] = useState('');
+  // Edit state
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState(INITIAL_EDIT_FORM);
+  const [editError, setEditError] = useState('');
+  const [editSubmitting, setEditSubmitting] = useState(false);
 
-  // Filters
-  const [inventoryFilter, setInventoryFilter] = useState('');
-  const [minRating, setMinRating] = useState('');
-  const [maxRating, setMaxRating] = useState('');
+  // Log tasting modal
+  const [showLogModal, setShowLogModal] = useState(false);
 
-  // Form
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState(INITIAL_FORM);
-  const [formError, setFormError] = useState('');
-  const [formSubmitting, setFormSubmitting] = useState(false);
-
-  async function loadInventory() {
-    setInventoryLoading(true);
-    setInventoryError('');
-    try {
-      const res = await api.get('/v1/inventory?limit=200&offset=0');
-      setInventoryOptions(res.data.inventory || []);
-    } catch (err) {
-      console.error(err);
-      const message =
-        err?.response?.data?.error || 'Failed to load inventory list.';
-      setInventoryError(message);
-    } finally {
-      setInventoryLoading(false);
-    }
-  }
-
-  async function loadTastings({ showSpinner = true } = {}) {
-    if (showSpinner) {
-      setLoading(true);
-    } else {
-      setLoadingList(true);
-    }
+  async function loadTastings() {
+    setLoading(true);
     setError('');
-
     try {
-      const params = new URLSearchParams();
-      params.set('limit', 100);
-      params.set('offset', 0);
-
-      if (inventoryFilter) params.set('inventory_id', inventoryFilter);
-      if (minRating) params.set('min_rating', String(minRating));
-      if (maxRating) params.set('max_rating', String(maxRating));
-
-      const res = await api.get(`/v1/tastings?${params.toString()}`);
-      const data = res.data;
-
-      setTastings(data.tastings || []);
-      setTotal(data.total || 0);
+      const res = await api.get('/v1/tastings?limit=200&offset=0');
+      const data = res.data || {};
+      const list = data.tastings || [];
+      setTastings(list);
+      setTotal(typeof data.total === 'number' ? data.total : list.length);
     } catch (err) {
       console.error(err);
-      const message =
-        err?.response?.data?.error || 'Failed to load tastings.';
-      setError(message);
+      const msg =
+        err?.response?.data?.error ||
+        'Failed to load tastings. Is the API running?';
+      setError(msg);
     } finally {
       setLoading(false);
-      setLoadingList(false);
     }
   }
 
   useEffect(() => {
-    loadInventory();
     loadTastings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function handleFilterSubmit(e) {
-    e.preventDefault();
-    loadTastings({ showSpinner: false });
+  function startEdit(t) {
+    setEditingId(t.id);
+    setEditError('');
+    setEditForm({
+      pour_amount_oz:
+        t.pour_amount_oz != null ? String(t.pour_amount_oz) : '',
+      rating: t.rating != null ? String(t.rating) : '',
+      notes: t.notes || '',
+    });
   }
 
-  function handleFormChange(e) {
+  function cancelEdit() {
+    setEditingId(null);
+    setEditForm(INITIAL_EDIT_FORM);
+    setEditError('');
+    setEditSubmitting(false);
+  }
+
+  function handleEditChange(e) {
     const { name, value } = e.target;
-    setForm((prev) => ({
+    setEditForm((prev) => ({
       ...prev,
       [name]: value,
     }));
   }
 
-  async function handleFormSubmit(e) {
+  async function handleEditSubmit(e) {
     e.preventDefault();
-    setFormSubmitting(true);
-    setFormError('');
+    if (!editingId) return;
+
+    setEditSubmitting(true);
+    setEditError('');
 
     try {
-      if (!form.inventory_id) {
-        setFormError('Please choose a bottle from your inventory.');
-        setFormSubmitting(false);
-        return;
+      const payload = {};
+
+      if (editForm.pour_amount_oz !== '') {
+        payload.pour_amount_oz = Number(editForm.pour_amount_oz);
+      } else {
+        payload.pour_amount_oz = null;
       }
 
-      const payload = {
-        inventory_id: form.inventory_id,
-        pour_amount_oz: form.pour_amount_oz
-          ? Number(form.pour_amount_oz)
-          : undefined,
-        rating: form.rating ? Number(form.rating) : undefined,
-        notes: form.notes.trim() || undefined,
-        shared_scope: form.shared_scope || 'private',
-      };
-
-      const res = await api.post('/v1/tastings', payload);
-      const created = res.data?.tasting;
-
-      if (created) {
-        setTastings((prev) => [created, ...prev]);
-        setTotal((prev) => prev + 1);
+      if (editForm.rating !== '') {
+        payload.rating = Number(editForm.rating);
+      } else {
+        payload.rating = null;
       }
 
-      setForm(INITIAL_FORM);
-      setShowForm(false);
+      payload.notes = editForm.notes ?? '';
+
+      await api.patch(`/v1/tastings/${editingId}`, payload);
+
+      await loadTastings();
+      cancelEdit();
     } catch (err) {
       console.error(err);
-      const message =
-        err?.response?.data?.error || 'Failed to save tasting.';
-      setFormError(message);
+      const msg =
+        err?.response?.data?.error ||
+        'Failed to update tasting.';
+      setEditError(msg);
     } finally {
-      setFormSubmitting(false);
+      setEditSubmitting(false);
+    }
+  }
+
+  async function handleDelete(t) {
+    const confirmDelete = window.confirm(
+      'Delete this tasting? This cannot be undone.'
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(`/v1/tastings/${t.id}`);
+      setTastings((prev) => prev.filter((x) => x.id !== t.id));
+      setTotal((prev) => Math.max(0, prev - 1));
+      if (editingId === t.id) {
+        cancelEdit();
+      }
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -157,209 +161,181 @@ function TastingsPage() {
         <div>
           <h1>Tastings</h1>
           <p className={styles.subtitle}>
-            Track pours, ratings, and notes from your collection.
+            Your tasting history across bottles and locations.
           </p>
         </div>
-        <button
-          type="button"
-          className={styles.addButton}
-          onClick={() => setShowForm((v) => !v)}
-        >
-          {showForm ? 'Cancel' : 'Add Tasting'}
-        </button>
-      </div>
-
-      <div className={styles.toolbar}>
-        <form className={styles.filterRow} onSubmit={handleFilterSubmit}>
-          <select
-            className={styles.select}
-            value={inventoryFilter}
-            onChange={(e) => setInventoryFilter(e.target.value)}
-            disabled={inventoryLoading || inventoryError}
-          >
-            <option value="">All inventory</option>
-            {inventoryOptions.map((inv) => (
-              <option key={inv.id} value={inv.id}>
-                {inv.bottle?.name || 'Unknown'} &mdash; {inv.location_label}
-              </option>
-            ))}
-          </select>
-
-          <input
-            className={styles.ratingInput}
-            type="number"
-            step="0.1"
-            placeholder="Min rating"
-            value={minRating}
-            onChange={(e) => setMinRating(e.target.value)}
-          />
-          <input
-            className={styles.ratingInput}
-            type="number"
-            step="0.1"
-            placeholder="Max rating"
-            value={maxRating}
-            onChange={(e) => setMaxRating(e.target.value)}
-          />
+        <div className={styles.headerRight}>
+          <span className={styles.count}>
+            {total} tasting{total === 1 ? '' : 's'}
+          </span>
           <button
-            type="submit"
-            className={styles.filterButton}
-            disabled={loadingList}
+            type="button"
+            className={styles.addButton}
+            onClick={() => setShowLogModal(true)}
           >
-            {loadingList ? 'Filtering...' : 'Apply'}
+            Log Tasting
           </button>
-        </form>
-        <div className={styles.count}>
-          {total} tasting{total === 1 ? '' : 's'}
         </div>
       </div>
 
-      {inventoryError && (
-        <div className={styles.error}>
-          Inventory warning: {inventoryError}
-        </div>
+      {loading && (
+        <div className={styles.message}>Loading tastings...</div>
       )}
-
-      {showForm && (
-        <div className={styles.formCard}>
-          <h2 className={styles.formTitle}>Add Tasting</h2>
-          {formError && <div className={styles.formError}>{formError}</div>}
-          <form className={styles.form} onSubmit={handleFormSubmit}>
-            <div className={styles.formRow}>
-              <label className={styles.label}>
-                Inventory Item *
-                <select
-                  name="inventory_id"
-                  className={styles.input}
-                  value={form.inventory_id}
-                  onChange={handleFormChange}
-                >
-                  <option value="">
-                    {inventoryOptions.length === 0
-                      ? 'No inventory available'
-                      : 'Select a bottle'}
-                  </option>
-                  {inventoryOptions.map((inv) => (
-                    <option key={inv.id} value={inv.id}>
-                      {inv.bottle?.name || 'Unknown'} &mdash;{' '}
-                      {inv.location_label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <div className={styles.formRow}>
-              <label className={styles.label}>
-                Pour (oz)
-                <input
-                  className={styles.input}
-                  type="number"
-                  step="0.1"
-                  name="pour_amount_oz"
-                  value={form.pour_amount_oz}
-                  onChange={handleFormChange}
-                  placeholder="e.g. 1.5"
-                />
-              </label>
-              <label className={styles.label}>
-                Rating
-                <input
-                  className={styles.input}
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  max="5"
-                  name="rating"
-                  value={form.rating}
-                  onChange={handleFormChange}
-                  placeholder="0–5"
-                />
-              </label>
-              <label className={styles.label}>
-                Visibility
-                <select
-                  name="shared_scope"
-                  className={styles.input}
-                  value={form.shared_scope}
-                  onChange={handleFormChange}
-                >
-                  <option value="private">Private</option>
-                  <option value="friends">Friends</option>
-                  <option value="group">Group</option>
-                  <option value="public">Public</option>
-                </select>
-              </label>
-            </div>
-
-            <div className={styles.formRow}>
-              <label className={styles.label}>
-                Notes
-                <textarea
-                  className={`${styles.input} ${styles.textarea}`}
-                  name="notes"
-                  rows={3}
-                  value={form.notes}
-                  onChange={handleFormChange}
-                  placeholder="Tasting notes, impressions, who you shared it with..."
-                />
-              </label>
-            </div>
-
-            <div className={styles.formActions}>
-              <button
-                type="submit"
-                className={styles.saveButton}
-                disabled={formSubmitting}
-              >
-                {formSubmitting ? 'Saving...' : 'Save Tasting'}
-              </button>
-            </div>
-          </form>
-        </div>
+      {error && !loading && (
+        <div className={styles.error}>{error}</div>
       )}
-
-      {loading && <div className={styles.message}>Loading tastings...</div>}
-      {error && <div className={styles.error}>{error}</div>}
 
       {!loading && !error && tastings.length === 0 && (
-        <div className={styles.message}>No tastings yet. Time to pour.</div>
+        <div className={styles.message}>
+          No tastings logged yet. Time to fix that.
+        </div>
       )}
 
       {!loading && !error && tastings.length > 0 && (
         <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Bottle</th>
-                <th>Location</th>
-                <th>Pour (oz)</th>
-                <th>Rating</th>
-                <th>Visibility</th>
-                <th>Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tastings.map((t) => (
-                <tr key={t.id}>
-                  <td>{formatDate(t.created_at)}</td>
-                  <td>{t.bottle?.name || 'Unknown'}</td>
-                  <td>{t.inventory?.location_label || '—'}</td>
-                  <td>
-                    {t.pour_amount_oz != null ? t.pour_amount_oz : '—'}
-                  </td>
-                  <td>{t.rating != null ? t.rating : '—'}</td>
-                  <td>{t.shared_scope || 'private'}</td>
-                  <td className={styles.notesCell}>
-                    {t.notes || '—'}
-                  </td>
+          <form onSubmit={handleEditSubmit}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Bottle</th>
+                  <th>Location</th>
+                  <th>Pour</th>
+                  <th>Rating</th>
+                  <th>Notes</th>
+                  <th />
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {tastings.map((t) => {
+                  const isEditing = editingId === t.id;
+                  const bottle = t.bottle || {};
+                  const inventory = t.inventory || {};
+
+                  return (
+                    <tr key={t.id}>
+                      <td>{formatDateTime(t.created_at)}</td>
+                      <td>
+                        {bottle.id ? (
+                          <Link
+                            to={`/app/bottles/${bottle.id}`}
+                            className={styles.nameLink}
+                          >
+                            {bottle.name || 'Unknown bottle'}
+                          </Link>
+                        ) : (
+                          bottle.name || 'Unknown bottle'
+                        )}
+                        <div className={styles.subRow}>
+                          {bottle.brand || 'Unknown Brand'}
+                          {bottle.type ? ` • ${bottle.type}` : ''}
+                        </div>
+                      </td>
+                      <td>{inventory.location_label || '—'}</td>
+                      <td>
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            step="0.25"
+                            name="pour_amount_oz"
+                            className={styles.editInput}
+                            value={editForm.pour_amount_oz}
+                            onChange={handleEditChange}
+                            placeholder="oz"
+                          />
+                        ) : (
+                          formatPour(t.pour_amount_oz)
+                        )}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            step="0.1"
+                            min="0"
+                            max="10"
+                            name="rating"
+                            className={styles.editInput}
+                            value={editForm.rating}
+                            onChange={handleEditChange}
+                            placeholder="0–10"
+                          />
+                        ) : (
+                          formatRating(t.rating)
+                        )}
+                      </td>
+                      <td className={styles.notesCell}>
+                        {isEditing ? (
+                          <textarea
+                            name="notes"
+                            className={`${styles.editInput} ${styles.editTextarea}`}
+                            rows={2}
+                            value={editForm.notes}
+                            onChange={handleEditChange}
+                          />
+                        ) : (
+                          t.notes || '—'
+                        )}
+                      </td>
+                      <td className={styles.actionsCell}>
+                        {isEditing ? (
+                          <div className={styles.rowActions}>
+                            <button
+                              type="submit"
+                              className={styles.saveButton}
+                              disabled={editSubmitting}
+                            >
+                              {editSubmitting ? 'Saving…' : 'Save'}
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.cancelButton}
+                              onClick={cancelEdit}
+                              disabled={editSubmitting}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div className={styles.rowActions}>
+                            <button
+                              type="button"
+                              className={styles.smallButton}
+                              onClick={() => startEdit(t)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.smallDangerButton}
+                              onClick={() => handleDelete(t)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+
+            {editingId && editError && (
+              <div className={styles.formError}>{editError}</div>
+            )}
+          </form>
         </div>
       )}
+
+      <LogTastingModal
+        isOpen={showLogModal}
+        onClose={() => setShowLogModal(false)}
+        onCreated={() => {
+          // Re-load tastings after logging a new one
+          loadTastings();
+        }}
+      />
     </div>
   );
 }

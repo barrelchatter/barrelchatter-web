@@ -66,6 +66,17 @@ function AppLayout() {
                   Admin Tags
                 </NavLink>
               )}
+
+              {isAdmin && (
+                <NavLink
+                  to="/app/admin/users"
+                  className={({ isActive }) =>
+                    isActive ? styles.navItemActive : styles.navItem
+                  }
+                >
+                  Admin Users
+                </NavLink>
+              )}
             </>
           )}
           </nav>
