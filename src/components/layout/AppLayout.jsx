@@ -77,6 +77,17 @@ function AppLayout() {
                   Admin Users
                 </NavLink>
               )}
+
+              {isAdmin && (
+                <NavLink
+                  to="/app/admin/audit-logs"
+                  className={({ isActive }) =>
+                    isActive ? styles.navItemActive : styles.navItem
+                  }
+                >
+                  Audit Logs
+                </NavLink>
+              )}
             </>
           )}
           </nav>

@@ -12,6 +12,7 @@ import AdminTagsPage from './pages/AdminTagsPage.jsx';
 import AdminUsersPage from './pages/AdminUsersPage.jsx';
 import BottleDetailPage from './pages/BottleDetailPage.jsx';
 import InventoryDetailPage from './pages/InventoryDetailPage.jsx';
+import AdminAuditLogsPage from './pages/AdminAuditLogsPage.jsx';
 import AdminBottleSubmissionsPage from './pages/AdminBottleSubmissionsPage.jsx';
 
 function App() {
@@ -64,6 +65,14 @@ function App() {
           element={
             <ProtectedRoute requireRoles={['admin']}>
               <AdminUsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/audit-logs"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminAuditLogsPage />
             </ProtectedRoute>
           }
         />
