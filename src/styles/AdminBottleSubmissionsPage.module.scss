@@ -1,150 +1,114 @@
+@use './design-system' as *;
+
 .page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--bc-space-4);
 }
+
+// ============================================================================
+// HEADER
+// ============================================================================
 
 .headerRow {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
-}
-
-.headerRow h1 {
-  margin: 0;
-  font-size: 22px;
+  gap: var(--bc-space-4);
+  
+  h1 {
+    margin: 0;
+    font-size: var(--bc-text-xl);
+  }
 }
 
 .subtitle {
-  margin: 4px 0 0;
-  font-size: 13px;
-  opacity: 0.8;
+  margin: var(--bc-space-1) 0 0;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .headerRight {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--bc-space-3);
 }
 
 .filterLabel {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 11px;
+  font-size: var(--bc-text-xs);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--bc-tracking-wider);
+  color: var(--bc-text-secondary);
 }
 
 .filterSelect {
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(10, 10, 10, 0.9);
-  color: var(--color-text);
-  padding: 4px 8px;
-  font-size: 13px;
+  @include select-base;
+  padding: var(--bc-space-1) var(--bc-space-2);
+  font-size: var(--bc-text-sm);
 }
 
 .count {
-  font-size: 13px;
-  opacity: 0.8;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-tertiary);
 }
 
+// ============================================================================
+// MESSAGES
+// ============================================================================
+
 .message {
-  font-size: 14px;
-  opacity: 0.85;
+  font-size: var(--bc-text-base);
+  color: var(--bc-text-secondary);
 }
 
 .error {
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(185, 71, 62, 0.16);
-  border: 1px solid var(--color-danger);
-  font-size: 13px;
-  margin-bottom: 4px;
+  @include alert-error;
+  margin-bottom: var(--bc-space-2);
 }
 
+// ============================================================================
+// TABLE
+// ============================================================================
+
 .tableWrapper {
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: var(--shadow-soft);
-  background: rgba(12, 12, 12, 0.95);
+  @include table-wrapper;
 }
 
 .table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.table thead {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.table th,
-.table td {
-  padding: 8px 10px;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  vertical-align: top;
-}
-
-.table th {
-  font-weight: 600;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  opacity: 0.85;
-}
-
-.table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.02);
+  @include table-base;
 }
 
 .nameLink {
-  color: var(--color-text);
+  color: var(--bc-text-primary);
   text-decoration: none;
-}
-
-.nameLink:hover {
-  text-decoration: underline;
-}
-
-.statusPending,
-.statusRejected {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  text-transform: capitalize;
+  font-weight: 500;
+  
+  &:hover {
+    color: var(--bc-accent);
+    text-decoration: underline;
+  }
 }
 
 .statusPending {
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  @include badge-default;
+  border-color: var(--bc-warning-border);
+  color: var(--bc-warning);
 }
 
 .statusRejected {
-  border: 1px solid rgba(185, 71, 62, 0.7);
+  @include badge-danger;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--bc-space-2);
 }
 
 .smallButton {
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: transparent;
-  color: var(--color-text);
-  padding: 3px 8px;
-  font-size: 11px;
-  cursor: pointer;
-}
-
-.smallButton:hover {
-  background: rgba(255, 255, 255, 0.06);
+  @include button-secondary;
+  @include button-sm;
 }

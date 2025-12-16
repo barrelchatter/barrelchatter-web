@@ -1,33 +1,134 @@
-@use './theme.scss';
+@use './design-system' as *;
+
+// ============================================================================
+// GLOBAL RESET & BASE STYLES
+// ============================================================================
 
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html,
 body,
 #root {
-    height: 100%;
+  height: 100%;
 }
 
 body {
-    margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: radial-gradient(circle at top, #2b2b2b 0, #1c1c1c 55%);
-    color: var(--color-text);
+  margin: 0;
+  font-family: var(--bc-font-sans);
+  font-size: var(--bc-text-base);
+  line-height: var(--bc-leading-normal);
+  color: var(--bc-text-primary);
+  background: var(--bc-bg-base);
+  background-image: radial-gradient(
+    ellipse at top,
+    var(--bc-bg-elevated) 0%,
+    var(--bc-bg-base) 60%
+  );
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// ============================================================================
+// TYPOGRAPHY DEFAULTS
+// ============================================================================
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 600;
+  line-height: var(--bc-leading-tight);
+  letter-spacing: var(--bc-tracking-tight);
+}
+
+h1 { font-size: var(--bc-text-2xl); }
+h2 { font-size: var(--bc-text-xl); }
+h3 { font-size: var(--bc-text-lg); }
+h4 { font-size: var(--bc-text-md); }
+
+p {
+  margin: 0;
 }
 
 a {
-    color: inherit;
-    text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
+
+// ============================================================================
+// FORM DEFAULTS
+// ============================================================================
 
 button {
-    font-family: inherit;
+  font-family: inherit;
 }
 
-code {
-    font-maily: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+// Remove default focus outline, we'll add our own
+:focus {
+  outline: none;
+}
+
+// ============================================================================
+// CODE
+// ============================================================================
+
+code,
+pre {
+  font-family: var(--bc-font-mono);
+  font-size: var(--bc-text-sm);
+}
+
+pre {
+  margin: 0;
+  padding: var(--bc-space-4);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-md);
+  overflow-x: auto;
+}
+
+// ============================================================================
+// SCROLLBAR STYLING
+// ============================================================================
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bc-border-strong);
+  border-radius: var(--bc-radius-full);
+  
+  &:hover {
+    background: var(--bc-text-tertiary);
+  }
+}
+
+// Firefox
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bc-border-strong) transparent;
+}
+
+// ============================================================================
+// SELECTION
+// ============================================================================
+
+::selection {
+  background: rgba(201, 166, 107, 0.3);
+  color: var(--bc-text-primary);
 }

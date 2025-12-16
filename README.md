@@ -1,230 +1,178 @@
 # BarrelChatter Web
 
-React + Vite single-page app for BarrelChatter. Collector UI + admin tools (tags, bottle moderation, and now **user + invite management**).
+A bourbon-inspired web application for collectors to track inventory, log tastings, and connect with fellow enthusiasts.
 
-> Theme: dark, lounge-y, and quietly judging your “daily drinker” choices.
+## Overview
 
-README refresh: 2025-12-12
-
----
+BarrelChatter Web is the browser-based interface for the BarrelChatter platform. It provides a dark, lounge-inspired UI optimized for bourbon collectors to manage their collections, log pours, and participate in the community.
 
 ## Tech Stack
 
-- **React 19**
-- **React Router 7**
-- **Vite 7**
-- **Axios**
-- **SCSS Modules** + global SCSS
-- **ESLint 9** (flat config)
+- **Framework:** React 19 with React Router 7
+- **Build Tool:** Vite 7
+- **Styling:** SCSS Modules with custom design system
+- **HTTP Client:** Fetch API via custom `api.js` wrapper
+- **State Management:** React Context (AuthContext)
+- **Image Storage:** DigitalOcean Spaces (nyc3 region)
 
----
+## Project Structure
 
-## Quick Start
-
-### 1) Prereqs
-- Node.js LTS (recommended **Node 20+**)
-- Running **BarrelChatter API**
-
-### 2) Configure env
-
-This app reads:
-
-- `VITE_API_BASE_URL` — base URL of the API **without** `/v1`
-
-```bash
-cp .env.example .env
+```
+barrelchatter-web/
+├── public/                    # Static assets
+├── src/
+│   ├── api/
+│   │   └── api.js            # API client wrapper
+│   ├── components/
+│   │   ├── layout/
+│   │   │   └── AppLayout.jsx # Main authenticated layout
+│   │   └── ProtectedRoute.jsx
+│   ├── context/
+│   │   └── AuthContext.jsx   # Authentication state
+│   ├── pages/
+│   │   ├── LoginPage.jsx
+│   │   ├── RegisterPage.jsx
+│   │   ├── HomePage.jsx
+│   │   ├── ProfilePage.jsx
+│   │   ├── BottlesPage.jsx
+│   │   ├── BottleDetailPage.jsx
+│   │   ├── InventoryPage.jsx
+│   │   ├── InventoryDetailPage.jsx
+│   │   ├── TastingsPage.jsx
+│   │   ├── WishlistPage.jsx
+│   │   ├── TagsPage.jsx
+│   │   ├── AdminTagsPage.jsx
+│   │   ├── AdminUsersPage.jsx
+│   │   ├── AdminBottleSubmissionsPage.jsx
+│   │   └── AdminAuditLogsPage.jsx
+│   ├── styles/
+│   │   ├── _design-system.scss  # Core design tokens & mixins
+│   │   ├── _shared.module.scss  # Reusable component patterns
+│   │   ├── global.scss          # Global resets & base styles
+│   │   └── [Page].module.scss   # Page-specific styles
+│   ├── App.jsx                  # Route definitions
+│   └── main.jsx                 # Entry point
+├── package.json
+├── vite.config.js
+└── README.md
 ```
 
-`.env.example`:
+## Getting Started
 
-```env
-VITE_API_BASE_URL=http://localhost:4000
-```
+### Prerequisites
 
-### 3) Install + run
+- Node.js 18+
+- npm or yarn
+- Running BarrelChatter API server (default: `http://localhost:4000`)
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd barrelchatter-web
+
+# Install dependencies
 npm install
+
+# Start development server
 npm run dev
 ```
 
-Vite will print the URL (typically `http://localhost:5173`).
+The app runs on `http://localhost:5173` by default.
 
----
+### Environment Variables
 
-## App Routes
+Create a `.env` file in the project root:
 
-Top-level:
-- `/login` — sign in
-- `/app/*` — authenticated app
-- `*` — fallback redirect
-
-App routes (nested under `/app`):
-- `/app/inventory`
-- `/app/inventory/:id`
-- `/app/bottles`
-- `/app/bottles/:id`
-- `/app/tastings`
-- `/app/wishlists`
-- `/app/tags`
-- `/app/admin/bottles-submissions` — **moderator/admin**
-- `/app/admin/tags` — **admin**
-- `/app/admin/users` — **admin** ✅ NEW (user + invite management)
-
-Routing is defined in `src/App.jsx`. Layout/nav is in `src/components/layout/AppLayout.jsx`.
-
----
-
-## New: Admin Users page
-
-`/app/admin/users` provides an admin console to manage the private instance:
-
-### User management
-- List/search users (by name/email/role/status)
-- Create a user (optionally set a temporary password)
-- Edit user data:
-  - name
-  - email
-  - role (`collector`, `moderator`, `admin`)
-- Lock/unlock a user (disables login without deleting data)
-- Trigger password reset (generates a reset token or temp password per API behavior)
-
-### Invite management
-- Create invite (email + role + expiry)
-- View invite status: pending/accepted/expired/revoked
-- Revoke unused invites
-- Copy invite token for sharing (Phase 1 “out-of-band” delivery)
-
-> Phase 1 UX: admin creates invite → copies token → sends it to the user (text/email/smoke signal).
-
----
-
-## Auth Model
-
-Auth is handled in `src/context/AuthContext.jsx`:
-
-- Stores `authToken` + `authUser` in `localStorage`
-- Axios interceptor in `src/api/client.js` adds `Authorization: Bearer <token>`
-
-`ProtectedRoute` guards `/app/*` and can enforce role access.
-
-### Roles used in the UI
-- `collector` — normal access
-- `moderator` — bottle submission moderation
-- `admin` — tags + users/invites + everything moderator can do
-
----
-
-## API expectations (new endpoints)
-
-The UI expects these admin endpoints to exist on the API:
-
-### Admin Users
-- `GET /v1/admin/users`
-- `POST /v1/admin/users`
-- `PATCH /v1/admin/users/:id`
-- `POST /v1/admin/users/:id/lock`
-- `POST /v1/admin/users/:id/unlock`
-- `POST /v1/admin/users/:id/reset-password`
-
-### Admin Invites
-- `GET /v1/admin/invites`
-- `POST /v1/admin/invites`
-- `POST /v1/admin/invites/:id/revoke`
-
-### Auth (invite-only registration)
-- `POST /v1/auth/register` (requires invite token)
-- `POST /v1/auth/login`
-
----
-
-## Project Layout
-
-```text
-.
-├─ index.html
-├─ vite.config.js
-├─ package.json
-├─ .env.example
-├─ public/
-└─ src/
-   ├─ main.jsx
-   ├─ App.jsx
-   ├─ api/
-   │  └─ client.js
-   ├─ context/
-   │  └─ AuthContext.jsx
-   ├─ components/
-   │  ├─ ProtectedRoute.jsx
-   │  └─ layout/
-   │     └─ AppLayout.jsx
-   ├─ pages/
-   │  ├─ LoginPage.jsx
-   │  ├─ InventoryPage.jsx
-   │  ├─ InventoryDetailPage.jsx
-   │  ├─ BottlesPage.jsx
-   │  ├─ BottleDetailPage.jsx
-   │  ├─ TastingsPage.jsx
-   │  ├─ WishlistPage.jsx
-   │  ├─ TagsPage.jsx
-   │  ├─ AdminBottleSubmissionsPage.jsx
-   │  ├─ AdminTagsPage.jsx
-   │  └─ AdminUsersPage.jsx        # NEW
-   └─ styles/
-      ├─ global.scss
-      └─ theme.scss
+```env
+VITE_API_URL=http://localhost:4000
 ```
 
----
+## Development
 
-## Styling
-
-- Global styles: `src/styles/global.scss`
-- Theme tokens: `src/styles/theme.scss`
-- Per-component/page styling: `*.module.scss`
-
----
-
-## Production Build & Deploy
+### Available Scripts
 
 ```bash
-npm ci
+npm run dev      # Start development server with HMR
+npm run build    # Build for production
+npm run preview  # Preview production build
+npm run lint     # Run ESLint
+```
+
+### Design System
+
+The application uses a custom bourbon-themed design system. See `/docs/design-system.md` for complete documentation.
+
+Key principles:
+- Dark lounge aesthetic with brass accents
+- 8px spacing scale
+- Consistent component patterns via SCSS mixins
+- Semantic color tokens for feedback states
+
+## Features
+
+### Current (Phase 1)
+
+- **Authentication:** Login, registration (invite-only), password reset
+- **Bottle Catalog:** Browse, search, filter verified bottles
+- **Personal Inventory:** Track owned bottles with status, location, purchase info
+- **Tasting Journal:** Log pours with ratings, notes, photos
+- **Wishlist:** Track desired bottles with price targets
+- **NFC Tags:** Claim and manage tags linked to bottles
+- **User Profiles:** View stats, update info, change password
+- **Admin Panel:** User management, tag administration, audit logs
+
+### Planned (Phase 2+)
+
+- Public signup and billing integration
+- Community pricing insights
+- Social features (follows, public tastings)
+- Wishlist alerts
+- Advanced analytics
+
+## API Integration
+
+The app communicates with the BarrelChatter API at `/v1/` endpoints. Authentication uses JWT tokens stored in localStorage.
+
+See `/docs/api-integration.md` for endpoint documentation.
+
+## Deployment
+
+### Production Build
+
+```bash
 npm run build
 ```
 
-Assets output to `dist/`.
+Output is generated in the `dist/` directory.
 
-Nginx SPA routing example:
+### Hosting
 
-```nginx
-server {
-  listen 80;
-  server_name your.domain.example;
+Recommended: Static hosting (Vercel, Netlify, DigitalOcean App Platform) with reverse proxy to API.
 
-  root /var/www/barrelchatter-web/dist;
-  index index.html;
+Ensure CORS is configured on the API server for your production domain.
 
-  location / {
-    try_files $uri $uri/ /index.html;
-  }
-}
-```
+## Documentation
 
----
+- [Project Index](docs/INDEX.md) - Complete documentation overview
+- [Design System](docs/design-system.md) - Styling guide
+- [Pages & Features](docs/pages.md) - Page-by-page documentation
+- [Components](docs/components.md) - Shared component reference
+- [API Integration](docs/api-integration.md) - Backend communication
+- [Authentication](docs/authentication.md) - Auth flow documentation
 
-## Troubleshooting
+## Contributing
 
-- **API calls hitting `/v1/v1/...`**
-  - Your `VITE_API_BASE_URL` includes `/v1`. Remove it.
-
-- **403 on `/app/admin/users`**
-  - You’re not an admin (or the token user role doesn’t match DB).
-
-- **User can’t sign up**
-  - Instance is invite-only; create an invite and use the token at registration.
-
----
+1. Create a feature branch from `main`
+2. Follow existing code style and patterns
+3. Update documentation for new features
+4. Submit a pull request
 
 ## License
 
-Private project (for now).
+Proprietary - BarrelChatter LLC
+
+## Support
+
+For questions or issues, contact the development team.

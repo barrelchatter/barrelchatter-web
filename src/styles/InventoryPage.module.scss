@@ -1,234 +1,215 @@
+@use './design-system' as *;
+
 .page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--bc-space-4);
 }
+
+// ============================================================================
+// HEADER
+// ============================================================================
 
 .headerRow {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
-}
-
-.headerRow h1 {
-  margin: 0;
-  font-size: 22px;
+  gap: var(--bc-space-4);
+  
+  h1 {
+    margin: 0;
+    font-size: var(--bc-text-xl);
+  }
 }
 
 .subtitle {
-  margin: 4px 0 0;
-  font-size: 13px;
-  opacity: 0.8;
+  margin: var(--bc-space-1) 0 0;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .headerRight {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--bc-space-3);
 }
 
 .count {
-  font-size: 13px;
-  opacity: 0.8;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-tertiary);
 }
 
-/* view toggle */
+// ============================================================================
+// VIEW TOGGLE
+// ============================================================================
 
 .viewToggle {
   display: inline-flex;
-  border-radius: 999px;
+  border-radius: var(--bc-radius-full);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--bc-border-default);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .viewModeButton,
 .viewModeButtonActive {
   border: none;
-  padding: 4px 10px;
-  font-size: 11px;
+  padding: var(--bc-space-1) var(--bc-space-3);
+  font-size: var(--bc-text-xs);
   cursor: pointer;
-  color: var(--color-text);
+  color: var(--bc-text-primary);
   background: transparent;
+  transition: all var(--bc-transition-fast);
 }
 
 .viewModeButton {
-  opacity: 0.7;
-}
-
-.viewModeButton:hover {
-  opacity: 1;
+  color: var(--bc-text-secondary);
+  
+  &:hover {
+    color: var(--bc-text-primary);
+    background: var(--bc-bg-hover);
+  }
 }
 
 .viewModeButtonActive {
-  background: var(--color-accent);
-  color: #120e0b;
-  opacity: 1;
+  background: var(--bc-accent);
+  color: var(--bc-text-inverse);
+  font-weight: 500;
 }
 
-/* common messages */
+// ============================================================================
+// MESSAGES
+// ============================================================================
 
 .message {
-  font-size: 14px;
-  opacity: 0.85;
+  font-size: var(--bc-text-base);
+  color: var(--bc-text-secondary);
+  padding: var(--bc-space-4);
 }
 
 .error {
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(185, 71, 62, 0.16);
-  border: 1px solid var(--color-danger);
-  font-size: 13px;
-  margin-bottom: 8px;
+  @include alert-error;
+  margin-bottom: var(--bc-space-2);
 }
 
-/* list view */
+// ============================================================================
+// TABLE VIEW
+// ============================================================================
 
 .tableWrapper {
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: var(--shadow-soft);
-  background: rgba(12, 12, 12, 0.95);
+  @include table-wrapper;
 }
 
 .table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.table thead {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.table th,
-.table td {
-  padding: 8px 10px;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.table th {
-  font-weight: 600;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  opacity: 0.85;
-}
-
-.table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.02);
+  @include table-base;
 }
 
 .nameLink {
-  color: var(--color-text);
+  color: var(--bc-text-primary);
   text-decoration: none;
-}
-
-.nameLink:hover {
-  text-decoration: underline;
+  font-weight: 500;
+  
+  &:hover {
+    color: var(--bc-accent);
+    text-decoration: underline;
+  }
 }
 
 .subRow {
-  font-size: 12px;
-  opacity: 0.8;
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-secondary);
+  margin-top: 2px;
 }
 
 .rowActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--bc-space-2);
 }
 
 .smallLinkButton {
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  padding: 3px 8px;
-  font-size: 11px;
+  @include button-ghost;
+  padding: var(--bc-space-1) var(--bc-space-2);
+  font-size: var(--bc-text-xs);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-sm);
   text-decoration: none;
-  cursor: pointer;
-  background: transparent;
-  color: var(--color-text);
+  
+  &:hover {
+    border-color: var(--bc-border-accent);
+    background: var(--bc-bg-hover);
+  }
 }
 
-.smallLinkButton:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-/* cards view */
+// ============================================================================
+// CARD VIEW
+// ============================================================================
 
 .cardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--bc-space-4);
 }
 
 .card {
-  background: var(--color-bg-alt);
-  border-radius: 18px;
-  padding: 12px 14px 10px;
-  box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  @include card;
+  padding: var(--bc-space-4);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--bc-space-2);
 }
 
 .cardHeader {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--bc-space-2);
   align-items: flex-start;
 }
 
 .cardTitle {
-  font-size: 15px;
+  font-size: var(--bc-text-md);
   font-weight: 600;
 }
 
 .cardSubtitle {
-  font-size: 13px;
-  opacity: 0.85;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .statusPill {
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  @include badge-default;
 }
 
 .cardMetaRow {
-  font-size: 12px;
-  opacity: 0.9;
-}
-
-.cardMetaRow strong {
-  font-weight: 500;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+  
+  strong {
+    font-weight: 500;
+    color: var(--bc-text-primary);
+  }
 }
 
 .cardActions {
-  margin-top: 6px;
+  margin-top: var(--bc-space-2);
   display: flex;
   justify-content: flex-end;
-  gap: 6px;
+  gap: var(--bc-space-2);
 }
 
-/* gallery view */
+// ============================================================================
+// GALLERY VIEW
+// ============================================================================
 
 .galleryGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--bc-space-4);
 }
 
 .galleryCard {
-  background: var(--color-bg-alt);
-  border-radius: 18px;
-  box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  @include card;
+  @include card-hover;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -237,8 +218,8 @@
 .galleryImageWrap {
   position: relative;
   width: 100%;
-  padding-top: 66%;
-  background: #222;
+  aspect-ratio: 3 / 2;
+  background: var(--bc-bg-surface);
 }
 
 .galleryImage {
@@ -255,63 +236,68 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.5;
-}
-
-.galleryPlaceholder span {
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 6px 10px;
-  font-size: 28px;
+  color: var(--bc-text-tertiary);
+  
+  span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    font-size: var(--bc-text-2xl);
+    border-radius: var(--bc-radius-full);
+    border: 1px solid var(--bc-border-strong);
+  }
 }
 
 .galleryStatusChip {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.6);
+  right: var(--bc-space-2);
+  bottom: var(--bc-space-2);
+  @include badge-default;
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .galleryBody {
-  padding: 8px 10px 10px;
+  padding: var(--bc-space-3) var(--bc-space-4);
 }
 
 .galleryTitle {
-  font-size: 14px;
+  font-size: var(--bc-text-base);
   font-weight: 600;
 }
 
 .gallerySubtitle {
-  font-size: 12px;
-  opacity: 0.85;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .galleryMetaRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  font-size: 11px;
-  opacity: 0.9;
-  margin-top: 4px;
+  gap: var(--bc-space-2);
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-secondary);
+  margin-top: var(--bc-space-2);
 }
 
 .galleryLinkRow {
-  margin-top: 6px;
+  margin-top: var(--bc-space-2);
   display: flex;
   justify-content: flex-end;
 }
 
 .galleryDetailsLink {
-  font-size: 11px;
-  text-decoration: none;
-  opacity: 0.85;
-}
-
-.galleryDetailsLink:hover {
-  opacity: 1;
-  text-decoration: underline;
+  @include button-ghost;
+  font-size: var(--bc-text-xs);
+  color: var(--bc-accent);
+  padding: var(--bc-space-1) 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  
+  &:hover {
+    text-decoration: underline;
+    background: none;
+  }
 }

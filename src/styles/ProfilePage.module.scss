@@ -1,31 +1,41 @@
+@use './design-system' as *;
+
 .page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--bc-space-5);
 }
+
+// ============================================================================
+// HEADER
+// ============================================================================
 
 .headerRow {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
-}
-
-.headerRow h1 {
-  margin: 0;
-  font-size: 22px;
+  gap: var(--bc-space-4);
+  
+  h1 {
+    margin: 0;
+    font-size: var(--bc-text-xl);
+  }
 }
 
 .subtitle {
-  margin: 4px 0 0;
-  font-size: 13px;
-  opacity: 0.8;
+  margin: var(--bc-space-1) 0 0;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
+
+// ============================================================================
+// CONTENT GRID
+// ============================================================================
 
 .contentGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 16px;
+  gap: var(--bc-space-4);
 }
 
 @media (max-width: 900px) {
@@ -34,29 +44,29 @@
   }
 }
 
-/* Profile card */
+// ============================================================================
+// PROFILE CARD
+// ============================================================================
+
 .profileCard {
   grid-column: 1 / 2;
-  background: var(--color-bg-alt);
-  border-radius: 20px;
-  padding: 20px 24px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: var(--shadow-soft);
+  @include card;
+  padding: var(--bc-space-5) var(--bc-space-6);
 }
 
 .profileHeader {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
+  gap: var(--bc-space-4);
 }
 
 .avatarWrap {
   width: 80px;
   height: 80px;
-  border-radius: 50%;
+  border-radius: var(--bc-radius-full);
   overflow: hidden;
   flex-shrink: 0;
-  border: 2px solid rgba(181, 142, 88, 0.4);
+  border: 2px solid var(--bc-border-accent);
 }
 
 .avatar {
@@ -71,10 +81,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(90, 62, 54, 0.8), rgba(28, 28, 28, 0.9));
-  font-size: 32px;
+  background: linear-gradient(135deg, var(--bc-accent-deep), var(--bc-bg-surface));
+  font-size: var(--bc-text-2xl);
   font-weight: 600;
-  color: var(--color-accent);
+  color: var(--bc-accent);
 }
 
 .profileInfo {
@@ -84,256 +94,188 @@
 
 .profileName {
   margin: 0;
-  font-size: 20px;
+  font-size: var(--bc-text-xl);
   font-weight: 600;
 }
 
 .profileEmail {
-  margin-top: 4px;
-  font-size: 14px;
-  opacity: 0.8;
+  margin-top: var(--bc-space-1);
+  font-size: var(--bc-text-base);
+  color: var(--bc-text-secondary);
 }
 
 .profileRole {
-  margin-top: 8px;
+  margin-top: var(--bc-space-2);
 }
 
 .roleBadge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 11px;
+  @include badge-accent;
   text-transform: capitalize;
-  border: 1px solid rgba(181, 142, 88, 0.5);
-  background: rgba(181, 142, 88, 0.15);
-  color: var(--color-accent);
 }
 
 .editButton {
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: transparent;
-  color: var(--color-text);
-  padding: 6px 12px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.editButton:hover {
-  background: rgba(255, 255, 255, 0.06);
+  @include button-secondary;
+  @include button-sm;
 }
 
 .profileDetails {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: var(--bc-space-5);
+  padding-top: var(--bc-space-4);
+  border-top: 1px solid var(--bc-border-subtle);
 }
 
 .detailRow {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
-  padding: 6px 0;
+  font-size: var(--bc-text-sm);
+  padding: var(--bc-space-2) 0;
 }
 
 .detailLabel {
-  opacity: 0.7;
+  color: var(--bc-text-tertiary);
 }
 
 .detailValue {
   font-weight: 500;
 }
 
-/* Edit form */
+// ============================================================================
+// FORMS
+// ============================================================================
+
 .editForm,
 .passwordForm {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: var(--bc-space-5);
+  padding-top: var(--bc-space-4);
+  border-top: 1px solid var(--bc-border-subtle);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--bc-space-3);
 }
 
 .formRow {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--bc-space-1);
 }
 
 .label {
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  @include label-base;
 }
 
 .input {
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(10, 10, 10, 0.9);
-  color: var(--color-text);
-  padding: 8px 10px;
-  font-size: 14px;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--color-accent);
+  @include input-base;
 }
 
 .formError {
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(185, 71, 62, 0.16);
-  border: 1px solid var(--color-danger);
-  font-size: 13px;
+  @include alert-error;
 }
 
 .formSuccess {
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(111, 191, 115, 0.16);
-  border: 1px solid #6fbf73;
-  font-size: 13px;
+  @include alert-success;
 }
 
 .formActions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 8px;
+  gap: var(--bc-space-2);
+  margin-top: var(--bc-space-2);
 }
 
 .cancelButton {
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: transparent;
-  color: var(--color-text);
-  padding: 8px 14px;
-  font-size: 13px;
-  cursor: pointer;
+  @include button-secondary;
 }
 
 .saveButton {
-  border-radius: var(--radius-sm);
-  border: none;
-  background: linear-gradient(
-    135deg,
-    var(--color-accent),
-    var(--color-accent-deep)
-  );
-  color: #120e0b;
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
+  @include button-primary;
 }
 
-.saveButton:disabled,
-.cancelButton:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
+// ============================================================================
+// SIDE CARDS
+// ============================================================================
 
-/* Stats card */
 .statsCard,
 .securityCard,
 .dangerCard {
-  background: var(--color-bg-alt);
-  border-radius: 16px;
-  padding: 16px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  @include card;
+  padding: var(--bc-space-4) var(--bc-space-5);
 }
 
 .cardTitle {
-  margin: 0 0 12px;
-  font-size: 14px;
+  margin: 0 0 var(--bc-space-3);
+  font-size: var(--bc-text-base);
   font-weight: 600;
-  opacity: 0.9;
+  color: var(--bc-text-secondary);
 }
 
+// ============================================================================
+// STATS
+// ============================================================================
+
 .statsLoading {
-  font-size: 13px;
-  opacity: 0.7;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-tertiary);
 }
 
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: var(--bc-space-3);
 }
 
 .statItem {
   text-align: center;
-  padding: 10px 8px;
+  padding: var(--bc-space-3) var(--bc-space-2);
   background: rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
+  border-radius: var(--bc-radius-lg);
 }
 
 .statValue {
-  font-size: 22px;
+  font-size: var(--bc-text-xl);
   font-weight: 700;
-  color: var(--color-accent);
+  color: var(--bc-accent);
 }
 
 .statLabel {
   margin-top: 2px;
-  font-size: 11px;
-  opacity: 0.7;
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--bc-tracking-wide);
 }
 
-/* Security card */
+// ============================================================================
+// SECURITY
+// ============================================================================
+
 .securityContent {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--bc-space-3);
 }
 
 .securityText {
   margin: 0;
-  font-size: 13px;
-  opacity: 0.8;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .secondaryButton {
+  @include button-secondary;
   align-self: flex-start;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: transparent;
-  color: var(--color-text);
-  padding: 8px 14px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background 0.15s ease;
 }
 
-.secondaryButton:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
+// ============================================================================
+// DANGER ZONE
+// ============================================================================
 
-/* Danger zone */
 .dangerContent {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--bc-space-3);
 }
 
 .logoutButton {
+  @include button-danger;
   align-self: flex-start;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(185, 71, 62, 0.5);
-  background: rgba(185, 71, 62, 0.1);
-  color: var(--color-danger);
-  padding: 8px 14px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.logoutButton:hover {
-  background: rgba(185, 71, 62, 0.2);
 }

@@ -1,7 +1,118 @@
+/**
+ * BottleDetailPage - Photos Section Update
+ * 
+ * This file shows the updated photos section for BottleDetailPage.
+ * Replace the existing photos section (around lines 300-400) with this code.
+ * 
+ * Also add these imports at the top:
+ *   import PhotoUpload from '../components/PhotoUpload';
+ * 
+ * And remove the old photo upload state variables:
+ *   - uploadFile, setUploadFile
+ *   - uploadCaption, setUploadCaption
+ *   - uploading, setUploading
+ *   - uploadError, setUploadError
+ *   - handlePhotoFileChange
+ *   - handlePhotoUpload
+ */
+
+// ============================================
+// UPDATED PHOTOS SECTION (replace existing)
+// ============================================
+
+// Add this import at the top of the file:
+// import PhotoUpload from '../components/PhotoUpload';
+
+// Replace the photo upload state with just error state:
+// const [photoError, setPhotoError] = useState('');
+
+// Replace the entire photos section JSX with:
+
+/*
+{/* Photos section *}
+<div className={styles.photosSection}>
+  <div className={styles.photosHeader}>
+    <div className={styles.infoLabel}>Photos</div>
+  </div>
+
+  {photoError && (
+    <div className={styles.photoError}>{photoError}</div>
+  )}
+
+  <PhotoUpload
+    bottleId={id}
+    onUploaded={(photo, photos, primaryUrl) => {
+      setBottle((prev) => ({
+        ...(prev || {}),
+        photos: photos || [],
+        primary_photo_url: primaryUrl ?? prev?.primary_photo_url ?? null,
+      }));
+      setPhotoError('');
+    }}
+    onError={(msg) => setPhotoError(msg)}
+  />
+
+  {bottle.photos && bottle.photos.length > 0 ? (
+    <div className={styles.photoGrid}>
+      {bottle.photos.map((photo) => (
+        <div key={photo.id} className={styles.photoCard}>
+          <div className={styles.photoThumbWrap}>
+            <img
+              src={photo.image_url}
+              alt={photo.caption || bottle.name}
+              className={styles.photoThumb}
+            />
+          </div>
+          <div className={styles.photoMetaRow}>
+            <div className={styles.photoCaption}>
+              {photo.caption || '\u00A0'}
+            </div>
+            <div className={styles.photoPrimaryArea}>
+              {photo.is_primary ? (
+                <span className={styles.photoPrimaryBadge}>
+                  Primary
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  className={styles.photoPrimaryButton}
+                  onClick={() => handleMakePrimary(photo.id)}
+                >
+                  Make primary
+                </button>
+              )}
+              <button
+                type="button"
+                className={styles.photoRemoveButton}
+                onClick={() => handleRemovePhoto(photo.id)}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className={styles.photoEmpty}>
+      No photos yet. Upload a bottle shot to use in
+      gallery and list views.
+    </div>
+  )}
+</div>
+*/
+
+// ============================================
+// FULL UPDATED BottleDetailPage.jsx
+// ============================================
+// Below is the complete updated file for reference.
+// You can either apply the changes above or replace the entire file.
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api, { API_BASE_URL } from '../api/client';
 import { useAuth } from '../context/AuthContext.jsx';
+import PhotoUpload from '../components/PhotoUpload';
 import styles from '../styles/BottleDetailPage.module.scss';
 
 const apiBase = (API_BASE_URL || '').replace(/\/$/, '');
@@ -86,11 +197,8 @@ function BottleDetailPage() {
   const [wishSubmitting, setWishSubmitting] = useState(false);
   const [wishError, setWishError] = useState('');
 
-  // photo upload state
-  const [uploadFile, setUploadFile] = useState(null);
-  const [uploadCaption, setUploadCaption] = useState('');
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState('');
+  // Photo error state (upload handled by PhotoUpload component)
+  const [photoError, setPhotoError] = useState('');
 
   useEffect(() => {
     let isMounted = true;
@@ -289,65 +397,6 @@ function BottleDetailPage() {
     }
   }
 
-  function handlePhotoFileChange(e) {
-    const file = e.target.files && e.target.files[0];
-    setUploadFile(file || null);
-  }
-
-  async function handlePhotoUpload(e) {
-    e.preventDefault();
-    if (!uploadFile) {
-      setUploadError('Please choose an image file first.');
-      return;
-    }
-    setUploading(true);
-    setUploadError('');
-    try {
-      const formData = new FormData();
-      formData.append('file', uploadFile);
-      if (uploadCaption.trim()) {
-        formData.append('caption', uploadCaption.trim());
-      }
-
-      const res = await api.post(
-        `/v1/bottles/${id}/photos/upload`,
-        formData,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        }
-      );
-      const newPhoto = res.data?.photo;
-
-      if (newPhoto) {
-        setBottle((prev) => {
-          const prevPhotos = prev?.photos || [];
-          const newPhotos = [newPhoto, ...prevPhotos];
-          return {
-            ...(prev || {}),
-            photos: newPhotos,
-            primary_photo_url: newPhoto.is_primary
-              ? newPhoto.image_url
-              : prev?.primary_photo_url ?? null,
-          };
-        });
-      }
-
-      setUploadFile(null);
-      setUploadCaption('');
-      if (e.target && e.target.reset) {
-        e.target.reset();
-      }
-    } catch (err) {
-      console.error(err);
-      const msg =
-        err?.response?.data?.error ||
-        'Failed to upload photo.';
-      setUploadError(msg);
-    } finally {
-      setUploading(false);
-    }
-  }
-
   async function handleMakePrimary(photoId) {
     try {
       const res = await api.post(
@@ -362,7 +411,7 @@ function BottleDetailPage() {
       }));
     } catch (err) {
       console.error(err);
-      // low priority: we can show a toast later
+      setPhotoError('Failed to set primary photo');
     }
   }
 
@@ -385,7 +434,7 @@ function BottleDetailPage() {
       }));
     } catch (err) {
       console.error('Failed to remove photo', err);
-      setUploadError(
+      setPhotoError(
         err?.response?.data?.error || 'Failed to remove photo.'
       );
     }
@@ -701,45 +750,28 @@ function BottleDetailPage() {
                 </form>
               )}
 
-              {/* Photos section */}
+              {/* Photos section - Updated for DO Spaces */}
               <div className={styles.photosSection}>
                 <div className={styles.photosHeader}>
                   <div className={styles.infoLabel}>Photos</div>
                 </div>
 
-                {uploadError && (
-                  <div className={styles.photoError}>{uploadError}</div>
+                {photoError && (
+                  <div className={styles.photoError}>{photoError}</div>
                 )}
 
-                <form
-                  className={styles.photoUploadForm}
-                  onSubmit={handlePhotoUpload}
-                >
-                  <div className={styles.photoUploadRow}>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className={styles.photoFileInput}
-                      onChange={handlePhotoFileChange}
-                    />
-                    <input
-                      type="text"
-                      className={styles.photoCaptionInput}
-                      placeholder="Caption (optional)"
-                      value={uploadCaption}
-                      onChange={(e) =>
-                        setUploadCaption(e.target.value)
-                      }
-                    />
-                    <button
-                      type="submit"
-                      className={styles.photoUploadButton}
-                      disabled={uploading}
-                    >
-                      {uploading ? 'Uploading...' : 'Upload'}
-                    </button>
-                  </div>
-                </form>
+                <PhotoUpload
+                  bottleId={id}
+                  onUploaded={(photo, photos, primaryUrl) => {
+                    setBottle((prev) => ({
+                      ...(prev || {}),
+                      photos: photos || [],
+                      primary_photo_url: primaryUrl ?? prev?.primary_photo_url ?? null,
+                    }));
+                    setPhotoError('');
+                  }}
+                  onError={(msg) => setPhotoError(msg)}
+                />
 
                 {bottle.photos && bottle.photos.length > 0 ? (
                   <div className={styles.photoGrid}>
@@ -750,7 +782,7 @@ function BottleDetailPage() {
                       >
                         <div className={styles.photoThumbWrap}>
                           <img
-                            src={resolveImageUrl(photo.image_url)}
+                            src={photo.image_url}
                             alt={photo.caption || bottle.name}
                             className={styles.photoThumb}
                           />

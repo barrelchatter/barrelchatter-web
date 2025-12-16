@@ -1,96 +1,82 @@
+@use './design-system' as *;
+
 .page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--bc-space-4);
 }
+
+// ============================================================================
+// HEADER
+// ============================================================================
 
 .headerRow {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
-}
-
-.headerRow h1 {
-  margin: 0;
-  font-size: 22px;
+  gap: var(--bc-space-4);
+  
+  h1 {
+    margin: 0;
+    font-size: var(--bc-text-xl);
+  }
 }
 
 .subtitle {
-  margin: 4px 0 0;
-  font-size: 13px;
-  opacity: 0.8;
+  margin: var(--bc-space-1) 0 0;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .accessDenied {
-  padding: 12px 14px;
-  border-radius: var(--radius-md);
-  background: rgba(185, 71, 62, 0.16);
-  border: 1px solid var(--color-danger);
-  font-size: 14px;
+  @include alert-error;
 }
 
+// ============================================================================
+// FORM CARD
+// ============================================================================
+
 .formCard {
-  background: var(--color-bg-alt);
-  border-radius: 20px;
-  padding: 14px 16px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: var(--shadow-soft);
+  @include card;
+  padding: var(--bc-space-4) var(--bc-space-5);
 }
 
 .formTitle {
-  margin: 0 0 4px;
-  font-size: 16px;
+  margin: 0 0 var(--bc-space-1);
+  font-size: var(--bc-text-lg);
 }
 
 .formHint {
-  margin: 0 0 8px;
-  font-size: 12px;
-  opacity: 0.8;
+  margin: 0 0 var(--bc-space-3);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .formError {
-  margin-bottom: 8px;
-  padding: 6px 8px;
-  border-radius: var(--radius-sm);
-  background: rgba(185, 71, 62, 0.16);
-  border: 1px solid var(--color-danger);
-  font-size: 13px;
+  @include alert-error;
+  margin-bottom: var(--bc-space-3);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--bc-space-3);
 }
 
 .formRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--bc-space-3);
 }
 
 .label {
+  @include label-base;
   flex: 1;
   min-width: 0;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
 }
 
 .input {
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(10, 10, 10, 0.9);
-  color: var(--color-text);
-  padding: 6px 10px;
-  font-size: 13px;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--color-accent);
+  @include input-base;
 }
 
 .formActions {
@@ -99,73 +85,31 @@
 }
 
 .saveButton {
-  border-radius: var(--radius-md);
-  border: none;
-  background: linear-gradient(
-    135deg,
-    var(--color-accent),
-    var(--color-accent-deep)
-  );
-  color: #120e0b;
-  padding: 7px 14px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow-soft);
+  @include button-primary;
 }
 
-.saveButton:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
+// ============================================================================
+// MESSAGES
+// ============================================================================
 
 .message {
-  font-size: 14px;
-  opacity: 0.85;
+  font-size: var(--bc-text-base);
+  color: var(--bc-text-secondary);
 }
 
 .error {
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(185, 71, 62, 0.16);
-  border: 1px solid var(--color-danger);
-  font-size: 13px;
-  margin-bottom: 8px;
+  @include alert-error;
+  margin-bottom: var(--bc-space-2);
 }
 
+// ============================================================================
+// TABLE
+// ============================================================================
+
 .tableWrapper {
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: var(--shadow-soft);
-  background: rgba(12, 12, 12, 0.95);
+  @include table-wrapper;
 }
 
 .table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.table thead {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.table th,
-.table td {
-  padding: 8px 10px;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.table th {
-  font-weight: 600;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  opacity: 0.85;
-}
-
-.table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.02);
+  @include table-base;
 }

@@ -1,136 +1,112 @@
+@use './design-system' as *;
+
 .backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 40px 16px;
-  z-index: 999;
+  @include modal-backdrop;
 }
 
 .modal {
-  width: 100%;
+  @include modal-content;
   max-width: 520px;
-  border-radius: 18px;
-  background: rgba(18, 18, 18, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
-  padding: 16px 18px 14px;
+  padding: var(--bc-space-5);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--bc-space-4);
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-}
-
-.header h2 {
-  margin: 0;
-  font-size: 18px;
+  gap: var(--bc-space-3);
+  
+  h2 {
+    margin: 0;
+    font-size: var(--bc-text-lg);
+  }
 }
 
 .closeButton {
-  border: none;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  font-size: 18px;
-  padding: 4px;
+  @include button-ghost;
+  font-size: var(--bc-text-lg);
+  padding: var(--bc-space-1);
+  color: var(--bc-text-secondary);
+  
+  &:hover {
+    color: var(--bc-text-primary);
+  }
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 4px;
+  gap: var(--bc-space-3);
 }
 
 .row {
   display: flex;
-  gap: 10px;
+  gap: var(--bc-space-3);
   align-items: flex-start;
 }
 
 .label {
+  @include label-base;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 12px;
 }
 
 .input {
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(0, 0, 0, 0.6);
-  padding: 6px 8px;
-  color: inherit;
-  font-size: 13px;
+  @include input-base;
 }
 
 .textarea {
+  @include input-base;
   resize: vertical;
-  min-height: 60px;
+  min-height: 70px;
 }
 
 .presetsRow {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--bc-space-2);
   flex-wrap: wrap;
 }
 
 .presetsLabel {
-  font-size: 12px;
-  opacity: 0.8;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .presetButton {
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: transparent;
-  color: inherit;
-  font-size: 12px;
-  padding: 2px 10px;
-  cursor: pointer;
+  @include button-ghost;
+  @include button-pill;
+  border: 1px solid var(--bc-border-default);
+  font-size: var(--bc-text-xs);
+  padding: var(--bc-space-1) var(--bc-space-3);
+  
+  &:hover {
+    border-color: var(--bc-accent);
+    background: rgba(201, 166, 107, 0.1);
+  }
 }
 
 .error {
-  padding: 8px 10px;
-  border-radius: 10px;
-  background: rgba(185, 71, 62, 0.16);
-  border: 1px solid #b9473e;
-  font-size: 13px;
+  @include alert-error;
 }
 
 .footer {
-  margin-top: 8px;
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--bc-space-2);
+  margin-top: var(--bc-space-2);
+  padding-top: var(--bc-space-3);
+  border-top: 1px solid var(--bc-border-subtle);
 }
 
 .secondaryButton {
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: transparent;
-  color: inherit;
-  font-size: 13px;
-  padding: 6px 14px;
-  cursor: pointer;
+  @include button-secondary;
+  @include button-pill;
 }
 
 .primaryButton {
-  border-radius: 999px;
-  font-size: 13px;
-  padding: 6px 14px;
-  cursor: pointer;
-  border: 1px solid #b58e58;
-  background: #5a3e36;
-  color: #e4d6c3;
+  @include button-primary;
+  @include button-pill;
 }

@@ -1,0 +1,536 @@
+// ============================================================================
+// BARRELCHATTER DESIGN SYSTEM
+// A bourbon-inspired dark lounge aesthetic
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// COLOR PALETTE
+// ----------------------------------------------------------------------------
+
+:root {
+  // Primary backgrounds
+  --bc-bg-base: #121212;           // Deep charcoal - main background
+  --bc-bg-surface: #1c1c1c;        // Elevated surface
+  --bc-bg-elevated: #252525;       // Cards, modals
+  --bc-bg-hover: #2e2e2e;          // Hover states
+  
+  // Accent colors - Bourbon Brass
+  --bc-accent: #c9a66b;            // Primary accent (warmer, richer)
+  --bc-accent-hover: #d4b47a;      // Lighter on hover
+  --bc-accent-muted: #a08050;      // Subdued accent
+  --bc-accent-deep: #5a3e36;       // Smoked oak - deep accent
+  --bc-accent-deep-hover: #6b4a40;
+  
+  // Text colors
+  --bc-text-primary: #f0e6d6;      // Cream - primary text
+  --bc-text-secondary: #b8a890;    // Muted text
+  --bc-text-tertiary: #7a6f60;     // Disabled/hint text
+  --bc-text-inverse: #1a1612;      // Text on accent backgrounds
+  
+  // Semantic colors
+  --bc-success: #6fbf73;
+  --bc-success-bg: rgba(111, 191, 115, 0.12);
+  --bc-success-border: rgba(111, 191, 115, 0.4);
+  
+  --bc-warning: #d4a84b;
+  --bc-warning-bg: rgba(212, 168, 75, 0.12);
+  --bc-warning-border: rgba(212, 168, 75, 0.4);
+  
+  --bc-danger: #c45c52;
+  --bc-danger-bg: rgba(196, 92, 82, 0.12);
+  --bc-danger-border: rgba(196, 92, 82, 0.4);
+  
+  --bc-info: #5b9bd5;
+  --bc-info-bg: rgba(91, 155, 213, 0.12);
+  --bc-info-border: rgba(91, 155, 213, 0.4);
+  
+  // Border colors
+  --bc-border-subtle: rgba(255, 255, 255, 0.06);
+  --bc-border-default: rgba(255, 255, 255, 0.10);
+  --bc-border-strong: rgba(255, 255, 255, 0.18);
+  --bc-border-accent: rgba(201, 166, 107, 0.4);
+  
+  // ----------------------------------------------------------------------------
+  // SPACING SCALE (8px base)
+  // ----------------------------------------------------------------------------
+  --bc-space-0: 0;
+  --bc-space-1: 4px;
+  --bc-space-2: 8px;
+  --bc-space-3: 12px;
+  --bc-space-4: 16px;
+  --bc-space-5: 20px;
+  --bc-space-6: 24px;
+  --bc-space-8: 32px;
+  --bc-space-10: 40px;
+  --bc-space-12: 48px;
+  --bc-space-16: 64px;
+  
+  // ----------------------------------------------------------------------------
+  // BORDER RADIUS
+  // ----------------------------------------------------------------------------
+  --bc-radius-xs: 4px;
+  --bc-radius-sm: 6px;
+  --bc-radius-md: 10px;
+  --bc-radius-lg: 14px;
+  --bc-radius-xl: 20px;
+  --bc-radius-2xl: 28px;
+  --bc-radius-full: 9999px;
+  
+  // ----------------------------------------------------------------------------
+  // SHADOWS
+  // ----------------------------------------------------------------------------
+  --bc-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --bc-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --bc-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --bc-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.55);
+  --bc-shadow-glow: 0 0 20px rgba(201, 166, 107, 0.15);
+  
+  // ----------------------------------------------------------------------------
+  // TYPOGRAPHY
+  // ----------------------------------------------------------------------------
+  --bc-font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --bc-font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+  
+  --bc-text-xs: 11px;
+  --bc-text-sm: 13px;
+  --bc-text-base: 14px;
+  --bc-text-md: 15px;
+  --bc-text-lg: 18px;
+  --bc-text-xl: 22px;
+  --bc-text-2xl: 28px;
+  --bc-text-3xl: 36px;
+  
+  --bc-leading-tight: 1.25;
+  --bc-leading-normal: 1.5;
+  --bc-leading-relaxed: 1.75;
+  
+  --bc-tracking-tight: -0.01em;
+  --bc-tracking-normal: 0;
+  --bc-tracking-wide: 0.02em;
+  --bc-tracking-wider: 0.06em;
+  --bc-tracking-widest: 0.12em;
+  
+  // ----------------------------------------------------------------------------
+  // TRANSITIONS
+  // ----------------------------------------------------------------------------
+  --bc-transition-fast: 0.1s ease;
+  --bc-transition-base: 0.15s ease;
+  --bc-transition-slow: 0.25s ease;
+  --bc-transition-bounce: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  // ----------------------------------------------------------------------------
+  // Z-INDEX SCALE
+  // ----------------------------------------------------------------------------
+  --bc-z-dropdown: 100;
+  --bc-z-sticky: 200;
+  --bc-z-modal-backdrop: 900;
+  --bc-z-modal: 1000;
+  --bc-z-toast: 1100;
+}
+
+// ============================================================================
+// MIXINS
+// ============================================================================
+
+// Focus ring for accessibility
+@mixin focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bc-bg-base), 0 0 0 4px var(--bc-accent);
+}
+
+// Card styling
+@mixin card {
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-xl);
+  box-shadow: var(--bc-shadow-md);
+}
+
+@mixin card-hover {
+  transition: transform var(--bc-transition-base), 
+              border-color var(--bc-transition-base),
+              box-shadow var(--bc-transition-base);
+  
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--bc-border-accent);
+    box-shadow: var(--bc-shadow-lg), var(--bc-shadow-glow);
+  }
+}
+
+// Interactive card (clickable)
+@mixin card-interactive {
+  @include card;
+  @include card-hover;
+  cursor: pointer;
+}
+
+// Table base
+@mixin table-base {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--bc-text-sm);
+  
+  thead {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  
+  th,
+  td {
+    padding: var(--bc-space-2) var(--bc-space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--bc-border-subtle);
+    vertical-align: top;
+  }
+  
+  th {
+    font-weight: 600;
+    font-size: var(--bc-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--bc-tracking-wider);
+    color: var(--bc-text-secondary);
+  }
+  
+  tbody tr:hover {
+    background: var(--bc-bg-hover);
+  }
+}
+
+// Table wrapper with rounded corners
+@mixin table-wrapper {
+  border-radius: var(--bc-radius-xl);
+  overflow: hidden;
+  border: 1px solid var(--bc-border-subtle);
+  background: var(--bc-bg-surface);
+  box-shadow: var(--bc-shadow-md);
+}
+
+// Truncate text with ellipsis
+@mixin truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Hide scrollbar but keep scrolling
+@mixin hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// ============================================================================
+// BUTTON MIXINS
+// ============================================================================
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bc-space-2);
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--bc-transition-base);
+  border: none;
+  text-decoration: none;
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+  
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+// Primary button - main CTA
+@mixin button-primary {
+  @include button-base;
+  background: linear-gradient(135deg, var(--bc-accent), var(--bc-accent-deep));
+  color: var(--bc-text-inverse);
+  border-radius: var(--bc-radius-md);
+  padding: var(--bc-space-2) var(--bc-space-4);
+  font-size: var(--bc-text-base);
+  font-weight: 600;
+  box-shadow: var(--bc-shadow-sm);
+  
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: var(--bc-shadow-md);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    filter: brightness(1);
+  }
+}
+
+// Secondary button - less prominent
+@mixin button-secondary {
+  @include button-base;
+  background: transparent;
+  color: var(--bc-text-primary);
+  border: 1px solid var(--bc-border-strong);
+  border-radius: var(--bc-radius-md);
+  padding: var(--bc-space-2) var(--bc-space-4);
+  font-size: var(--bc-text-base);
+  
+  &:hover:not(:disabled) {
+    background: var(--bc-bg-hover);
+    border-color: var(--bc-border-accent);
+  }
+}
+
+// Ghost button - minimal
+@mixin button-ghost {
+  @include button-base;
+  background: transparent;
+  color: var(--bc-text-secondary);
+  border: none;
+  border-radius: var(--bc-radius-sm);
+  padding: var(--bc-space-1) var(--bc-space-2);
+  font-size: var(--bc-text-sm);
+  
+  &:hover:not(:disabled) {
+    background: var(--bc-bg-hover);
+    color: var(--bc-text-primary);
+  }
+}
+
+// Danger button
+@mixin button-danger {
+  @include button-base;
+  background: var(--bc-danger-bg);
+  color: var(--bc-danger);
+  border: 1px solid var(--bc-danger-border);
+  border-radius: var(--bc-radius-md);
+  padding: var(--bc-space-2) var(--bc-space-4);
+  font-size: var(--bc-text-base);
+  
+  &:hover:not(:disabled) {
+    background: rgba(196, 92, 82, 0.2);
+    border-color: var(--bc-danger);
+  }
+}
+
+// Small button variant
+@mixin button-sm {
+  padding: var(--bc-space-1) var(--bc-space-2);
+  font-size: var(--bc-text-xs);
+  border-radius: var(--bc-radius-sm);
+}
+
+// Pill button (rounded)
+@mixin button-pill {
+  border-radius: var(--bc-radius-full);
+}
+
+// ============================================================================
+// FORM MIXINS
+// ============================================================================
+
+@mixin input-base {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-primary);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  font-size: var(--bc-text-sm);
+  font-family: inherit;
+  transition: border-color var(--bc-transition-base), 
+              box-shadow var(--bc-transition-base);
+  
+  &::placeholder {
+    color: var(--bc-text-tertiary);
+  }
+  
+  &:hover:not(:disabled):not(:focus) {
+    border-color: var(--bc-border-strong);
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: var(--bc-accent);
+    box-shadow: 0 0 0 3px rgba(201, 166, 107, 0.15);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin label-base {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-1);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}
+
+@mixin select-base {
+  @include input-base;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23b8a890' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--bc-space-3) center;
+  padding-right: var(--bc-space-8);
+}
+
+// ============================================================================
+// MODAL MIXINS
+// ============================================================================
+
+@mixin modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--bc-space-10) var(--bc-space-4);
+  z-index: var(--bc-z-modal-backdrop);
+  overflow-y: auto;
+}
+
+@mixin modal-content {
+  width: 100%;
+  max-width: 560px;
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-xl);
+  box-shadow: var(--bc-shadow-xl);
+  animation: modal-enter 0.2s ease-out;
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// ============================================================================
+// BADGE MIXINS
+// ============================================================================
+
+@mixin badge-base {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--bc-space-2);
+  border-radius: var(--bc-radius-full);
+  font-size: var(--bc-text-xs);
+  font-weight: 500;
+  border: 1px solid;
+}
+
+@mixin badge-default {
+  @include badge-base;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--bc-border-default);
+  color: var(--bc-text-secondary);
+}
+
+@mixin badge-accent {
+  @include badge-base;
+  background: rgba(201, 166, 107, 0.15);
+  border-color: var(--bc-border-accent);
+  color: var(--bc-accent);
+}
+
+@mixin badge-success {
+  @include badge-base;
+  background: var(--bc-success-bg);
+  border-color: var(--bc-success-border);
+  color: var(--bc-success);
+}
+
+@mixin badge-danger {
+  @include badge-base;
+  background: var(--bc-danger-bg);
+  border-color: var(--bc-danger-border);
+  color: var(--bc-danger);
+}
+
+// ============================================================================
+// ALERT MIXINS
+// ============================================================================
+
+@mixin alert-base {
+  padding: var(--bc-space-3) var(--bc-space-4);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-sm);
+  border: 1px solid;
+}
+
+@mixin alert-error {
+  @include alert-base;
+  background: var(--bc-danger-bg);
+  border-color: var(--bc-danger-border);
+  color: var(--bc-danger);
+}
+
+@mixin alert-success {
+  @include alert-base;
+  background: var(--bc-success-bg);
+  border-color: var(--bc-success-border);
+  color: var(--bc-success);
+}
+
+@mixin alert-warning {
+  @include alert-base;
+  background: var(--bc-warning-bg);
+  border-color: var(--bc-warning-border);
+  color: var(--bc-warning);
+}
+
+@mixin alert-info {
+  @include alert-base;
+  background: var(--bc-info-bg);
+  border-color: var(--bc-info-border);
+  color: var(--bc-info);
+}
+
+// ============================================================================
+// UTILITY CLASSES (exported for use in components)
+// ============================================================================
+
+// Text utilities
+.bc-text-primary { color: var(--bc-text-primary); }
+.bc-text-secondary { color: var(--bc-text-secondary); }
+.bc-text-tertiary { color: var(--bc-text-tertiary); }
+.bc-text-accent { color: var(--bc-accent); }
+.bc-text-danger { color: var(--bc-danger); }
+.bc-text-success { color: var(--bc-success); }
+
+// Text size utilities
+.bc-text-xs { font-size: var(--bc-text-xs); }
+.bc-text-sm { font-size: var(--bc-text-sm); }
+.bc-text-base { font-size: var(--bc-text-base); }
+.bc-text-lg { font-size: var(--bc-text-lg); }
+.bc-text-xl { font-size: var(--bc-text-xl); }
+
+// Font weight utilities
+.bc-font-normal { font-weight: 400; }
+.bc-font-medium { font-weight: 500; }
+.bc-font-semibold { font-weight: 600; }
+.bc-font-bold { font-weight: 700; }
+
+// Opacity utilities
+.bc-opacity-50 { opacity: 0.5; }
+.bc-opacity-70 { opacity: 0.7; }
+.bc-opacity-80 { opacity: 0.8; }
+.bc-opacity-90 { opacity: 0.9; }

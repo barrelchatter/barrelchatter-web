@@ -1,158 +1,179 @@
+@use './design-system' as *;
+
 .appShell {
   display: flex;
   min-height: 100vh;
-  background-color: var(--color-bg);
+  background-color: var(--bc-bg-base);
 }
+
+// ============================================================================
+// SIDEBAR
+// ============================================================================
 
 .sidebar {
   width: 220px;
-  background: linear-gradient(180deg, #232323, #151515);
-  padding: 24px 16px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    180deg,
+    var(--bc-bg-elevated) 0%,
+    var(--bc-bg-surface) 100%
+  );
+  padding: var(--bc-space-6) var(--bc-space-4);
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  gap: var(--bc-space-8);
+  border-right: 1px solid var(--bc-border-subtle);
 }
 
 .logo {
   font-weight: 700;
-  font-size: 20px;
-  letter-spacing: 0.06em;
+  font-size: var(--bc-text-lg);
+  letter-spacing: var(--bc-tracking-wider);
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--bc-accent);
 }
 
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--bc-space-1);
 }
 
 .navSeparator {
-  margin: 8px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: var(--bc-space-2) 0;
+  border: none;
+  border-top: 1px solid var(--bc-border-subtle);
 }
 
 .navSectionLabel {
-  font-size: 11px;
+  font-size: var(--bc-text-xs);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.6;
-  margin: 2px 0 6px;
+  letter-spacing: var(--bc-tracking-wider);
+  color: var(--bc-text-tertiary);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  margin-top: var(--bc-space-1);
 }
 
 .navItem,
 .navItemActive {
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  opacity: 0.85;
+  padding: var(--bc-space-2) var(--bc-space-3);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-base);
+  color: var(--bc-text-secondary);
   text-decoration: none;
-  color: var(--color-text);
-  transition: background 0.15s ease, opacity 0.15s ease,
-    transform 0.1s ease;
+  transition: all var(--bc-transition-base);
+  display: block;
 }
 
 .navItem:hover {
-  opacity: 1;
-  background-color: rgba(181, 142, 88, 0.12);
+  color: var(--bc-text-primary);
+  background-color: rgba(201, 166, 107, 0.1);
 }
 
 .navItemActive {
-  opacity: 1;
+  color: var(--bc-text-inverse);
   background: linear-gradient(
     135deg,
-    rgba(181, 142, 88, 0.95),
-    rgba(90, 62, 54, 0.95)
+    var(--bc-accent) 0%,
+    var(--bc-accent-deep) 100%
   );
-  color: #120e0b;
-  transform: translateX(1px);
+  font-weight: 500;
+  box-shadow: var(--bc-shadow-sm);
 }
+
+// ============================================================================
+// MAIN AREA
+// ============================================================================
 
 .mainArea {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  overflow: hidden;
 }
+
+// ============================================================================
+// TOPBAR
+// ============================================================================
 
 .topbar {
   height: 56px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: radial-gradient(circle at top left, #2b2b2b 0, #181818 60%);
+  padding: 0 var(--bc-space-6);
+  border-bottom: 1px solid var(--bc-border-subtle);
+  background: var(--bc-bg-surface);
 }
 
 .topbarLeft {
+  // Reserved for breadcrumbs or search
 }
 
 .topbarRight {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--bc-space-3);
 }
 
 .userLink {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--bc-space-2);
   text-decoration: none;
-  color: var(--color-text);
-  padding: 4px 8px;
-  border-radius: var(--radius-md);
-  transition: background 0.15s ease;
-}
+  color: var(--bc-text-primary);
+  padding: var(--bc-space-1) var(--bc-space-2);
+  border-radius: var(--bc-radius-md);
+  transition: background var(--bc-transition-base);
 
-.userLink:hover {
-  background: rgba(255, 255, 255, 0.06);
+  &:hover {
+    background: var(--bc-bg-hover);
+  }
 }
 
 .userAvatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(181, 142, 88, 0.3), rgba(90, 62, 54, 0.5));
+  width: 32px;
+  height: 32px;
+  border-radius: var(--bc-radius-full);
+  background: linear-gradient(
+    135deg,
+    rgba(201, 166, 107, 0.2) 0%,
+    var(--bc-accent-deep) 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: var(--bc-text-sm);
   font-weight: 600;
-  color: var(--color-accent);
-  border: 1px solid rgba(181, 142, 88, 0.4);
+  color: var(--bc-accent);
+  border: 1px solid var(--bc-border-accent);
 }
 
 .userInfo {
-  font-size: 13px;
-  opacity: 0.9;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .logoutButton {
-  border: none;
-  background: var(--color-accent-deep);
-  color: var(--color-text);
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  cursor: pointer;
-  box-shadow: var(--shadow-soft);
-  transition: background 0.15s ease, transform 0.08s ease;
+  @include button-ghost;
+  color: var(--bc-text-secondary);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  
+  &:hover {
+    color: var(--bc-danger);
+    background: var(--bc-danger-bg);
+  }
 }
 
-.logoutButton:hover {
-  background: #704b3f;
-  transform: translateY(-1px);
-}
-
-.logoutButton:active {
-  transform: translateY(0);
-}
+// ============================================================================
+// CONTENT
+// ============================================================================
 
 .content {
-  padding: 24px 28px;
   flex: 1;
-  min-height: 0;
-  overflow: auto;
+  padding: var(--bc-space-6);
+  overflow-y: auto;
+  overflow-x: hidden;
 }

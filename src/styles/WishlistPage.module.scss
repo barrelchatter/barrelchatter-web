@@ -1,128 +1,101 @@
+@use './design-system' as *;
+
 .page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--bc-space-4);
 }
+
+// ============================================================================
+// HEADER
+// ============================================================================
 
 .headerRow {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
-}
-
-.headerRow h1 {
-  margin: 0;
-  font-size: 22px;
+  gap: var(--bc-space-4);
+  
+  h1 {
+    margin: 0;
+    font-size: var(--bc-text-xl);
+  }
 }
 
 .subtitle {
-  margin: 4px 0 0;
-  font-size: 13px;
-  opacity: 0.8;
+  margin: var(--bc-space-1) 0 0;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .addButton {
-  align-self: center;
-  border: none;
-  border-radius: var(--radius-md);
-  background: linear-gradient(
-    135deg,
-    var(--color-accent),
-    var(--color-accent-deep)
-  );
-  color: #120e0b;
-  padding: 8px 14px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow-soft);
-  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.1s ease;
+  @include button-primary;
 }
 
-.addButton:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
-}
-
-.smallNote {
-  font-size: 12px;
-  opacity: 0.8;
-}
+// ============================================================================
+// FORM
+// ============================================================================
 
 .formCard {
-  background: var(--color-bg-alt);
-  border-radius: 20px;
-  padding: 14px 16px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: var(--shadow-soft);
+  @include card;
+  padding: var(--bc-space-4) var(--bc-space-5);
 }
 
 .formTitle {
-  margin: 0 0 4px;
-  font-size: 16px;
+  margin: 0 0 var(--bc-space-1);
+  font-size: var(--bc-text-lg);
 }
 
 .formHint {
-  margin: 0 0 8px;
-  font-size: 12px;
-  opacity: 0.8;
+  margin: 0 0 var(--bc-space-3);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .formError {
-  margin-bottom: 8px;
-  padding: 6px 8px;
-  border-radius: var(--radius-sm);
-  background: rgba(185, 71, 62, 0.16);
-  border: 1px solid var(--color-danger);
-  font-size: 13px;
+  @include alert-error;
+  margin-bottom: var(--bc-space-3);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--bc-space-3);
 }
 
 .formRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--bc-space-3);
 }
 
 .label {
+  @include label-base;
   flex: 1;
   min-width: 0;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+}
+
+.input {
+  @include input-base;
+}
+
+.textarea {
+  @include input-base;
+  resize: vertical;
+  min-height: 80px;
 }
 
 .checkboxLabel {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  margin-top: 20px;
-}
-
-.input {
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(10, 10, 10, 0.9);
-  color: var(--color-text);
-  padding: 6px 10px;
-  font-size: 13px;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--color-accent);
-}
-
-.textarea {
-  resize: vertical;
+  gap: var(--bc-space-2);
+  font-size: var(--bc-text-sm);
+  margin-top: var(--bc-space-5);
+  cursor: pointer;
+  
+  input[type="checkbox"] {
+    accent-color: var(--bc-accent);
+  }
 }
 
 .formActions {
@@ -131,119 +104,95 @@
 }
 
 .saveButton {
-  border-radius: var(--radius-md);
-  border: none;
-  background: linear-gradient(
-    135deg,
-    var(--color-accent),
-    var(--color-accent-deep)
-  );
-  color: #120e0b;
-  padding: 7px 14px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow-soft);
+  @include button-primary;
 }
 
-.saveButton:disabled {
-  opacity: 0.6;
-  cursor: default;
+.smallNote {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
+
+.linkLikeButton {
+  background: none;
+  border: none;
+  color: var(--bc-accent);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  
+  &:hover {
+    color: var(--bc-accent-hover);
+  }
+}
+
+// ============================================================================
+// MESSAGES
+// ============================================================================
 
 .message {
-  font-size: 14px;
-  opacity: 0.85;
+  font-size: var(--bc-text-base);
+  color: var(--bc-text-secondary);
+  padding: var(--bc-space-4);
 }
 
 .error {
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(185, 71, 62, 0.16);
-  border: 1px solid var(--color-danger);
-  font-size: 13px;
-  margin-bottom: 8px;
+  @include alert-error;
+  margin-bottom: var(--bc-space-2);
 }
 
+// ============================================================================
+// TABLE
+// ============================================================================
+
 .tableWrapper {
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: var(--shadow-soft);
-  background: rgba(12, 12, 12, 0.95);
+  @include table-wrapper;
 }
 
 .table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.table thead {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.table th,
-.table td {
-  padding: 8px 10px;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  vertical-align: top;
-}
-
-.table th {
-  font-weight: 600;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  opacity: 0.85;
-}
-
-.table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.02);
+  @include table-base;
 }
 
 .notesCell {
-  max-width: 260px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  max-width: 280px;
+  @include truncate;
 }
 
 .actionsCell {
   white-space: nowrap;
 }
 
+// ============================================================================
+// ALERT BUTTONS
+// ============================================================================
+
 .alertButtonOn,
 .alertButtonOff {
-  border-radius: 999px;
-  padding: 3px 10px;
-  font-size: 11px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  @include button-sm;
+  @include button-pill;
+  border: 1px solid var(--bc-border-default);
   background: transparent;
-  color: var(--color-text);
+  color: var(--bc-text-primary);
   cursor: pointer;
 }
 
 .alertButtonOn {
-  background: rgba(181, 142, 88, 0.2);
+  background: rgba(201, 166, 107, 0.15);
+  border-color: var(--bc-border-accent);
+  color: var(--bc-accent);
 }
 
 .alertButtonOff {
-  opacity: 0.6;
+  color: var(--bc-text-secondary);
 }
 
 .deleteButton {
-  border-radius: 999px;
-  border: 1px solid rgba(185, 71, 62, 0.7);
-  background: transparent;
-  color: var(--color-danger);
-  padding: 3px 10px;
-  font-size: 11px;
-  cursor: pointer;
+  @include button-danger;
+  @include button-sm;
+  @include button-pill;
 }
 
 .count {
-  font-size: 13px;
-  opacity: 0.8;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-tertiary);
 }

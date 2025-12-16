@@ -1,200 +1,169 @@
+@use './design-system' as *;
+
 .page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--bc-space-4);
 }
+
+// ============================================================================
+// HEADER
+// ============================================================================
 
 .headerRow {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
-}
-
-.headerRow h1 {
-  margin: 0;
-  font-size: 22px;
+  gap: var(--bc-space-4);
+  
+  h1 {
+    margin: 0;
+    font-size: var(--bc-text-xl);
+  }
 }
 
 .subtitle {
-  margin: 4px 0 0;
-  font-size: 13px;
-  opacity: 0.8;
+  margin: var(--bc-space-1) 0 0;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .accessDenied {
-  padding: 12px 14px;
-  border-radius: var(--radius-md);
-  background: rgba(185, 71, 62, 0.15);
-  border: 1px solid rgba(185, 71, 62, 0.35);
+  @include alert-error;
 }
+
+// ============================================================================
+// TABS
+// ============================================================================
 
 .tabs {
   display: flex;
-  gap: 8px;
+  gap: var(--bc-space-2);
 }
 
 .tab,
 .tabActive {
-  border: 1px solid rgba(228, 214, 195, 0.15);
-  background: rgba(43, 43, 43, 0.7);
-  color: var(--color-text);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  cursor: pointer;
+  @include button-secondary;
+  @include button-sm;
 }
 
 .tabActive {
-  border-color: rgba(181, 142, 88, 0.6);
-  box-shadow: 0 0 0 2px rgba(181, 142, 88, 0.15) inset;
+  border-color: var(--bc-border-accent);
+  background: rgba(201, 166, 107, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(201, 166, 107, 0.2);
 }
 
+// ============================================================================
+// PANELS
+// ============================================================================
+
 .panel {
-  background: var(--color-bg-alt);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  padding: 14px;
+  @include card;
+  padding: var(--bc-space-4);
 }
 
 .panelHeader {
-  font-size: 14px;
+  font-size: var(--bc-text-base);
   font-weight: 600;
-  margin-bottom: 10px;
-  opacity: 0.9;
+  margin-bottom: var(--bc-space-3);
+  color: var(--bc-text-secondary);
 }
+
+// ============================================================================
+// FORMS
+// ============================================================================
 
 .filters,
 .formRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--bc-space-3);
   align-items: center;
 }
 
-.input,
-.select {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(228, 214, 195, 0.15);
-  color: var(--color-text);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  outline: none;
+.input {
+  @include input-base;
   min-width: 200px;
 }
 
 .select {
+  @include select-base;
   min-width: 160px;
 }
 
-.primaryBtn,
-.secondaryBtn,
-.smallBtn,
-.smallBtnDanger {
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  cursor: pointer;
-  border: 1px solid rgba(228, 214, 195, 0.15);
-  background: rgba(0, 0, 0, 0.25);
-  color: var(--color-text);
-}
-
 .primaryBtn {
-  border-color: rgba(181, 142, 88, 0.55);
-  background: rgba(181, 142, 88, 0.15);
+  @include button-primary;
 }
 
 .secondaryBtn {
-  opacity: 0.95;
+  @include button-secondary;
 }
 
-.smallBtn,
+.smallBtn {
+  @include button-secondary;
+  @include button-sm;
+}
+
 .smallBtnDanger {
-  padding: 7px 9px;
-  font-size: 12px;
+  @include button-danger;
+  @include button-sm;
 }
 
-.smallBtnDanger {
-  border-color: rgba(185, 71, 62, 0.6);
-  background: rgba(185, 71, 62, 0.12);
-}
-
-.primaryBtn:disabled,
-.secondaryBtn:disabled,
-.smallBtn:disabled,
-.smallBtnDanger:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
+// ============================================================================
+// NOTICES & ERRORS
+// ============================================================================
 
 .notice {
-  margin-top: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(181, 142, 88, 0.35);
-  background: rgba(181, 142, 88, 0.10);
+  margin-top: var(--bc-space-3);
+  @include alert-info;
 }
 
 .noticeRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: var(--bc-space-3);
 }
 
 .token {
-  margin-top: 6px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 13px;
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(228, 214, 195, 0.12);
+  margin-top: var(--bc-space-2);
+  font-family: var(--bc-font-mono);
+  font-size: var(--bc-text-sm);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  border-radius: var(--bc-radius-sm);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--bc-border-subtle);
   word-break: break-all;
 }
 
 .error {
-  margin-top: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  background: rgba(185, 71, 62, 0.15);
-  border: 1px solid rgba(185, 71, 62, 0.35);
+  @include alert-error;
+  margin-top: var(--bc-space-3);
 }
 
 .loading,
 .empty {
-  margin-top: 10px;
-  opacity: 0.85;
+  margin-top: var(--bc-space-3);
+  color: var(--bc-text-secondary);
 }
 
+// ============================================================================
+// TABLE
+// ============================================================================
+
 .tableWrap {
-  margin-top: 10px;
-  overflow: auto;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(228, 214, 195, 0.10);
+  margin-top: var(--bc-space-3);
+  @include table-wrapper;
+  overflow-x: auto;
 }
 
 .table {
-  width: 100%;
-  border-collapse: collapse;
+  @include table-base;
   min-width: 860px;
 }
 
-.table th,
-.table td {
-  text-align: left;
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(228, 214, 195, 0.08);
-  font-size: 13px;
-}
-
-.table th {
-  font-size: 12px;
-  letter-spacing: 0.02em;
-  opacity: 0.85;
-}
-
 .rowMuted {
-  opacity: 0.75;
+  opacity: 0.6;
 }
 
 .actionsCol {
@@ -202,81 +171,95 @@
 }
 
 .badge {
-  display: inline-flex;
-  padding: 2px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(181, 142, 88, 0.45);
-  background: rgba(181, 142, 88, 0.12);
-  font-size: 12px;
+  @include badge-accent;
 }
 
 .statusActive {
-  color: rgba(228, 214, 195, 0.95);
+  color: var(--bc-success);
 }
 
 .statusLocked {
-  color: rgba(185, 71, 62, 0.95);
+  color: var(--bc-danger);
 }
 
 .statusAccepted {
-  color: rgba(181, 142, 88, 0.95);
+  color: var(--bc-accent);
 }
 
 .statusExpired {
-  opacity: 0.85;
+  color: var(--bc-text-tertiary);
 }
 
+// ============================================================================
+// EDIT ROW
+// ============================================================================
+
 .editRow td {
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .editForm {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--bc-space-3);
 }
 
 .editGrid {
   display: grid;
   grid-template-columns: 1fr 1fr 180px 140px;
-  gap: 12px;
+  gap: var(--bc-space-3);
   align-items: end;
 }
 
-.field span {
-  display: block;
-  font-size: 12px;
-  opacity: 0.8;
-  margin-bottom: 6px;
+@media (max-width: 900px) {
+  .editGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-1);
+  
+  span {
+    font-size: var(--bc-text-xs);
+    color: var(--bc-text-secondary);
+  }
 }
 
 .checkboxField {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding-top: 22px;
-  font-size: 13px;
+  gap: var(--bc-space-2);
+  padding-top: var(--bc-space-5);
+  font-size: var(--bc-text-sm);
+  
+  input[type="checkbox"] {
+    accent-color: var(--bc-accent);
+  }
 }
 
 .editActions {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: var(--bc-space-3);
 }
 
 .mutedMeta {
   margin-left: auto;
-  font-size: 12px;
-  opacity: 0.75;
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
   max-width: 420px;
 }
 
 .codeBlock {
   margin: 0;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.35);
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(228, 214, 195, 0.12);
+  padding: var(--bc-space-3);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--bc-radius-md);
+  border: 1px solid var(--bc-border-subtle);
   overflow: auto;
-  font-size: 12px;
+  font-size: var(--bc-text-sm);
+  font-family: var(--bc-font-mono);
 }

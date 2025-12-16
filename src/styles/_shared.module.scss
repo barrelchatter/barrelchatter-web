@@ -1,0 +1,470 @@
+@use './design-system' as *;
+
+// ============================================================================
+// SHARED COMPONENT STYLES
+// These are common patterns used across multiple pages
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// PAGE LAYOUT
+// ----------------------------------------------------------------------------
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-5);
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--bc-space-4);
+  flex-wrap: wrap;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+}
+
+.subtitle {
+  margin-top: var(--bc-space-1);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}
+
+// ----------------------------------------------------------------------------
+// MESSAGES & ALERTS
+// ----------------------------------------------------------------------------
+
+.message {
+  font-size: var(--bc-text-base);
+  color: var(--bc-text-secondary);
+  padding: var(--bc-space-4);
+}
+
+.error {
+  @include alert-error;
+}
+
+.success {
+  @include alert-success;
+}
+
+.warning {
+  @include alert-warning;
+}
+
+// ----------------------------------------------------------------------------
+// COUNT BADGE
+// ----------------------------------------------------------------------------
+
+.count {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-tertiary);
+}
+
+// ----------------------------------------------------------------------------
+// BUTTONS
+// ----------------------------------------------------------------------------
+
+.primaryButton {
+  @include button-primary;
+}
+
+.secondaryButton {
+  @include button-secondary;
+}
+
+.ghostButton {
+  @include button-ghost;
+}
+
+.dangerButton {
+  @include button-danger;
+}
+
+.smallButton {
+  @include button-secondary;
+  @include button-sm;
+}
+
+.smallPrimaryButton {
+  @include button-primary;
+  @include button-sm;
+}
+
+.smallDangerButton {
+  @include button-danger;
+  @include button-sm;
+}
+
+// ----------------------------------------------------------------------------
+// FORM ELEMENTS
+// ----------------------------------------------------------------------------
+
+.label {
+  @include label-base;
+}
+
+.input {
+  @include input-base;
+}
+
+.select {
+  @include select-base;
+}
+
+.textarea {
+  @include input-base;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-primary);
+  cursor: pointer;
+  
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--bc-accent);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// FORM LAYOUT
+// ----------------------------------------------------------------------------
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-3);
+}
+
+.formRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bc-space-3);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-2);
+  margin-top: var(--bc-space-2);
+}
+
+.formError {
+  @include alert-error;
+  margin-bottom: var(--bc-space-2);
+}
+
+.formSuccess {
+  @include alert-success;
+  margin-bottom: var(--bc-space-2);
+}
+
+// ----------------------------------------------------------------------------
+// FORM CARD
+// ----------------------------------------------------------------------------
+
+.formCard {
+  @include card;
+  padding: var(--bc-space-4) var(--bc-space-5);
+}
+
+.formTitle {
+  font-size: var(--bc-text-lg);
+  font-weight: 600;
+  margin-bottom: var(--bc-space-3);
+}
+
+.formHint {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+  margin-bottom: var(--bc-space-3);
+}
+
+.sectionTitle {
+  font-size: var(--bc-text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--bc-tracking-wider);
+  color: var(--bc-text-tertiary);
+  margin-top: var(--bc-space-3);
+  margin-bottom: var(--bc-space-2);
+}
+
+// ----------------------------------------------------------------------------
+// TABLE
+// ----------------------------------------------------------------------------
+
+.tableWrapper {
+  @include table-wrapper;
+}
+
+.table {
+  @include table-base;
+}
+
+.nameLink {
+  color: var(--bc-text-primary);
+  text-decoration: none;
+  font-weight: 500;
+  
+  &:hover {
+    color: var(--bc-accent);
+    text-decoration: underline;
+  }
+}
+
+.subRow {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-secondary);
+  margin-top: 2px;
+}
+
+.notesCell {
+  max-width: 280px;
+  @include truncate;
+}
+
+.actionsCell {
+  white-space: nowrap;
+}
+
+.rowActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bc-space-2);
+}
+
+// ----------------------------------------------------------------------------
+// BADGES
+// ----------------------------------------------------------------------------
+
+.badge {
+  @include badge-default;
+}
+
+.badgeAccent {
+  @include badge-accent;
+}
+
+.badgeSuccess {
+  @include badge-success;
+}
+
+.badgeDanger {
+  @include badge-danger;
+}
+
+// ----------------------------------------------------------------------------
+// VIEW TOGGLE
+// ----------------------------------------------------------------------------
+
+.viewToggle {
+  display: inline-flex;
+  border-radius: var(--bc-radius-full);
+  overflow: hidden;
+  border: 1px solid var(--bc-border-default);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.viewModeButton,
+.viewModeButtonActive {
+  border: none;
+  padding: var(--bc-space-1) var(--bc-space-3);
+  font-size: var(--bc-text-xs);
+  cursor: pointer;
+  color: var(--bc-text-primary);
+  background: transparent;
+  transition: all var(--bc-transition-fast);
+}
+
+.viewModeButton {
+  color: var(--bc-text-secondary);
+  
+  &:hover {
+    color: var(--bc-text-primary);
+    background: var(--bc-bg-hover);
+  }
+}
+
+.viewModeButtonActive {
+  background: var(--bc-accent);
+  color: var(--bc-text-inverse);
+  font-weight: 500;
+}
+
+// ----------------------------------------------------------------------------
+// CARDS (for grid views)
+// ----------------------------------------------------------------------------
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--bc-space-4);
+}
+
+.card {
+  @include card;
+  padding: var(--bc-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-2);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--bc-space-2);
+}
+
+.cardTitle {
+  font-size: var(--bc-text-md);
+  font-weight: 600;
+}
+
+.cardSubtitle {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}
+
+.cardMetaRow {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+  
+  strong {
+    font-weight: 500;
+    color: var(--bc-text-primary);
+  }
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-2);
+  margin-top: var(--bc-space-2);
+}
+
+// ----------------------------------------------------------------------------
+// GALLERY VIEW
+// ----------------------------------------------------------------------------
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--bc-space-4);
+}
+
+.galleryCard {
+  @include card;
+  @include card-hover;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.galleryImageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  background: var(--bc-bg-surface);
+  overflow: hidden;
+}
+
+.galleryImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.galleryPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-2xl);
+  
+  span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--bc-radius-full);
+    border: 1px solid var(--bc-border-strong);
+  }
+}
+
+.galleryBody {
+  padding: var(--bc-space-3) var(--bc-space-4);
+}
+
+.galleryTitle {
+  font-size: var(--bc-text-base);
+  font-weight: 600;
+}
+
+.gallerySubtitle {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+  margin-top: 2px;
+}
+
+.galleryMetaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bc-space-2);
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-secondary);
+  margin-top: var(--bc-space-2);
+}
+
+.galleryLinkRow {
+  margin-top: var(--bc-space-2);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.galleryDetailsLink {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-accent);
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ----------------------------------------------------------------------------
+// STATUS BADGES
+// ----------------------------------------------------------------------------
+
+.statusPill {
+  @include badge-default;
+}
+
+.statusActive {
+  color: var(--bc-success);
+}
+
+.statusLocked {
+  color: var(--bc-danger);
+}
+
+.statusPending {
+  color: var(--bc-warning);
+}

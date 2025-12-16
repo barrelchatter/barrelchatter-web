@@ -1,0 +1,167 @@
+.uploadContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 24px;
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.dropzone:hover:not(:disabled) {
+  border-color: rgba(181, 142, 88, 0.5);
+  background: rgba(181, 142, 88, 0.08);
+}
+
+.dropzone:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dropzoneIcon {
+  font-size: 32px;
+  opacity: 0.8;
+}
+
+.dropzoneText {
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.dropzoneHint {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.previewContainer {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preview {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.clearButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.clearButton:hover {
+  background: rgba(185, 71, 62, 0.9);
+}
+
+.captionRow {
+  display: flex;
+}
+
+.captionInput {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.3);
+  color: inherit;
+  font-size: 14px;
+}
+
+.captionInput:focus {
+  outline: none;
+  border-color: rgba(181, 142, 88, 0.5);
+}
+
+.captionInput::placeholder {
+  opacity: 0.5;
+}
+
+.progressContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progressBar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-deep));
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+.progressText {
+  font-size: 12px;
+  opacity: 0.8;
+  text-align: center;
+}
+
+.error {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(185, 71, 62, 0.16);
+  border: 1px solid var(--color-danger);
+  font-size: 13px;
+}
+
+.uploadButton {
+  align-self: flex-start;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-deep));
+  color: #120e0b;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.08s ease, filter 0.1s ease;
+}
+
+.uploadButton:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.uploadButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
