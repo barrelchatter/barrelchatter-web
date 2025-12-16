@@ -1,0 +1,128 @@
+@use './design-system' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-2);
+}
+
+.loading {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-tertiary);
+  padding: var(--bc-space-2) 0;
+}
+
+.select {
+  @include select-base;
+}
+
+.selectedPath {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  padding-left: var(--bc-space-1);
+}
+
+// ============================================================================
+// LEGACY INPUT
+// ============================================================================
+
+.legacyContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-1);
+}
+
+.legacyInput {
+  @include input-base;
+}
+
+.legacyHint {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+}
+
+.legacyLink {
+  background: none;
+  border: none;
+  color: var(--bc-accent);
+  font-size: inherit;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    color: var(--bc-accent-hover);
+  }
+}
+
+// ============================================================================
+// CREATE FORM
+// ============================================================================
+
+.createForm {
+  margin-top: var(--bc-space-2);
+  padding: var(--bc-space-3);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--bc-radius-md);
+  border: 1px solid var(--bc-border-subtle);
+}
+
+.createRow {
+  display: flex;
+  gap: var(--bc-space-2);
+  margin-bottom: var(--bc-space-2);
+}
+
+.createInput {
+  @include input-base;
+  flex: 1;
+  padding: var(--bc-space-2);
+  font-size: var(--bc-text-sm);
+}
+
+.createParentSelect {
+  @include select-base;
+  width: 100%;
+  padding: var(--bc-space-2);
+  font-size: var(--bc-text-sm);
+}
+
+.createTypeSelect {
+  @include select-base;
+  width: auto;
+  min-width: 100px;
+  padding: var(--bc-space-2);
+  font-size: var(--bc-text-sm);
+}
+
+.createActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-2);
+}
+
+.createCancelButton {
+  @include button-ghost;
+  padding: var(--bc-space-1) var(--bc-space-3);
+  font-size: var(--bc-text-xs);
+}
+
+.createSubmitButton {
+  @include button-primary;
+  padding: var(--bc-space-1) var(--bc-space-3);
+  font-size: var(--bc-text-xs);
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ============================================================================
+// ERROR
+// ============================================================================
+
+.error {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-danger);
+}

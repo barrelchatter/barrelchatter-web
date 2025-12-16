@@ -15,7 +15,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: var(--bc-space-4);
-  
+
   h1 {
     margin: 0;
     font-size: var(--bc-text-xl);
@@ -32,6 +32,33 @@
   display: flex;
   align-items: center;
   gap: var(--bc-space-3);
+  flex-wrap: wrap;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+}
+
+.searchInput {
+  @include input-base;
+  min-width: 180px;
+  padding: var(--bc-space-1) var(--bc-space-3);
+  border-radius: var(--bc-radius-full);
+  font-size: var(--bc-text-sm);
+}
+
+.addButton {
+  @include button-primary;
+  @include button-sm;
+  white-space: nowrap;
+}
+
+.submitButton {
+  @include button-secondary;
+  @include button-sm;
+  white-space: nowrap;
 }
 
 .count {
@@ -64,7 +91,7 @@
 
 .viewModeButton {
   color: var(--bc-text-secondary);
-  
+
   &:hover {
     color: var(--bc-text-primary);
     background: var(--bc-bg-hover);
@@ -75,6 +102,66 @@
   background: var(--bc-accent);
   color: var(--bc-text-inverse);
   font-weight: 500;
+}
+
+// ============================================================================
+// ADD FORM
+// ============================================================================
+
+.addFormCard {
+  @include card;
+  padding: var(--bc-space-4) var(--bc-space-5);
+}
+
+.addFormTitle {
+  margin: 0 0 var(--bc-space-3);
+  font-size: var(--bc-text-lg);
+}
+
+.addFormError {
+  @include alert-error;
+  margin-bottom: var(--bc-space-3);
+}
+
+.addForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-3);
+}
+
+.addFormRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bc-space-3);
+}
+
+.addFormLabel {
+  @include label-base;
+  flex: 1;
+  min-width: 180px;
+}
+
+.addFormInput {
+  @include input-base;
+}
+
+.addFormSelect {
+  @include select-base;
+}
+
+.addFormActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-2);
+  margin-top: var(--bc-space-2);
+}
+
+.addFormCancelButton {
+  @include button-secondary;
+}
+
+.addFormSubmitButton {
+  @include button-primary;
 }
 
 // ============================================================================
@@ -108,7 +195,7 @@
   color: var(--bc-text-primary);
   text-decoration: none;
   font-weight: 500;
-  
+
   &:hover {
     color: var(--bc-accent);
     text-decoration: underline;
@@ -119,6 +206,17 @@
   font-size: var(--bc-text-xs);
   color: var(--bc-text-secondary);
   margin-top: 2px;
+}
+
+.locationCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bc-space-1);
+}
+
+.locationIcon {
+  font-size: var(--bc-text-xs);
+  opacity: 0.7;
 }
 
 .rowActions {
@@ -134,7 +232,7 @@
   border: 1px solid var(--bc-border-default);
   border-radius: var(--bc-radius-sm);
   text-decoration: none;
-  
+
   &:hover {
     border-color: var(--bc-border-accent);
     background: var(--bc-bg-hover);
@@ -183,7 +281,7 @@
 .cardMetaRow {
   font-size: var(--bc-text-sm);
   color: var(--bc-text-secondary);
-  
+
   strong {
     font-weight: 500;
     color: var(--bc-text-primary);
@@ -237,7 +335,7 @@
   align-items: center;
   justify-content: center;
   color: var(--bc-text-tertiary);
-  
+
   span {
     display: flex;
     align-items: center;
@@ -295,7 +393,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  
+
   &:hover {
     text-decoration: underline;
     background: none;

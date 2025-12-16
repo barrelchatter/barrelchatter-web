@@ -17,6 +17,7 @@ import BottleDetailPage from './pages/BottleDetailPage.jsx';
 import InventoryDetailPage from './pages/InventoryDetailPage.jsx';
 import AdminAuditLogsPage from './pages/AdminAuditLogsPage.jsx';
 import AdminBottleSubmissionsPage from './pages/AdminBottleSubmissionsPage.jsx';
+import StorageLocationsPage from './pages/StorageLocationsPage.jsx';
 
 function App() {
   return (
@@ -51,6 +52,9 @@ function App() {
         <Route path="tastings" element={<TastingsPage />} />
         <Route path="wishlists" element={<WishlistPage />} />
         <Route path="tags" element={<TagsPage />} />
+        
+        {/* Storage Locations - user can manage their own */}
+        <Route path="storage-locations" element={<StorageLocationsPage />} />
 
         {/* Moderator/Admin: Bottle Submissions */}
         <Route

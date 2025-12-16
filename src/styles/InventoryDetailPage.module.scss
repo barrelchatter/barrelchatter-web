@@ -12,35 +12,30 @@
 
 .headerRow {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: var(--bc-space-4);
 }
 
 .backLink {
   @include button-ghost;
-  padding: 0;
-  
-  &:hover {
-    background: none;
-    color: var(--bc-accent);
-  }
+  font-size: var(--bc-text-sm);
+  padding: var(--bc-space-1) var(--bc-space-2);
 }
 
 .headerTitleBlock {
-  text-align: right;
+  flex: 1;
 }
 
 .headerBreadcrumb {
-  font-size: var(--bc-text-xs);
-  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
 }
 
 .breadcrumbLink {
-  color: var(--bc-text-secondary);
+  color: var(--bc-accent);
   text-decoration: none;
-  
+
   &:hover {
-    color: var(--bc-accent);
     text-decoration: underline;
   }
 }
@@ -52,6 +47,7 @@
 .message {
   font-size: var(--bc-text-base);
   color: var(--bc-text-secondary);
+  padding: var(--bc-space-4);
 }
 
 .error {
@@ -63,28 +59,23 @@
 // ============================================================================
 
 .topRow {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 280px;
   gap: var(--bc-space-4);
-}
 
-.mainCard {
-  flex: 2;
-  min-width: 300px;
-  @include card;
-  padding: var(--bc-space-4) var(--bc-space-5);
-}
-
-.sideCard {
-  flex: 1;
-  min-width: 280px;
-  @include card;
-  padding: var(--bc-space-4) var(--bc-space-5);
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 // ============================================================================
 // MAIN CARD
 // ============================================================================
+
+.mainCard {
+  @include card;
+  padding: var(--bc-space-4) var(--bc-space-5);
+}
 
 .mainCardHeader {
   display: flex;
@@ -94,10 +85,10 @@
 }
 
 .mainCardHeaderTitle {
-  font-size: var(--bc-text-xs);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-tertiary);
   text-transform: uppercase;
   letter-spacing: var(--bc-tracking-wider);
-  color: var(--bc-text-tertiary);
 }
 
 .editButton {
@@ -117,16 +108,16 @@
 .heroRow {
   display: flex;
   gap: var(--bc-space-4);
+  margin-bottom: var(--bc-space-4);
 }
 
 .heroImageWrap {
-  width: 96px;
-  min-width: 96px;
-  height: 140px;
+  width: 120px;
+  height: 120px;
   border-radius: var(--bc-radius-lg);
   overflow: hidden;
   background: var(--bc-bg-surface);
-  border: 1px solid var(--bc-border-default);
+  flex-shrink: 0;
 }
 
 .heroImage {
@@ -141,209 +132,218 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--bc-text-tertiary);
-  
+
   span {
-    font-size: var(--bc-text-2xl);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: var(--bc-radius-full);
-    border: 1px solid var(--bc-border-strong);
+    font-size: var(--bc-text-3xl);
+    color: var(--bc-text-tertiary);
+    font-weight: 600;
   }
 }
 
-.heroText {
+.heroInfo {
   flex: 1;
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.title {
+.heroTitle {
   margin: 0;
   font-size: var(--bc-text-xl);
 }
 
-.subtitle {
-  margin-top: 2px;
+.heroSub {
   font-size: var(--bc-text-sm);
   color: var(--bc-text-secondary);
-}
-
-.releaseName {
   margin-top: var(--bc-space-1);
-  font-size: var(--bc-text-sm);
-  color: var(--bc-text-tertiary);
 }
 
-.heroLinks {
+.heroBottleLink {
   margin-top: var(--bc-space-2);
-}
-
-.bottleLink {
   font-size: var(--bc-text-sm);
   color: var(--bc-accent);
   text-decoration: none;
-  
+
   &:hover {
     text-decoration: underline;
   }
 }
 
 // ============================================================================
-// INFO GRID
+// DETAILS GRID (View Mode)
 // ============================================================================
 
-.infoGrid {
-  margin-top: var(--bc-space-4);
+.detailsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: var(--bc-space-3);
 }
 
-.infoItem {
+.detailItem {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.infoLabel {
+.detailLabel {
   font-size: var(--bc-text-xs);
-  text-transform: uppercase;
-  letter-spacing: var(--bc-tracking-wider);
   color: var(--bc-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--bc-tracking-wide);
 }
 
-.infoValue {
-  font-size: var(--bc-text-sm);
-}
-
-.statusBadge,
-.identityBadge {
-  @include badge-default;
+.detailValue {
+  font-size: var(--bc-text-base);
   display: inline-flex;
+  align-items: center;
+  gap: var(--bc-space-1);
+}
+
+.locationIcon {
+  font-size: var(--bc-text-xs);
+  opacity: 0.7;
 }
 
 // ============================================================================
 // EDIT FORM
 // ============================================================================
 
-.editForm {
-  margin-top: var(--bc-space-3);
-  padding-top: var(--bc-space-3);
-  border-top: 1px solid var(--bc-border-subtle);
-  display: flex;
-  flex-direction: column;
-  gap: var(--bc-space-3);
-}
-
 .editError {
   @include alert-error;
+  margin-bottom: var(--bc-space-3);
 }
 
-.editRow {
+.editForm {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--bc-space-4);
+}
+
+.editGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: var(--bc-space-3);
 }
 
 .editLabel {
   @include label-base;
-  flex: 1;
-  min-width: 0;
 }
 
-.editInput,
-.editSelect {
+.editInput {
   @include input-base;
 }
 
 .editActions {
   display: flex;
   justify-content: flex-end;
+  gap: var(--bc-space-2);
   margin-top: var(--bc-space-2);
 }
 
-.editSaveButton {
-  @include button-primary;
-}
-
 // ============================================================================
-// SIDE CARD
+// STATS CARD
 // ============================================================================
 
-.sideTitle {
-  margin: 0 0 var(--bc-space-3);
-  font-size: var(--bc-text-lg);
+.statsCard {
+  @include card;
+  padding: var(--bc-space-4);
+  height: fit-content;
 }
 
-.sideStat {
-  display: flex;
-  justify-content: space-between;
+.statsCardTitle {
   font-size: var(--bc-text-sm);
-  margin-bottom: var(--bc-space-2);
+  color: var(--bc-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--bc-tracking-wider);
+  margin-bottom: var(--bc-space-3);
 }
 
-.sideStatLabel {
+.statsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-3);
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statValue {
+  font-size: var(--bc-text-lg);
+  font-weight: 600;
+  color: var(--bc-accent);
+}
+
+.statLabel {
+  font-size: var(--bc-text-xs);
   color: var(--bc-text-secondary);
 }
 
-.sideStatValue {
-  font-weight: 500;
-}
-
-.sideActions {
-  margin-top: var(--bc-space-3);
-  display: flex;
-  gap: var(--bc-space-2);
-}
-
-.sideButton {
-  @include button-secondary;
-  text-decoration: none;
-}
-
-.sideNote {
-  margin-top: var(--bc-space-3);
-  font-size: var(--bc-text-xs);
-  color: var(--bc-text-tertiary);
-}
-
 // ============================================================================
-// TASTINGS SECTION
+// SECTION CARD
 // ============================================================================
 
-.section {
-  margin-top: var(--bc-space-2);
+.sectionCard {
+  @include card;
+  padding: var(--bc-space-4) var(--bc-space-5);
 }
 
 .sectionHeader {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: var(--bc-space-2);
-  
-  h2 {
-    margin: 0;
-    font-size: var(--bc-text-lg);
+  align-items: center;
+  margin-bottom: var(--bc-space-3);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--bc-text-lg);
+}
+
+.noData {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+  padding: var(--bc-space-4) 0;
+}
+
+// ============================================================================
+// TASTING LIST
+// ============================================================================
+
+.tastingList {
+  display: flex;
+  flex-direction: column;
+}
+
+.tastingRow {
+  padding: var(--bc-space-3) 0;
+  border-bottom: 1px solid var(--bc-border-subtle);
+
+  &:last-child {
+    border-bottom: none;
   }
 }
 
-.sectionCount {
-  font-size: var(--bc-text-sm);
+.tastingDate {
+  font-size: var(--bc-text-xs);
   color: var(--bc-text-tertiary);
+  margin-bottom: var(--bc-space-1);
 }
 
-.tableWrapper {
-  @include table-wrapper;
+.tastingDetails {
+  display: flex;
+  gap: var(--bc-space-2);
+  margin-bottom: var(--bc-space-1);
 }
 
-.table {
-  @include table-base;
+.tastingChip {
+  @include badge-default;
 }
 
-.notesCell {
-  max-width: 280px;
-  @include truncate;
+.tastingNotes {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+  margin-top: var(--bc-space-2);
 }

@@ -47,6 +47,13 @@ function AppLayout() {
             Tags
           </NavLink>
 
+          <div className={styles.navSeparator} />
+          <div className={styles.navSectionLabel}>Settings</div>
+
+          <NavLink to="/app/storage-locations" className={navClass}>
+            Storage Locations
+          </NavLink>
+
           {(isModeratorOrAdmin || isAdmin) && (
             <>
               <div className={styles.navSeparator} />
