@@ -22,25 +22,32 @@ function AppLayout() {
     <div className={styles.appShell}>
       <aside className={styles.sidebar}>
         <div className={styles.logo}>BarrelChatter</div>
-          <nav className={styles.nav}>
-            {/* Core user flow */}
-            <NavLink to="/app/bottles" className={navClass}>
-              Bottles
-            </NavLink>
-            <NavLink to="/app/inventory" className={navClass}>
-              Inventory
-            </NavLink>
-            <NavLink to="/app/tastings" className={navClass}>
-              Tastings
-            </NavLink>
-            <NavLink to="/app/wishlists" className={navClass}>
-              Wishlist
-            </NavLink>
-            <NavLink to="/app/tags" className={navClass}>
-              Tags
-            </NavLink>
+        <nav className={styles.nav}>
+          {/* Home */}
+          <NavLink to="/app/home" className={navClass}>
+            Home
+          </NavLink>
 
-            {(isModeratorOrAdmin || isAdmin) && (
+          <div className={styles.navSeparator} />
+
+          {/* Core user flow */}
+          <NavLink to="/app/bottles" className={navClass}>
+            Bottles
+          </NavLink>
+          <NavLink to="/app/inventory" className={navClass}>
+            Inventory
+          </NavLink>
+          <NavLink to="/app/tastings" className={navClass}>
+            Tastings
+          </NavLink>
+          <NavLink to="/app/wishlists" className={navClass}>
+            Wishlist
+          </NavLink>
+          <NavLink to="/app/tags" className={navClass}>
+            Tags
+          </NavLink>
+
+          {(isModeratorOrAdmin || isAdmin) && (
             <>
               <div className={styles.navSeparator} />
               <div className={styles.navSectionLabel}>Admin</div>
@@ -48,49 +55,32 @@ function AppLayout() {
               {isModeratorOrAdmin && (
                 <NavLink
                   to="/app/admin/bottles-submissions"
-                  className={({ isActive }) =>
-                    isActive ? styles.navItemActive : styles.navItem
-                  }
+                  className={navClass}
                 >
                   Bottle Submissions
                 </NavLink>
               )}
 
               {isAdmin && (
-                <NavLink
-                  to="/app/admin/tags"
-                  className={({ isActive }) =>
-                    isActive ? styles.navItemActive : styles.navItem
-                  }
-                >
+                <NavLink to="/app/admin/tags" className={navClass}>
                   Admin Tags
                 </NavLink>
               )}
 
               {isAdmin && (
-                <NavLink
-                  to="/app/admin/users"
-                  className={({ isActive }) =>
-                    isActive ? styles.navItemActive : styles.navItem
-                  }
-                >
+                <NavLink to="/app/admin/users" className={navClass}>
                   Admin Users
                 </NavLink>
               )}
 
               {isAdmin && (
-                <NavLink
-                  to="/app/admin/audit-logs"
-                  className={({ isActive }) =>
-                    isActive ? styles.navItemActive : styles.navItem
-                  }
-                >
+                <NavLink to="/app/admin/audit-logs" className={navClass}>
                   Audit Logs
                 </NavLink>
               )}
             </>
           )}
-          </nav>
+        </nav>
       </aside>
 
       <div className={styles.mainArea}>
@@ -98,9 +88,14 @@ function AppLayout() {
           <div className={styles.topbarLeft} />
           <div className={styles.topbarRight}>
             {user && (
-              <span className={styles.userInfo}>
-                {user.name} ({user.role})
-              </span>
+              <NavLink to="/app/profile" className={styles.userLink}>
+                <span className={styles.userAvatar}>
+                  {(user.name || 'U').charAt(0).toUpperCase()}
+                </span>
+                <span className={styles.userInfo}>
+                  {user.name}
+                </span>
+              </NavLink>
             )}
             <button
               type="button"

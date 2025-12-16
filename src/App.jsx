@@ -1,6 +1,9 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage.jsx';
+import RegisterPage from './pages/RegisterPage.jsx';
+import HomePage from './pages/HomePage.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
 import InventoryPage from './pages/InventoryPage.jsx';
 import AppLayout from './components/layout/AppLayout.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
@@ -18,7 +21,9 @@ import AdminBottleSubmissionsPage from './pages/AdminBottleSubmissionsPage.jsx';
 function App() {
   return (
     <Routes>
+      {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       {/* Top-level: must be authenticated for anything under /app */}
       <Route
@@ -29,8 +34,14 @@ function App() {
           </ProtectedRoute>
         }
       >
-        {/* Default landing */}
-        <Route index element={<InventoryPage />} />
+        {/* Default landing - now goes to Home */}
+        <Route index element={<HomePage />} />
+
+        {/* Home dashboard */}
+        <Route path="home" element={<HomePage />} />
+
+        {/* Profile */}
+        <Route path="profile" element={<ProfilePage />} />
 
         {/* Normal user routes */}
         <Route path="inventory" element={<InventoryPage />} />
@@ -71,7 +82,7 @@ function App() {
         <Route
           path="admin/audit-logs"
           element={
-            <ProtectedRoute requiredRole="admin">
+            <ProtectedRoute requireRoles={['admin']}>
               <AdminAuditLogsPage />
             </ProtectedRoute>
           }

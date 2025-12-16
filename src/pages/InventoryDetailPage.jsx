@@ -82,8 +82,8 @@ function InventoryDetailPage() {
       try {
         // Load all inventory and tastings (same pattern as before)
         const [invRes, tastRes] = await Promise.all([
-          api.get('/v1/inventory?limit=500&offset=0'),
-          api.get('/v1/tastings?limit=500&offset=0'),
+          api.get('/v1/inventory?limit=100&offset=0'),
+          api.get('/v1/tastings?limit=100&offset=0'),
         ]);
 
         if (!isMounted) return;

@@ -104,9 +104,9 @@ function BottleDetailPage() {
         const [bottleRes, invRes, tastingsRes, wishlistRes] =
           await Promise.all([
             api.get(`/v1/bottles/${id}`),
-            api.get('/v1/inventory?limit=500&offset=0'),
-            api.get('/v1/tastings?limit=200&offset=0'),
-            api.get('/v1/wishlists?limit=500&offset=0'),
+            api.get('/v1/inventory?limit=100&offset=0'),
+            api.get('/v1/tastings?limit=100&offset=0'),
+            api.get('/v1/wishlists?limit=100&offset=0'),
           ]);
 
         if (!isMounted) return;

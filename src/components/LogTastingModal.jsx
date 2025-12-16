@@ -37,7 +37,7 @@ function LogTastingModal({
       setInvLoading(true);
       setInvError('');
       try {
-        const res = await api.get('/v1/inventory?limit=500&offset=0');
+        const res = await api.get('/v1/inventory?limit=100&offset=0');
         const list = res.data?.inventory || [];
         setInventory(list);
 

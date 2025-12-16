@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles/LoginPage.module.scss';
 
@@ -8,9 +8,10 @@ function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/app';
+  const justRegistered = location.state?.registered;
 
-  const [email, setEmail] = useState('admin@barrelchatter.local');
-  const [password, setPassword] = useState('ChangeMe123!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -38,6 +39,12 @@ function LoginPage() {
         <h1 className={styles.title}>BarrelChatter</h1>
         <p className={styles.subtitle}>Sign in to your account</p>
 
+        {justRegistered && (
+          <div className={styles.success}>
+            Account created successfully! Please sign in.
+          </div>
+        )}
+
         {error && <div className={styles.error}>{error}</div>}
 
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -49,6 +56,7 @@ function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
+              placeholder="you@example.com"
             />
           </label>
 
@@ -60,6 +68,7 @@ function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
+              placeholder="Your password"
             />
           </label>
 
@@ -73,9 +82,10 @@ function LoginPage() {
         </form>
 
         <p className={styles.hint}>
-          Dev shortcut:{' '}
-          <code>admin@barrelchatter.local</code> /{' '}
-          <code>ChangeMe123!</code>
+          Have an invite?{' '}
+          <Link to="/register" className={styles.link}>
+            Create an account
+          </Link>
         </p>
       </div>
     </div>

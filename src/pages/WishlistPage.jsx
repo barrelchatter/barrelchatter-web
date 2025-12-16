@@ -32,7 +32,7 @@ function WishlistPage() {
     setBottlesLoading(true);
     setBottlesError('');
     try {
-      const res = await api.get('/v1/bottles?limit=200&offset=0');
+      const res = await api.get('/v1/bottles?limit=100&offset=0');
       setBottles(res.data.bottles || []);
     } catch (err) {
       console.error(err);

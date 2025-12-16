@@ -52,7 +52,7 @@ function TastingsPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await api.get('/v1/tastings?limit=200&offset=0');
+      const res = await api.get('/v1/tastings?limit=100&offset=0');
       const data = res.data || {};
       const list = data.tastings || [];
       setTastings(list);

@@ -42,7 +42,7 @@ function TagsPage() {
     setInventoryLoading(true);
     setInventoryError('');
     try {
-      const res = await api.get('/v1/inventory?limit=200&offset=0');
+      const res = await api.get('/v1/inventory?limit=100&offset=0');
       setInventoryOptions(res.data.inventory || []);
     } catch (err) {
       console.error(err);

@@ -12,7 +12,7 @@
   border-radius: 20px;
   padding: 32px 28px;
   width: 100%;
-  max-width: 360px;
+  max-width: 400px;
   box-shadow: var(--shadow-soft);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
@@ -40,20 +40,10 @@
   font-size: 13px;
 }
 
-.success {
-  margin-bottom: 12px;
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(111, 191, 115, 0.16);
-  border: 1px solid #6fbf73;
-  font-size: 13px;
-  color: #6fbf73;
-}
-
 .form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .label {
@@ -77,8 +67,27 @@
   border-color: var(--color-accent);
 }
 
-.input::placeholder {
-  opacity: 0.5;
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tokenHint {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.tokenValid {
+  font-size: 11px;
+  color: #6fbf73;
+  margin-top: 2px;
+}
+
+.tokenInvalid {
+  font-size: 11px;
+  color: var(--color-danger);
+  margin-top: 2px;
 }
 
 .button {
@@ -117,6 +126,13 @@
   text-align: center;
 }
 
+.hintSmall {
+  margin-top: 12px;
+  font-size: 11px;
+  opacity: 0.6;
+  text-align: center;
+}
+
 .link {
   color: var(--color-accent);
   text-decoration: underline;
@@ -124,4 +140,22 @@
 
 .link:hover {
   opacity: 0.9;
+}
+
+/* Success state */
+.successBox {
+  padding: 20px;
+  text-align: center;
+}
+
+.successText {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #6fbf73;
+}
+
+.successSubtext {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.8;
 }
