@@ -136,7 +136,7 @@ function BottlesPage() {
 
   async function loadWishlists() {
     try {
-      const res = await api.get('/v1/wishlists?limit=500&offset=0');
+      const res = await api.get('/v1/wishlists?limit=100&offset=0');
       const map = {};
       (res.data.wishlists || []).forEach((wl) => {
         const bottleId = wl.bottle_id || wl.bottle?.id;

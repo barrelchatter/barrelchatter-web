@@ -1,0 +1,254 @@
+.container {
+  background: var(--bc-bg-elevated, #252525);
+  border: 1px solid var(--bc-border-subtle, rgba(255, 255, 255, 0.06));
+  border-radius: var(--bc-radius-xl, 20px);
+  box-shadow: var(--bc-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.35));
+  padding: 16px;
+}
+
+.sectionTitle {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bc-text-primary, #f0e6d6);
+}
+
+// Display Mode
+.conditionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.conditionItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.conditionLabel {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--bc-text-tertiary, #7a6f60);
+}
+
+.fillDisplay {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fillBar {
+  width: 24px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--bc-border-default, rgba(255, 255, 255, 0.1));
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.fillLevel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, var(--bc-accent, #c9a66b), var(--bc-accent-hover, #d4b47a));
+  transition: height 0.3s ease;
+  border-radius: 0 0 3px 3px;
+}
+
+.fillText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--bc-text-primary, #f0e6d6);
+}
+
+.conditionBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--bc-border-default, rgba(255, 255, 255, 0.1));
+  color: var(--bc-text-secondary, #b8a890);
+
+  &.seal_intact, &.condition_mint {
+    background: var(--bc-success-bg, rgba(111, 191, 115, 0.12));
+    border-color: var(--bc-success-border, rgba(111, 191, 115, 0.4));
+    color: var(--bc-success, #6fbf73);
+  }
+
+  &.seal_broken, &.condition_worn {
+    background: var(--bc-warning-bg, rgba(212, 168, 75, 0.12));
+    border-color: var(--bc-warning-border, rgba(212, 168, 75, 0.4));
+    color: var(--bc-warning, #d4a84b);
+  }
+
+  &.seal_missing, &.condition_damaged {
+    background: var(--bc-danger-bg, rgba(196, 92, 82, 0.12));
+    border-color: var(--bc-danger-border, rgba(196, 92, 82, 0.4));
+    color: var(--bc-danger, #c45c52);
+  }
+
+  &.condition_good {
+    background: var(--bc-info-bg, rgba(91, 155, 213, 0.12));
+    border-color: var(--bc-info-border, rgba(91, 155, 213, 0.4));
+    color: var(--bc-info, #5b9bd5);
+  }
+}
+
+// Edit Mode
+.editGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.editField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.editLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--bc-text-secondary, #b8a890);
+}
+
+.editSelect {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--bc-border-default, rgba(255, 255, 255, 0.1));
+  border-radius: var(--bc-radius-md, 10px);
+  color: var(--bc-text-primary, #f0e6d6);
+  font-size: 13px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23b8a890' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+
+  &:focus {
+    outline: none;
+    border-color: var(--bc-accent, #c9a66b);
+    box-shadow: 0 0 0 3px rgba(201, 166, 107, 0.15);
+  }
+}
+
+.fillEditRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--bc-text-primary, #f0e6d6);
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--bc-accent, #c9a66b);
+    cursor: pointer;
+  }
+}
+
+// Small inline indicators
+.fillIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  &.size_small {
+    .fillBarSmall { width: 12px; height: 24px; }
+    .fillLabelSmall { font-size: 11px; }
+  }
+
+  &.size_medium {
+    .fillBarSmall { width: 16px; height: 32px; }
+    .fillLabelSmall { font-size: 13px; }
+  }
+}
+
+.fillBarSmall {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--bc-border-default, rgba(255, 255, 255, 0.1));
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.fillLevelSmall {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bc-accent, #c9a66b);
+  transition: height 0.15s ease;
+}
+
+.fillLabelSmall {
+  color: var(--bc-text-secondary, #b8a890);
+  font-weight: 500;
+}
+
+.conditionBadgeInline {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 10px;
+  border: 1px solid;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--bc-border-default, rgba(255, 255, 255, 0.1));
+  color: var(--bc-text-secondary, #b8a890);
+
+  &.seal_intact, &.condition_mint {
+    background: var(--bc-success-bg, rgba(111, 191, 115, 0.12));
+    border-color: var(--bc-success-border, rgba(111, 191, 115, 0.4));
+    color: var(--bc-success, #6fbf73);
+  }
+
+  &.seal_broken, &.condition_worn {
+    background: var(--bc-warning-bg, rgba(212, 168, 75, 0.12));
+    border-color: var(--bc-warning-border, rgba(212, 168, 75, 0.4));
+    color: var(--bc-warning, #d4a84b);
+  }
+
+  &.seal_missing, &.condition_damaged {
+    background: var(--bc-danger-bg, rgba(196, 92, 82, 0.12));
+    border-color: var(--bc-danger-border, rgba(196, 92, 82, 0.4));
+    color: var(--bc-danger, #c45c52);
+  }
+
+  &.condition_good {
+    background: var(--bc-info-bg, rgba(91, 155, 213, 0.12));
+    border-color: var(--bc-info-border, rgba(91, 155, 213, 0.4));
+    color: var(--bc-info, #5b9bd5);
+  }
+}

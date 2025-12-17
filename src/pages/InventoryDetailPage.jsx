@@ -1,72 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import api, { API_BASE_URL } from '../api/client';
-import StorageLocationSelect from '../components/StorageLocationSelect';
-import PurchaseLocationSelect from '../components/PurchaseLocationSelect';
-import DealBadge from '../components/DealBadge';
-import BottlePricingCard from '../components/BottlePricingCard';
+import api from '../api/client';
+import LogTastingModal from '../components/LogTastingModal';
 import styles from '../styles/InventoryDetailPage.module.scss';
-
-const apiBase = (API_BASE_URL || '').replace(/\/$/, '');
-
-function resolveImageUrl(path) {
-  if (!path) return '';
-  if (path.startsWith('http://') || path.startsWith('https://')) {
-    return path;
-  }
-  return `${apiBase}${path}`;
-}
-
-function formatDateTime(value) {
-  if (!value) return '—';
-  try {
-    return new Date(value).toLocaleString();
-  } catch {
-    return value;
-  }
-}
-
-function formatDate(value) {
-  if (!value) return '—';
-  try {
-    return new Date(value).toLocaleDateString();
-  } catch {
-    return value;
-  }
-}
-
-function formatPrice(value) {
-  if (value == null) return '—';
-  const num = Number(value);
-  if (Number.isNaN(num)) return '—';
-  return `$${num.toFixed(2)}`;
-}
-
-function formatStatus(status) {
-  if (!status) return '—';
-  return status.charAt(0).toUpperCase() + status.slice(1);
-}
-
-function formatIdentity(inv) {
-  if (!inv) return '—';
-  if (inv.bottle_serial_label) return inv.bottle_serial_label;
-  if (inv.bottle_number != null && inv.bottle_total != null) {
-    return `Bottle ${inv.bottle_number}/${inv.bottle_total}`;
-  }
-  if (inv.bottle_number != null) {
-    return `Bottle ${inv.bottle_number}`;
-  }
-  return '—';
-}
-
-function formatLocation(inv) {
-  if (inv?.storage_location?.name) {
-    return inv.storage_location.full_path || inv.storage_location.name;
-  }
-  return inv?.location_label || '—';
-}
-
-const STATUS_OPTIONS = ['sealed', 'open', 'finished', 'sample'];
 
 function InventoryDetailPage() {
   const { id } = useParams();
@@ -74,638 +10,521 @@ function InventoryDetailPage() {
 
   const [item, setItem] = useState(null);
   const [bottle, setBottle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [editing, setEditing] = useState(false);
+  const [editForm, setEditForm] = useState({});
+  const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState('details');
+  const [showTastingModal, setShowTastingModal] = useState(false);
   const [tastings, setTastings] = useState([]);
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  // Fetch inventory item
+  const fetchItem = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-  // Pricing data (Migration 011)
-  const [pricingData, setPricingData] = useState(null);
+    try {
+      const response = await api.get(`/v1/inventory/${id}`);
+      // API returns { inventory: {...} }
+      const inventoryData = response.data?.inventory || response.data;
+      setItem(inventoryData);
+      setBottle(inventoryData.bottle || null);
+      setEditForm(inventoryData);
 
-  // edit state
-  const [editMode, setEditMode] = useState(false);
-  const [editForm, setEditForm] = useState({
-    storage_location_id: null,
-    location_label: '',
-    purchase_location_id: null,
-    purchase_store: '',
-    purchase_city: '',
-    purchase_state: '',
-    status: 'sealed',
-    bottle_serial_label: '',
-    bottle_number: '',
-    bottle_total: '',
-    price_paid: '',
-    purchase_date: '', // Migration 011
-  });
-  const [editError, setEditError] = useState('');
-  const [editSubmitting, setEditSubmitting] = useState(false);
-
-  // Calculate deal analysis (Migration 011)
-  const dealAnalysis = useMemo(() => {
-    if (!item?.price_paid || item.price_paid <= 0) return null;
-    if (!pricingData?.pricing?.avg_price) return null;
-
-    const userPrice = Number(item.price_paid);
-    const avgPrice = Number(pricingData.pricing.avg_price);
-    const msrp = pricingData.bottle?.msrp ? Number(pricingData.bottle.msrp) : null;
-
-    const vsAvgPct = ((userPrice / avgPrice) - 1) * 100;
-    const vsMsrpPct = msrp ? ((userPrice / msrp) - 1) * 100 : null;
-
-    return { vsAvgPct, vsMsrpPct, avgPrice, msrp };
-  }, [item, pricingData]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function load() {
-      setLoading(true);
-      setError('');
-
+      // Fetch tastings for this inventory item
       try {
-        const [invRes, tastRes] = await Promise.all([
-          api.get('/v1/inventory?limit=100&offset=0'),
-          api.get('/v1/tastings?limit=100&offset=0'),
-        ]);
-
-        if (!isMounted) return;
-
-        const allInv = invRes.data?.inventory || [];
-        const found = allInv.find((inv) => inv.id === id);
-
-        if (!found) {
-          setError('Inventory item not found.');
-          setItem(null);
-          setBottle(null);
-          setTastings([]);
-          return;
-        }
-
-        setItem(found);
-        setBottle(found.bottle || null);
-
-        const allTastings = tastRes.data?.tastings || [];
-        const relevant = allTastings.filter(
-          (t) => t.inventory && t.inventory.id === id
-        );
-        setTastings(relevant);
-
-        // Load pricing data (Migration 011)
-        if (found.bottle?.id) {
-          try {
-            const pricingRes = await api.get(`/v1/pricing/bottles/${found.bottle.id}?months=12&min_samples=3`);
-            if (isMounted) setPricingData(pricingRes.data);
-          } catch (pErr) {
-            console.error('Failed to load pricing data', pErr);
-          }
-
-          try {
-            const bRes = await api.get(`/v1/bottles/${found.bottle.id}`);
-            if (!isMounted) return;
-            const fullBottle = bRes.data?.bottle || null;
-            if (fullBottle) setBottle(fullBottle);
-          } catch (bErr) {
-            console.error('Failed to load full bottle details', bErr);
-          }
-        }
+        const tastingsRes = await api.get(`/v1/tastings?inventory_id=${id}&limit=50`);
+        setTastings(tastingsRes.data?.tastings || []);
       } catch (err) {
-        console.error(err);
-        if (!isMounted) return;
-        const msg =
-          err?.response?.data?.error ||
-          'Failed to load inventory details.';
-        setError(msg);
-      } finally {
-        if (isMounted) setLoading(false);
+        console.log('Could not load tastings:', err);
       }
+    } catch (err) {
+      console.error('Error fetching inventory:', err);
+      const message = err?.response?.data?.error || err.message || 'Failed to fetch inventory item';
+      setError(message);
+    } finally {
+      setLoading(false);
     }
-
-    load();
-    return () => {
-      isMounted = false;
-    };
   }, [id]);
 
   useEffect(() => {
-    if (!item) return;
-    setEditForm({
-      storage_location_id: item.storage_location_id || null,
-      location_label: item.location_label || '',
-      purchase_location_id: item.purchase_location_id || null,
-      purchase_store: item.purchase_store || '',
-      purchase_city: item.purchase_city || '',
-      purchase_state: item.purchase_state || '',
-      status: item.status || 'sealed',
-      bottle_serial_label: item.bottle_serial_label || '',
-      bottle_number:
-        item.bottle_number != null ? String(item.bottle_number) : '',
-      bottle_total:
-        item.bottle_total != null ? String(item.bottle_total) : '',
-      price_paid:
-        item.price_paid != null ? String(item.price_paid) : '',
-      purchase_date: item.purchase_date || '', // Migration 011
-    });
-  }, [item]);
+    fetchItem();
+  }, [fetchItem]);
 
-  const stats = useMemo(() => {
-    if (!tastings || tastings.length === 0) {
-      return { count: 0, totalOz: 0, lastDate: null };
-    }
-    let totalOz = 0;
-    let lastDate = null;
-    tastings.forEach((t) => {
-      if (t.pour_amount_oz != null) {
-        const n = Number(t.pour_amount_oz);
-        if (!Number.isNaN(n)) totalOz += n;
-      }
-      if (t.created_at) {
-        const d = new Date(t.created_at);
-        if (!lastDate || d > lastDate) lastDate = d;
-      }
-    });
-    return { count: tastings.length, totalOz, lastDate };
-  }, [tastings]);
-
-  const identityLabel = item ? formatIdentity(item) : '—';
-
-  function handleEditChange(e) {
-    const { name, value } = e.target;
-    setEditForm((prev) => ({ ...prev, [name]: value }));
+  // Handle form field changes
+  function handleFieldChange(field, value) {
+    setEditForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  function handleStorageLocationChange(locationId) {
-    setEditForm((prev) => ({
-      ...prev,
-      storage_location_id: locationId,
-      location_label: locationId ? '' : prev.location_label,
-    }));
-  }
-
-  function handleLegacyLocationChange(value) {
-    setEditForm((prev) => ({
-      ...prev,
-      location_label: value,
-      storage_location_id: null,
-    }));
-  }
-
-  function handlePurchaseLocationChange(locationId) {
-    setEditForm((prev) => ({
-      ...prev,
-      purchase_location_id: locationId,
-      purchase_store: locationId ? '' : prev.purchase_store,
-      purchase_city: locationId ? '' : prev.purchase_city,
-      purchase_state: locationId ? '' : prev.purchase_state,
-    }));
-  }
-
-  function handleLegacyPurchaseChange({ store, city, state }) {
-    setEditForm((prev) => ({
-      ...prev,
-      purchase_store: store,
-      purchase_city: city,
-      purchase_state: state,
-      purchase_location_id: null,
-    }));
-  }
-
-  function handleEditCancel() {
-    setEditError('');
-    setEditMode(false);
-    if (item) {
-      setEditForm({
-        storage_location_id: item.storage_location_id || null,
-        location_label: item.location_label || '',
-        purchase_location_id: item.purchase_location_id || null,
-        purchase_store: item.purchase_store || '',
-        purchase_city: item.purchase_city || '',
-        purchase_state: item.purchase_state || '',
-        status: item.status || 'sealed',
-        bottle_serial_label: item.bottle_serial_label || '',
-        bottle_number:
-          item.bottle_number != null ? String(item.bottle_number) : '',
-        bottle_total:
-          item.bottle_total != null ? String(item.bottle_total) : '',
-        price_paid:
-          item.price_paid != null ? String(item.price_paid) : '',
-        purchase_date: item.purchase_date || '',
+  // Save changes
+  async function handleSave() {
+    setSaving(true);
+    try {
+      const response = await api.patch(`/v1/inventory/${id}`, {
+        status: editForm.status,
+        location_label: editForm.location_label,
+        notes: editForm.notes,
+        msrp: editForm.msrp ? parseFloat(editForm.msrp) : null,
+        price_paid: editForm.price_paid ? parseFloat(editForm.price_paid) : null,
+        purchase_date: editForm.purchase_date || null,
+        purchase_store: editForm.purchase_store || null,
+        purchase_city: editForm.purchase_city || null,
+        purchase_state: editForm.purchase_state || null,
       });
+
+      // API returns { inventory: {...} }
+      const updated = response.data?.inventory || response.data;
+      setItem(updated);
+      setEditing(false);
+    } catch (err) {
+      console.error('Error saving inventory:', err);
+      const message = err?.response?.data?.error || err.message || 'Failed to save';
+      alert(message);
+    } finally {
+      setSaving(false);
     }
   }
 
-  async function handleEditSubmit(e) {
-    e.preventDefault();
-    setEditSubmitting(true);
-    setEditError('');
+  // Delete item
+  async function handleDelete() {
+    if (!window.confirm('Are you sure you want to delete this bottle from your inventory?')) {
+      return;
+    }
 
     try {
-      const payload = {
-        status: editForm.status || null,
-        bottle_serial_label: editForm.bottle_serial_label.trim() || null,
-        bottle_number: editForm.bottle_number
-          ? Number(editForm.bottle_number)
-          : null,
-        bottle_total: editForm.bottle_total
-          ? Number(editForm.bottle_total)
-          : null,
-        price_paid: editForm.price_paid
-          ? Number(editForm.price_paid)
-          : null,
-        purchase_date: editForm.purchase_date || null, // Migration 011
-      };
-
-      if (editForm.storage_location_id) {
-        payload.storage_location_id = editForm.storage_location_id;
-      }
-
-      if (editForm.location_label && editForm.location_label.trim()) {
-        payload.location_label = editForm.location_label.trim();
-      }
-
-      if (editForm.purchase_location_id) {
-        payload.purchase_location_id = editForm.purchase_location_id;
-      }
-
-      if (editForm.purchase_store && editForm.purchase_store.trim()) {
-        payload.purchase_store = editForm.purchase_store.trim();
-      }
-      if (editForm.purchase_city && editForm.purchase_city.trim()) {
-        payload.purchase_city = editForm.purchase_city.trim();
-      }
-      if (editForm.purchase_state && editForm.purchase_state.trim()) {
-        payload.purchase_state = editForm.purchase_state.trim();
-      }
-
-      const res = await api.patch(`/v1/inventory/${id}`, payload);
-      const updated = res.data?.inventory;
-
-      if (updated) {
-        setItem((prev) => ({ ...(prev || {}), ...updated }));
-      }
-
-      setEditMode(false);
+      await api.delete(`/v1/inventory/${id}`);
+      navigate('/app/inventory');
     } catch (err) {
-      console.error(err);
-      const msg =
-        err?.response?.data?.error || 'Failed to update inventory item.';
-      setEditError(msg);
-    } finally {
-      setEditSubmitting(false);
+      console.error('Error deleting:', err);
+      const message = err?.response?.data?.error || err.message || 'Failed to delete';
+      alert(message);
     }
   }
 
-  return (
-    <div className={styles.page}>
-      <div className={styles.headerRow}>
-        <button
-          type="button"
-          className={styles.backLink}
-          onClick={() => navigate(-1)}
-        >
-          ← Back
-        </button>
-        <div className={styles.headerTitleBlock}>
-          <span className={styles.headerBreadcrumb}>
-            <Link to="/app/inventory" className={styles.breadcrumbLink}>
-              Inventory
-            </Link>{' '}
-            / Details
-          </span>
+  function handleCancel() {
+    setEditForm(item);
+    setEditing(false);
+  }
+
+  // Format currency
+  function formatCurrency(value) {
+    if (!value) return '—';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(value);
+  }
+
+  // Format date
+  function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    return new Date(dateStr).toLocaleDateString();
+  }
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.error}>
+          <h2>Error</h2>
+          <p>{error}</p>
+          <Link to="/app/inventory" className={styles.backLink}>
+            ← Back to Inventory
+          </Link>
         </div>
       </div>
+    );
+  }
 
-      {loading && <div className={styles.message}>Loading inventory...</div>}
+  if (!item) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.error}>
+          <h2>Not Found</h2>
+          <p>This inventory item could not be found.</p>
+          <Link to="/app/inventory" className={styles.backLink}>
+            ← Back to Inventory
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-      {error && !loading && <div className={styles.error}>{error}</div>}
+  const bottleName = bottle?.name || item.bottle_name || 'Unknown Bottle';
+  const distillery = bottle?.distillery || item.distillery || '';
 
-      {!loading && !error && item && (
-        <>
-          <div className={styles.topRow}>
-            <div className={styles.mainCard}>
-              <div className={styles.mainCardHeader}>
-                <div className={styles.mainCardHeaderTitle}>Inventory Item</div>
-                <div>
-                  {!editMode ? (
-                    <button
-                      type="button"
-                      className={styles.editButton}
-                      onClick={() => setEditMode(true)}
-                    >
-                      Edit
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className={styles.editButtonSecondary}
-                      onClick={handleEditCancel}
-                      disabled={editSubmitting}
-                    >
-                      Cancel
-                    </button>
-                  )}
-                </div>
-              </div>
+  return (
+    <div className={styles.container}>
+      {/* Header */}
+      <header className={styles.header}>
+        <Link to="/app/inventory" className={styles.backLink}>
+          ← Back to Inventory
+        </Link>
 
-              <div className={styles.heroRow}>
-                <div className={styles.heroImageWrap}>
-                  {bottle?.primary_photo_url ? (
-                    <img
-                      src={resolveImageUrl(bottle.primary_photo_url)}
-                      alt={bottle.name}
-                      className={styles.heroImage}
-                    />
-                  ) : (
-                    <div className={styles.heroPlaceholder}>
-                      <span>
-                        {(bottle?.name || 'B').charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  )}
-                </div>
+        <div className={styles.headerMain}>
+          <div className={styles.headerInfo}>
+            <h1 className={styles.title}>{bottleName}</h1>
+            {distillery && <p className={styles.distillery}>{distillery}</p>}
 
-                <div className={styles.heroInfo}>
-                  <h1 className={styles.heroTitle}>
-                    {bottle?.name || 'Unknown bottle'}
-                  </h1>
-                  <div className={styles.heroSub}>
-                    {bottle?.brand || 'Unknown Brand'}
-                    {bottle?.type ? ` • ${bottle.type}` : ''}
-                  </div>
-                  {bottle?.id && (
-                    <Link
-                      to={`/app/bottles/${bottle.id}`}
-                      className={styles.heroBottleLink}
-                    >
-                      View bottle details →
-                    </Link>
-                  )}
-                </div>
-              </div>
-
-              {editError && (
-                <div className={styles.editError}>{editError}</div>
+            <div className={styles.badges}>
+              <span className={`${styles.statusBadge} ${styles[`status_${item.status}`]}`}>
+                {item.status}
+              </span>
+              {item.location_label && (
+                <span className={styles.statusBadge}>{item.location_label}</span>
               )}
-
-              {editMode ? (
-                <form className={styles.editForm} onSubmit={handleEditSubmit}>
-                  <div className={styles.editGrid}>
-                    <label className={styles.editLabel}>
-                      Storage Location
-                      <StorageLocationSelect
-                        value={editForm.storage_location_id}
-                        onChange={handleStorageLocationChange}
-                        showLegacy={true}
-                        legacyValue={editForm.location_label}
-                        onLegacyChange={handleLegacyLocationChange}
-                      />
-                    </label>
-
-                    <label className={styles.editLabel}>
-                      Purchase Location
-                      <PurchaseLocationSelect
-                        value={editForm.purchase_location_id}
-                        onChange={handlePurchaseLocationChange}
-                        inventoryId={id}
-                        showLegacy={true}
-                        legacyStore={editForm.purchase_store}
-                        legacyCity={editForm.purchase_city}
-                        legacyState={editForm.purchase_state}
-                        onLegacyChange={handleLegacyPurchaseChange}
-                      />
-                    </label>
-
-                    <label className={styles.editLabel}>
-                      Status
-                      <select
-                        name="status"
-                        value={editForm.status}
-                        onChange={handleEditChange}
-                        className={styles.editInput}
-                      >
-                        {STATUS_OPTIONS.map((s) => (
-                          <option key={s} value={s}>
-                            {s.charAt(0).toUpperCase() + s.slice(1)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className={styles.editLabel}>
-                      Bottle Serial Label
-                      <input
-                        type="text"
-                        name="bottle_serial_label"
-                        value={editForm.bottle_serial_label}
-                        onChange={handleEditChange}
-                        className={styles.editInput}
-                        placeholder="e.g., Barrel #123"
-                      />
-                    </label>
-
-                    <label className={styles.editLabel}>
-                      Bottle Number
-                      <input
-                        type="number"
-                        name="bottle_number"
-                        value={editForm.bottle_number}
-                        onChange={handleEditChange}
-                        className={styles.editInput}
-                        placeholder="e.g., 42"
-                      />
-                    </label>
-
-                    <label className={styles.editLabel}>
-                      Bottle Total
-                      <input
-                        type="number"
-                        name="bottle_total"
-                        value={editForm.bottle_total}
-                        onChange={handleEditChange}
-                        className={styles.editInput}
-                        placeholder="e.g., 200"
-                      />
-                    </label>
-
-                    <label className={styles.editLabel}>
-                      Price Paid
-                      <input
-                        type="number"
-                        step="0.01"
-                        name="price_paid"
-                        value={editForm.price_paid}
-                        onChange={handleEditChange}
-                        className={styles.editInput}
-                        placeholder="e.g., 59.99"
-                      />
-                    </label>
-
-                    {/* Purchase Date (Migration 011) */}
-                    <label className={styles.editLabel}>
-                      Purchase Date
-                      <input
-                        type="date"
-                        name="purchase_date"
-                        value={editForm.purchase_date}
-                        onChange={handleEditChange}
-                        className={styles.editInput}
-                      />
-                    </label>
-                  </div>
-
-                  <div className={styles.editActions}>
-                    <button
-                      type="button"
-                      className={styles.editButtonSecondary}
-                      onClick={handleEditCancel}
-                      disabled={editSubmitting}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className={styles.editButton}
-                      disabled={editSubmitting}
-                    >
-                      {editSubmitting ? 'Saving...' : 'Save Changes'}
-                    </button>
-                  </div>
-                </form>
-              ) : (
-                <div className={styles.detailsGrid}>
-                  <div className={styles.detailItem}>
-                    <span className={styles.detailLabel}>Location</span>
-                    <span className={styles.detailValue}>
-                      {formatLocation(item)}
-                      {item.storage_location && (
-                        <span className={styles.locationIcon} title="Linked to storage location">
-                          📍
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <span className={styles.detailLabel}>Status</span>
-                    <span className={styles.detailValue}>
-                      {formatStatus(item.status)}
-                    </span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <span className={styles.detailLabel}>Identity</span>
-                    <span className={styles.detailValue}>{identityLabel}</span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <span className={styles.detailLabel}>Price Paid</span>
-                    <span className={styles.detailValue}>
-                      {formatPrice(item.price_paid)}
-                      {/* Deal badge (Migration 011) */}
-                      {dealAnalysis && (
-                        <DealBadge
-                          priceVsAvgPct={dealAnalysis.vsAvgPct}
-                          priceVsMsrpPct={dealAnalysis.vsMsrpPct}
-                          size="sm"
-                        />
-                      )}
-                    </span>
-                  </div>
-                  {/* Purchase Date (Migration 011) */}
-                  <div className={styles.detailItem}>
-                    <span className={styles.detailLabel}>Purchased</span>
-                    <span className={styles.detailValue}>
-                      {formatDate(item.purchase_date)}
-                    </span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <span className={styles.detailLabel}>Added</span>
-                    <span className={styles.detailValue}>
-                      {formatDateTime(item.created_at)}
-                    </span>
-                  </div>
-                  {item.opened_at && (
-                    <div className={styles.detailItem}>
-                      <span className={styles.detailLabel}>Opened</span>
-                      <span className={styles.detailValue}>
-                        {formatDateTime(item.opened_at)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div className={styles.sideColumn}>
-              {/* Pricing Card (Migration 011) */}
-              {bottle?.id && (
-                <BottlePricingCard
-                  bottleId={bottle.id}
-                  userPricePaid={item.price_paid ? Number(item.price_paid) : null}
-                  compact
-                />
-              )}
-
-              <div className={styles.statsCard}>
-                <div className={styles.statsCardTitle}>Tasting Stats</div>
-                <div className={styles.statsGrid}>
-                  <div className={styles.statItem}>
-                    <span className={styles.statValue}>{stats.count}</span>
-                    <span className={styles.statLabel}>Tastings</span>
-                  </div>
-                  <div className={styles.statItem}>
-                    <span className={styles.statValue}>
-                      {stats.totalOz.toFixed(1)} oz
-                    </span>
-                    <span className={styles.statLabel}>Total Poured</span>
-                  </div>
-                  <div className={styles.statItem}>
-                    <span className={styles.statValue}>
-                      {stats.lastDate
-                        ? stats.lastDate.toLocaleDateString()
-                        : '—'}
-                    </span>
-                    <span className={styles.statLabel}>Last Tasting</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
-          <div className={styles.sectionCard}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Tasting History</h2>
-            </div>
-            {tastings.length === 0 ? (
-              <div className={styles.noData}>
-                No tastings recorded for this bottle yet.
-              </div>
+          <div className={styles.headerActions}>
+            {!editing ? (
+              <>
+                <button className={styles.editButton} onClick={() => setEditing(true)}>
+                  Edit
+                </button>
+                <button className={styles.deleteButton} onClick={handleDelete}>
+                  Delete
+                </button>
+              </>
             ) : (
-              <div className={styles.tastingList}>
-                {tastings.map((t) => (
-                  <div key={t.id} className={styles.tastingRow}>
-                    <div className={styles.tastingDate}>
-                      {formatDateTime(t.created_at)}
-                    </div>
-                    <div className={styles.tastingDetails}>
-                      {t.pour_amount_oz != null && (
-                        <span className={styles.tastingChip}>
-                          {t.pour_amount_oz} oz
-                        </span>
-                      )}
-                      {t.rating != null && (
-                        <span className={styles.tastingChip}>
-                          ★ {t.rating}
-                        </span>
-                      )}
-                    </div>
-                    {t.notes && (
-                      <div className={styles.tastingNotes}>{t.notes}</div>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <>
+                <button className={styles.cancelButton} onClick={handleCancel} disabled={saving}>
+                  Cancel
+                </button>
+                <button className={styles.saveButton} onClick={handleSave} disabled={saving}>
+                  {saving ? 'Saving...' : 'Save'}
+                </button>
+              </>
             )}
           </div>
-        </>
+        </div>
+      </header>
+
+      {/* Quick Actions */}
+      <div className={styles.quickActions}>
+        <button 
+          className={styles.logPourButton}
+          onClick={() => setShowTastingModal(true)}
+        >
+          🥃 Log a Pour
+        </button>
+      </div>
+
+      {/* Image */}
+      {(item.photo_url || bottle?.image_url || bottle?.primary_photo_url) && (
+        <div className={styles.imageSection}>
+          <img
+            src={item.photo_url || bottle?.image_url || bottle?.primary_photo_url}
+            alt={bottleName}
+            className={styles.bottleImage}
+          />
+        </div>
       )}
+
+      {/* Tabs */}
+      <div className={styles.tabs}>
+        <button
+          className={`${styles.tab} ${activeTab === 'details' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('details')}
+        >
+          Details
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'tastings' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('tastings')}
+        >
+          Tastings ({tastings.length})
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'purchase' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('purchase')}
+        >
+          Purchase Info
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'notes' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('notes')}
+        >
+          Notes
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      <div className={styles.content}>
+        {activeTab === 'details' && (
+          <div className={styles.detailsTab}>
+            <section className={styles.section}>
+              <h3 className={styles.sectionTitle}>Bottle Information</h3>
+
+              {editing ? (
+                <div className={styles.editGrid}>
+                  <label className={styles.editField}>
+                    <span>Status</span>
+                    <select
+                      value={editForm.status || ''}
+                      onChange={(e) => handleFieldChange('status', e.target.value)}
+                    >
+                      <option value="sealed">Sealed</option>
+                      <option value="open">Open</option>
+                      <option value="finished">Finished</option>
+                      <option value="sample">Sample</option>
+                    </select>
+                  </label>
+
+                  <label className={styles.editField}>
+                    <span>Location</span>
+                    <input
+                      type="text"
+                      value={editForm.location_label || ''}
+                      onChange={(e) => handleFieldChange('location_label', e.target.value)}
+                      placeholder="e.g., Home Bar"
+                    />
+                  </label>
+                </div>
+              ) : (
+                <div className={styles.infoGrid}>
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>Type</span>
+                    <span className={styles.infoValue}>{bottle?.type || '—'}</span>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>Proof</span>
+                    <span className={styles.infoValue}>
+                      {bottle?.proof ? `${bottle.proof}°` : '—'}
+                    </span>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>Age</span>
+                    <span className={styles.infoValue}>{bottle?.age_statement || 'NAS'}</span>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>Status</span>
+                    <span className={styles.infoValue} style={{ textTransform: 'capitalize' }}>
+                      {item.status}
+                    </span>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>Location</span>
+                    <span className={styles.infoValue}>{item.location_label || '—'}</span>
+                  </div>
+
+                  {item.opened_at && (
+                    <div className={styles.infoItem}>
+                      <span className={styles.infoLabel}>Opened</span>
+                      <span className={styles.infoValue}>{formatDate(item.opened_at)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+          </div>
+        )}
+
+        {activeTab === 'purchase' && (
+          <div className={styles.detailsTab}>
+            <section className={styles.section}>
+              <h3 className={styles.sectionTitle}>Purchase Information</h3>
+
+              {editing ? (
+                <div className={styles.editGrid}>
+                  <label className={styles.editField}>
+                    <span>MSRP</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editForm.msrp || ''}
+                      onChange={(e) => handleFieldChange('msrp', e.target.value)}
+                      placeholder="0.00"
+                    />
+                  </label>
+
+                  <label className={styles.editField}>
+                    <span>Price Paid</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editForm.price_paid || ''}
+                      onChange={(e) => handleFieldChange('price_paid', e.target.value)}
+                      placeholder="0.00"
+                    />
+                  </label>
+
+                  <label className={styles.editField}>
+                    <span>Purchase Date</span>
+                    <input
+                      type="date"
+                      value={editForm.purchase_date || ''}
+                      onChange={(e) => handleFieldChange('purchase_date', e.target.value)}
+                    />
+                  </label>
+
+                  <label className={styles.editField}>
+                    <span>Store</span>
+                    <input
+                      type="text"
+                      value={editForm.purchase_store || ''}
+                      onChange={(e) => handleFieldChange('purchase_store', e.target.value)}
+                      placeholder="Store name"
+                    />
+                  </label>
+
+                  <label className={styles.editField}>
+                    <span>City</span>
+                    <input
+                      type="text"
+                      value={editForm.purchase_city || ''}
+                      onChange={(e) => handleFieldChange('purchase_city', e.target.value)}
+                      placeholder="City"
+                    />
+                  </label>
+
+                  <label className={styles.editField}>
+                    <span>State</span>
+                    <input
+                      type="text"
+                      value={editForm.purchase_state || ''}
+                      onChange={(e) => handleFieldChange('purchase_state', e.target.value)}
+                      placeholder="State"
+                    />
+                  </label>
+                </div>
+              ) : (
+                <div className={styles.infoGrid}>
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>MSRP</span>
+                    <span className={styles.infoValue}>{formatCurrency(item.msrp)}</span>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>Price Paid</span>
+                    <span className={styles.infoValue}>{formatCurrency(item.price_paid)}</span>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>Purchase Date</span>
+                    <span className={styles.infoValue}>{formatDate(item.purchase_date)}</span>
+                  </div>
+
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>Store</span>
+                    <span className={styles.infoValue}>{item.purchase_store || '—'}</span>
+                  </div>
+
+                  <div className={`${styles.infoItem} ${styles.fullWidth}`}>
+                    <span className={styles.infoLabel}>Location</span>
+                    <span className={styles.infoValue}>
+                      {item.purchase_city && item.purchase_state
+                        ? `${item.purchase_city}, ${item.purchase_state}`
+                        : item.purchase_city || item.purchase_state || '—'}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </section>
+          </div>
+        )}
+
+        {activeTab === 'notes' && (
+          <div className={styles.detailsTab}>
+            <section className={styles.section}>
+              <h3 className={styles.sectionTitle}>Notes</h3>
+
+              {editing ? (
+                <textarea
+                  className={styles.notesTextarea}
+                  value={editForm.notes || ''}
+                  onChange={(e) => handleFieldChange('notes', e.target.value)}
+                  placeholder="Add notes about this bottle..."
+                  rows={6}
+                />
+              ) : (
+                <p className={styles.notesText}>
+                  {item.notes || 'No notes yet.'}
+                </p>
+              )}
+            </section>
+          </div>
+        )}
+
+        {activeTab === 'tastings' && (
+          <div className={styles.detailsTab}>
+            <section className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <h3 className={styles.sectionTitle}>Tasting History</h3>
+                <button 
+                  className={styles.addTastingButton}
+                  onClick={() => setShowTastingModal(true)}
+                >
+                  + Log Pour
+                </button>
+              </div>
+
+              {tastings.length === 0 ? (
+                <div className={styles.emptyTastings}>
+                  <p>No tastings logged yet.</p>
+                  <button 
+                    className={styles.logFirstButton}
+                    onClick={() => setShowTastingModal(true)}
+                  >
+                    Log Your First Pour
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.tastingsList}>
+                  {tastings.map((tasting) => (
+                    <div key={tasting.id} className={styles.tastingCard}>
+                      <div className={styles.tastingHeader}>
+                        <span className={styles.tastingDate}>
+                          {new Date(tasting.created_at).toLocaleDateString()}
+                        </span>
+                        {tasting.rating && (
+                          <span className={styles.tastingRating}>
+                            {'★'.repeat(Math.round(tasting.rating / 2))}
+                            {'☆'.repeat(5 - Math.round(tasting.rating / 2))}
+                            <span className={styles.ratingNumber}>{tasting.rating}/10</span>
+                          </span>
+                        )}
+                      </div>
+                      <div className={styles.tastingMeta}>
+                        {tasting.pour_amount_oz && (
+                          <span className={styles.pourAmount}>{tasting.pour_amount_oz} oz</span>
+                        )}
+                        <span className={styles.visibility}>{tasting.shared_scope}</span>
+                      </div>
+                      {tasting.notes && (
+                        <p className={styles.tastingNotes}>{tasting.notes}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
+        )}
+      </div>
+
+      {/* Log Tasting Modal */}
+      <LogTastingModal
+        isOpen={showTastingModal}
+        onClose={() => setShowTastingModal(false)}
+        onSuccess={() => {
+          setShowTastingModal(false);
+          fetchItem(); // Refresh to get new tasting
+        }}
+        inventoryItem={item}
+      />
     </div>
   );
 }

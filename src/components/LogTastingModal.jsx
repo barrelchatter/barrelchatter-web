@@ -1,266 +1,267 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../api/client';
 import styles from '../styles/LogTastingModal.module.scss';
 
+const POUR_AMOUNTS = [
+  { value: 0.5, label: '½ oz' },
+  { value: 1, label: '1 oz' },
+  { value: 1.5, label: '1½ oz' },
+  { value: 2, label: '2 oz' },
+  { value: 3, label: '3 oz' },
+];
+
 /**
+ * LogTastingModal - Log a pour/tasting
+ * 
  * Props:
- * - isOpen: boolean
- * - initialInventoryId?: string
- * - onClose: () => void
- * - onCreated?: (tasting) => void
+ *   isOpen: boolean
+ *   onClose: () => void
+ *   onSuccess: (tasting) => void
+ *   inventoryItem: object (pre-selected inventory item with nested bottle)
  */
 function LogTastingModal({
   isOpen,
-  initialInventoryId,
   onClose,
-  onCreated,
+  onSuccess,
+  inventoryItem = null,
 }) {
   const [inventory, setInventory] = useState([]);
-  const [invLoading, setInvLoading] = useState(false);
-  const [invError, setInvError] = useState('');
-
-  const [form, setForm] = useState({
-    inventory_id: '',
-    pour_amount_oz: '',
-    rating: '',
-    notes: '',
-  });
-
+  const [loadingInventory, setLoadingInventory] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(null);
 
-  // Load inventory when modal opens
+  const [selectedId, setSelectedId] = useState('');
+  const [pourAmount, setPourAmount] = useState(1.5);
+  const [rating, setRating] = useState(0);
+  const [notes, setNotes] = useState('');
+  const [sharedScope, setSharedScope] = useState('private');
+
+  // Get bottle name helper
+  function getBottleName(item) {
+    if (!item) return 'Unknown Bottle';
+    // Try various paths where the name might be
+    return item.bottle?.name || item.bottle_name || item.name || 'Unknown Bottle';
+  }
+
+  function getDistillery(item) {
+    if (!item) return '';
+    return item.bottle?.distillery || item.bottle_distillery || item.distillery || '';
+  }
+
+  // Fetch inventory when modal opens (only if no pre-selected item)
   useEffect(() => {
     if (!isOpen) return;
+    
+    // Reset form
+    setSelectedId(inventoryItem?.id || '');
+    setPourAmount(1.5);
+    setRating(0);
+    setNotes('');
+    setSharedScope('private');
+    setError(null);
 
-    async function loadInventory() {
-      setInvLoading(true);
-      setInvError('');
+    // If we have a pre-selected item, no need to fetch
+    if (inventoryItem) {
+      return;
+    }
+
+    // Fetch inventory for dropdown
+    async function fetchInventory() {
+      setLoadingInventory(true);
       try {
-        const res = await api.get('/v1/inventory?limit=100&offset=0');
-        const list = res.data?.inventory || [];
-        setInventory(list);
-
-        setForm((prev) => ({
-          ...prev,
-          inventory_id:
-            initialInventoryId ||
-            prev.inventory_id ||
-            (list[0]?.id || ''),
-        }));
+        const response = await api.get('/v1/inventory?limit=100&offset=0');
+        const allItems = response.data?.inventory || [];
+        // Show all non-finished bottles
+        const pourableItems = allItems.filter(item => item.status !== 'finished');
+        setInventory(pourableItems);
       } catch (err) {
-        console.error(err);
-        const msg =
-          err?.response?.data?.error ||
-          'Failed to load inventory for tasting.';
-        setInvError(msg);
+        console.error('Error fetching inventory:', err);
+        setInventory([]);
       } finally {
-        setInvLoading(false);
+        setLoadingInventory(false);
       }
     }
 
-    loadInventory();
-    setError('');
-    setSubmitting(false);
-  }, [isOpen, initialInventoryId]);
-
-  function resetAndClose() {
-    setForm({
-      inventory_id: '',
-      pour_amount_oz: '',
-      rating: '',
-      notes: '',
-    });
-    setError('');
-    setSubmitting(false);
-    onClose?.();
-  }
-
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
-
-  function setPourPreset(value) {
-    setForm((prev) => ({
-      ...prev,
-      pour_amount_oz: String(value),
-    }));
-  }
+    fetchInventory();
+  }, [isOpen, inventoryItem]);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (submitting) return;
+
+    const inventoryId = inventoryItem?.id || selectedId;
+    if (!inventoryId) {
+      setError('Please select a bottle');
+      return;
+    }
+
     setSubmitting(true);
-    setError('');
+    setError(null);
 
     try {
-      if (!form.inventory_id) {
-        setError('Please select a bottle from your inventory.');
-        setSubmitting(false);
-        return;
-      }
+      const response = await api.post('/v1/tastings', {
+        inventory_id: inventoryId,
+        pour_amount_oz: pourAmount,
+        rating: rating || null,
+        notes: notes || null,
+        shared_scope: sharedScope,
+      });
 
-      const payload = {
-        inventory_id: form.inventory_id,
-        pour_amount_oz: form.pour_amount_oz
-          ? Number(form.pour_amount_oz)
-          : undefined,
-        rating: form.rating ? Number(form.rating) : undefined,
-        notes: form.notes.trim() || undefined,
-      };
-
-      const res = await api.post('/v1/tastings', payload);
-      const tasting =
-        res.data?.tasting || res.data?.tastingRecord || null;
-
-      onCreated?.(tasting);
-      resetAndClose();
+      const tasting = response.data?.tasting || response.data;
+      onSuccess?.(tasting);
+      onClose();
     } catch (err) {
-      console.error(err);
-      const msg =
-        err?.response?.data?.error ||
-        'Failed to log tasting.';
-      setError(msg);
+      console.error('Error logging tasting:', err);
+      setError(err?.response?.data?.error || err.message || 'Failed to log tasting');
+    } finally {
       setSubmitting(false);
     }
   }
 
   if (!isOpen) return null;
 
-  return (
-    <div className={styles.backdrop}>
-      <div className={styles.modal}>
-        <div className={styles.header}>
-          <h2>Log a Tasting</h2>
-          <button
-            type="button"
-            className={styles.closeButton}
-            onClick={resetAndClose}
-          >
-            ✕
-          </button>
-        </div>
+  // Determine which item to show info for
+  const displayItem = inventoryItem || inventory.find(i => i.id === selectedId);
 
-        {invError && (
-          <div className={styles.error}>{invError}</div>
-        )}
+  return (
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <header className={styles.header}>
+          <h2 className={styles.title}>Log a Pour</h2>
+          <button className={styles.closeButton} onClick={onClose}>×</button>
+        </header>
 
         <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.row}>
-            <label className={styles.label}>
-              Inventory Bottle *
-              <select
-                name="inventory_id"
-                className={styles.input}
-                value={form.inventory_id}
-                onChange={handleChange}
-                disabled={invLoading || !!invError}
-              >
-                <option value="">
-                  {inventory.length === 0
-                    ? 'No inventory items found'
-                    : 'Select inventory item'}
-                </option>
-                {inventory.map((inv) => {
-                  const bottle = inv.bottle || {};
-                  const labelParts = [
-                    bottle.name || 'Unknown bottle',
-                    bottle.brand,
-                    inv.location_label,
-                  ].filter(Boolean);
-                  return (
-                    <option key={inv.id} value={inv.id}>
-                      {labelParts.join(' — ')}
+          {/* Bottle Selection or Display */}
+          <div className={styles.field}>
+            <label className={styles.label}>Bottle</label>
+            
+            {inventoryItem ? (
+              // Pre-selected bottle - just display it
+              <div className={styles.selectedBottle}>
+                <span className={styles.bottleName}>{getBottleName(inventoryItem)}</span>
+                {getDistillery(inventoryItem) && (
+                  <span className={styles.bottleDistillery}>{getDistillery(inventoryItem)}</span>
+                )}
+              </div>
+            ) : (
+              // Need to select from dropdown
+              loadingInventory ? (
+                <div className={styles.loadingText}>Loading bottles...</div>
+              ) : inventory.length === 0 ? (
+                <div className={styles.emptyText}>
+                  No bottles in inventory. Add some bottles first.
+                </div>
+              ) : (
+                <select
+                  className={styles.select}
+                  value={selectedId}
+                  onChange={(e) => setSelectedId(e.target.value)}
+                  required
+                >
+                  <option value="">Choose a bottle...</option>
+                  {inventory.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {getBottleName(item)} ({item.status}) - {item.location_label || 'No location'}
                     </option>
-                  );
-                })}
-              </select>
-            </label>
+                  ))}
+                </select>
+              )
+            )}
           </div>
 
-          <div className={styles.row}>
-            <label className={styles.label}>
-              Pour (oz)
+          {/* Pour Amount */}
+          <div className={styles.field}>
+            <label className={styles.label}>Pour Amount</label>
+            <div className={styles.pourButtons}>
+              {POUR_AMOUNTS.map((amount) => (
+                <button
+                  key={amount.value}
+                  type="button"
+                  className={`${styles.pourButton} ${pourAmount === amount.value ? styles.pourButtonActive : ''}`}
+                  onClick={() => setPourAmount(amount.value)}
+                >
+                  {amount.label}
+                </button>
+              ))}
               <input
                 type="number"
-                step="0.25"
-                name="pour_amount_oz"
-                className={styles.input}
-                value={form.pour_amount_oz}
-                onChange={handleChange}
-                placeholder="1.5"
-              />
-            </label>
-          </div>
-
-          <div className={styles.presetsRow}>
-            <span className={styles.presetsLabel}>
-              Quick pour:
-            </span>
-            {[0.5, 1, 1.5, 2].map((val) => (
-              <button
-                key={val}
-                type="button"
-                className={styles.presetButton}
-                onClick={() => setPourPreset(val)}
-              >
-                {val} oz
-              </button>
-            ))}
-          </div>
-
-          <div className={styles.row}>
-            <label className={styles.label}>
-              Rating (0–10)
-              <input
-                type="number"
-                step="0.1"
+                className={styles.customPour}
+                value={pourAmount}
+                onChange={(e) => setPourAmount(parseFloat(e.target.value) || 0)}
                 min="0"
-                max="10"
-                name="rating"
-                className={styles.input}
-                value={form.rating}
-                onChange={handleChange}
-                placeholder="8.5"
+                max="12"
+                step="0.25"
               />
-            </label>
+            </div>
           </div>
 
-          <div className={styles.row}>
-            <label className={styles.label}>
-              Notes
-              <textarea
-                name="notes"
-                rows={3}
-                className={`${styles.input} ${styles.textarea}`}
-                value={form.notes}
-                onChange={handleChange}
-                placeholder="Aroma, palate, finish, anything memorable..."
-              />
-            </label>
+          {/* Rating */}
+          <div className={styles.field}>
+            <label className={styles.label}>Rating</label>
+            <div className={styles.ratingRow}>
+              <div className={styles.ratingStars}>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                  <button
+                    key={num}
+                    type="button"
+                    className={`${styles.ratingStar} ${num <= rating ? styles.ratingStarFilled : ''}`}
+                    onClick={() => setRating(rating === num ? 0 : num)}
+                  >
+                    {num <= rating ? '★' : '☆'}
+                  </button>
+                ))}
+              </div>
+              <span className={styles.ratingValue}>
+                {rating > 0 ? `${rating}/10` : 'Not rated'}
+              </span>
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div className={styles.field}>
+            <label className={styles.label}>Tasting Notes</label>
+            <textarea
+              className={styles.textarea}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="What did you think?"
+              rows={4}
+            />
+          </div>
+
+          {/* Visibility */}
+          <div className={styles.field}>
+            <label className={styles.label}>Visibility</label>
+            <div className={styles.visibilityOptions}>
+              {[
+                { value: 'private', label: '🔒 Private' },
+                { value: 'friends', label: '👥 Friends' },
+                { value: 'public', label: '🌍 Public' },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className={`${styles.visibilityButton} ${sharedScope === opt.value ? styles.visibilityButtonActive : ''}`}
+                  onClick={() => setSharedScope(opt.value)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {error && <div className={styles.error}>{error}</div>}
 
-          <div className={styles.footer}>
-            <button
-              type="button"
-              className={styles.secondaryButton}
-              onClick={resetAndClose}
-              disabled={submitting}
-            >
+          <div className={styles.actions}>
+            <button type="button" className={styles.cancelButton} onClick={onClose} disabled={submitting}>
               Cancel
             </button>
             <button
               type="submit"
-              className={styles.primaryButton}
-              disabled={submitting || !!invError}
+              className={styles.submitButton}
+              disabled={submitting || (!inventoryItem && !selectedId)}
             >
-              {submitting ? 'Logging…' : 'Log Tasting'}
+              {submitting ? 'Logging...' : 'Log Pour'}
             </button>
           </div>
         </form>

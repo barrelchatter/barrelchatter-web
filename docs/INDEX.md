@@ -1,175 +1,204 @@
-# BarrelChatter Web Documentation
+# BarrelChatter Frontend Documentation
 
-## Overview
-
-This documentation covers the BarrelChatter web application, a React-based frontend for the bourbon collection management platform.
-
-## Documentation Index
-
-### Getting Started
-- [README.md](../README.md) - Project overview, setup, and quick start guide
-
-### Architecture
-- [Project Structure](project-structure.md) - Directory layout and file organization
-- [Tech Stack](tech-stack.md) - Technologies, libraries, and tooling decisions
-
-### Design
-- [Design System](design-system.md) - Colors, typography, spacing, and component patterns
-- [Styling Guide](styling-guide.md) - SCSS module patterns and best practices
-
-### Features
-- [Pages Reference](pages.md) - Complete page-by-page documentation
-- [Components](components.md) - Shared and reusable components
-- [Modals](modals.md) - Modal dialogs and forms
-
-### Integration
-- [API Integration](api-integration.md) - Backend API communication patterns
-- [Authentication](authentication.md) - Login, registration, and session management
-- [Image Upload](image-upload.md) - Photo upload to DigitalOcean Spaces
-
-### Administration
-- [Admin Features](admin-features.md) - Admin-only functionality documentation
-- [Role-Based Access](role-based-access.md) - Permission system and route protection
+> **Complete documentation for the BarrelChatter web application**
 
 ---
 
-## Application Overview
+## Getting Started
 
-### Purpose
+1. **New Developer?** Start with [ARCHITECTURE.md](ARCHITECTURE.md)
+2. **Building UI?** See [COMPONENTS.md](COMPONENTS.md) and [STYLING.md](STYLING.md)
+3. **Adding Pages?** Check [PAGES.md](PAGES.md)
+4. **API Integration?** Read [API_INTEGRATION.md](API_INTEGRATION.md)
+5. **Admin Features?** Review [ADMIN_FEATURES.md](ADMIN_FEATURES.md)
 
-BarrelChatter Web enables bourbon enthusiasts to:
+---
 
-1. **Track Collections** - Maintain a personal inventory of bottles with purchase details, status, and location
-2. **Log Tastings** - Record pours with ratings, tasting notes, and photos
-3. **Discover Bottles** - Browse the verified bottle catalog with community ratings
-4. **Manage Tags** - Link NFC tags to bottles for quick scan-to-log workflows
-5. **Build Wishlists** - Track desired bottles with target prices
+## Documentation Index
 
-### Target Users
+### Architecture & Structure
+| Document | Description |
+|----------|-------------|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Application structure, routing, state management |
+| [API_INTEGRATION.md](API_INTEGRATION.md) | API client, authentication, error handling |
 
-| Persona | Description | Primary Features |
-|---------|-------------|------------------|
-| **Collector Carl** | Serious enthusiast with 100+ bottles | Inventory, tastings, NFC tags |
-| **Curious Riley** | Newer to bourbon, exploring | Bottle catalog, wishlist, tastings |
-| **Admin Nick** | Platform administrator | User management, tag admin, audit logs |
+### UI Development
+| Document | Description |
+|----------|-------------|
+| [COMPONENTS.md](COMPONENTS.md) | Reusable component reference |
+| [PAGES.md](PAGES.md) | Page-level component documentation |
+| [STYLING.md](STYLING.md) | Design system, SCSS patterns, theming |
 
-### Current Phase
-
-The application is in **Phase 1** (Private Multi-User App):
-
-- Invite-only registration
-- Core inventory and tasting features
-- NFC tag management
-- Basic social sharing (friends visibility)
-- Admin tools for platform management
-
-### Future Phases
-
-**Phase 2** - Public Collector App:
-- Public registration with OAuth
-- Billing integration (Stripe)
-- Community pricing insights
-- Public profiles and follows
-- Wishlist alerts
-
-**Phase 3** - B2B/White-Label:
-- Venue/organization accounts
-- Event management
-- Member lockers
-- White-label theming
-- Organization dashboards
+### Features
+| Document | Description |
+|----------|-------------|
+| [ADMIN_FEATURES.md](ADMIN_FEATURES.md) | Admin panel and moderation tools |
+| [PRICING_INTELLIGENCE.md](PRICING_INTELLIGENCE.md) | Community pricing features |
 
 ---
 
 ## Quick Reference
 
-### Key Files
-
-| File | Purpose |
-|------|---------|
-| `src/App.jsx` | Route definitions and layout structure |
-| `src/main.jsx` | Application entry point |
-| `src/api/api.js` | API client with auth headers |
-| `src/context/AuthContext.jsx` | Authentication state management |
-| `src/styles/_design-system.scss` | Design tokens and mixins |
-| `src/styles/global.scss` | Global styles and resets |
-
 ### Route Structure
-
 ```
-/login                    - Public login page
-/register                 - Public registration (invite required)
+/                           → Redirect to /app or /login
+/login                      → Login page
+/register                   → Registration (with invite token)
 
-/app                      - Authenticated area (requires login)
-  /app/home              - Dashboard with stats and activity
-  /app/bottles           - Bottle catalog
-  /app/bottles/:id       - Bottle detail page
-  /app/inventory         - Personal collection
-  /app/inventory/:id     - Inventory item detail
-  /app/tastings          - Tasting history
-  /app/wishlists         - Wishlist management
-  /app/tags              - Personal tag management
-  /app/profile           - User profile settings
+/app                        → Authenticated routes (AppLayout)
+  /app/home                 → Dashboard
+  /app/bottles              → Bottle catalog
+  /app/bottles/:id          → Bottle detail
+  /app/inventory            → User inventory
+  /app/inventory/:id        → Inventory item detail
+  /app/tastings             → Tasting journal
+  /app/wishlists            → Wishlist
+  /app/tags                 → NFC tag management
+  /app/storage-locations    → Storage hierarchy
+  /app/profile              → User profile
 
-  /app/admin/users       - User administration (admin only)
-  /app/admin/tags        - Tag administration (admin only)
-  /app/admin/audit-logs  - Audit log viewer (admin only)
-  /app/admin/bottles-submissions - Bottle moderation (moderator+)
+/app/admin/*                → Admin routes (role-protected)
+  /admin/bottles-submissions
+  /admin/tags
+  /admin/tag-packs
+  /admin/tag-packs/:id
+  /admin/tags/bulk-import
+  /admin/users
+  /admin/purchase-locations
+  /admin/audit-logs
 ```
 
-### API Base URL
+### Component Import Patterns
+```jsx
+// API client (ALWAYS use this, never raw fetch)
+import api from '../api/client';
 
-Development: `http://localhost:4000`
-Production: Configured via `VITE_API_URL` environment variable
+// Auth context
+import { useAuth } from '../context/AuthContext';
 
-### Design Tokens
+// Protected routes
+import ProtectedRoute from '../components/ProtectedRoute';
 
-Primary accent: `#c9a66b` (Bourbon Brass)
-Background: `#121212` (Deep Charcoal)
-Text: `#f0e6d6` (Cream)
+// Styles (SCSS modules)
+import styles from '../styles/PageName.module.scss';
+```
 
-See [Design System](design-system.md) for complete reference.
+### Common API Patterns
+```javascript
+// GET with pagination
+const res = await api.get('/v1/bottles?limit=100&offset=0');
+const bottles = res.data?.bottles || [];
+
+// POST create
+const res = await api.post('/v1/inventory', payload);
+const newItem = res.data?.inventory;
+
+// PATCH update
+await api.patch(`/v1/tastings/${id}`, payload);
+
+// DELETE
+await api.delete(`/v1/wishlists/${id}`);
+```
+
+### View Mode Toggle Pattern
+```jsx
+const [viewMode, setViewMode] = useState('list'); // 'list' | 'cards' | 'gallery'
+
+<div className={styles.viewToggle}>
+  <button 
+    className={viewMode === 'list' ? styles.viewModeButtonActive : styles.viewModeButton}
+    onClick={() => setViewMode('list')}
+  >List</button>
+  {/* ... cards, gallery buttons */}
+</div>
+
+{viewMode === 'list' && <TableView data={items} />}
+{viewMode === 'cards' && <CardGrid data={items} />}
+{viewMode === 'gallery' && <GalleryGrid data={items} />}
+```
 
 ---
 
-## Development Workflow
+## File Naming Conventions
 
-### Starting Development
+| Type | Pattern | Example |
+|------|---------|---------|
+| Page component | `{Name}Page.jsx` | `BottlesPage.jsx` |
+| Feature component | `{Name}.jsx` | `PhotoUpload.jsx` |
+| Layout component | `{Name}.jsx` in `layout/` | `AppLayout.jsx` |
+| SCSS module | `{ComponentName}.module.scss` | `BottlesPage.module.scss` |
+| Hook | `use{Name}.js` | `usePricing.js` |
 
-```bash
-# Ensure API is running on port 4000
-cd ../barrelchatter-api && npm run dev
+---
 
-# Start web app
-cd ../barrelchatter-web && npm run dev
+## Common Gotchas
+
+### 1. Always Use `api` Client
+```javascript
+// ❌ Wrong - bypasses auth
+const res = await fetch('/v1/bottles');
+
+// ✅ Correct - includes auth token
+const res = await api.get('/v1/bottles');
 ```
 
-### Making Changes
+### 2. API Response Structure
+```javascript
+// Response is wrapped in data
+const res = await api.get('/v1/bottles');
+const bottles = res.data?.bottles || [];  // ✅ Access via .data
+```
 
-1. **Pages** - Add new pages in `src/pages/`, create matching `.module.scss`
-2. **Components** - Shared components go in `src/components/`
-3. **Styles** - Use design system mixins, follow existing patterns
-4. **Routes** - Update `src/App.jsx` with new routes
-5. **API** - Add endpoints to `src/api/api.js` if needed
+### 3. Pagination Limits
+```javascript
+// ❌ Wrong - limit > 100 rejected by API
+api.get('/v1/bottles?limit=500');
 
-### Testing
+// ✅ Correct - max 100 per request
+api.get('/v1/bottles?limit=100');
+```
 
-Currently manual testing. Automated testing planned for Phase 2.
-
-### Building for Production
-
-```bash
-npm run build
-# Output in dist/ directory
+### 4. Image URL Resolution
+```javascript
+// Images may be relative or absolute
+function resolveImageUrl(path) {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return `${API_BASE_URL}${path}`;
+}
 ```
 
 ---
 
-## Support
+## Contributing
 
-For technical questions, consult:
-1. This documentation
-2. Inline code comments
-3. Development team
+### Adding a New Page
 
-For feature requests or bug reports, use the project issue tracker.
+1. Create `src/pages/NewPage.jsx`
+2. Create `src/styles/NewPage.module.scss`
+3. Add route in `App.jsx`
+4. Add to navigation in `AppLayout.jsx`
+5. Document in [PAGES.md](PAGES.md)
+
+### Adding a New Component
+
+1. Create `src/components/NewComponent.jsx`
+2. Create `src/styles/NewComponent.module.scss`
+3. Add JSDoc comments
+4. Document in [COMPONENTS.md](COMPONENTS.md)
+
+---
+
+## Changelog
+
+### December 2024
+- Migration 011: Barrel tracking, pricing intelligence
+- Migration 012: Enhanced tracking, social features
+- Tag pack system with bulk import
+- Purchase location catalog
+- Storage location hierarchy
+
+### November 2024
+- Initial Phase 1 release
+- Core CRUD for bottles, inventory, tastings
+- Admin panel foundation

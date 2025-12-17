@@ -1,178 +1,206 @@
-# BarrelChatter Web
+# BarrelChatter Web Frontend
 
-A bourbon-inspired web application for collectors to track inventory, log tastings, and connect with fellow enthusiasts.
+**NFC-powered bourbon collection management for serious collectors.**
 
-## Overview
+> **Stack:** React 18 • React Router 6 • SCSS Modules  
+> **Platform:** Web (Desktop & Mobile Responsive)  
+> **Status:** Phase 1 Complete (Private Multi-User App)
 
-BarrelChatter Web is the browser-based interface for the BarrelChatter platform. It provides a dark, lounge-inspired UI optimized for bourbon collectors to manage their collections, log pours, and participate in the community.
+---
 
-## Tech Stack
-
-- **Framework:** React 19 with React Router 7
-- **Build Tool:** Vite 7
-- **Styling:** SCSS Modules with custom design system
-- **HTTP Client:** Fetch API via custom `api.js` wrapper
-- **State Management:** React Context (AuthContext)
-- **Image Storage:** DigitalOcean Spaces (nyc3 region)
-
-## Project Structure
-
-```
-barrelchatter-web/
-├── public/                    # Static assets
-├── src/
-│   ├── api/
-│   │   └── api.js            # API client wrapper
-│   ├── components/
-│   │   ├── layout/
-│   │   │   └── AppLayout.jsx # Main authenticated layout
-│   │   └── ProtectedRoute.jsx
-│   ├── context/
-│   │   └── AuthContext.jsx   # Authentication state
-│   ├── pages/
-│   │   ├── LoginPage.jsx
-│   │   ├── RegisterPage.jsx
-│   │   ├── HomePage.jsx
-│   │   ├── ProfilePage.jsx
-│   │   ├── BottlesPage.jsx
-│   │   ├── BottleDetailPage.jsx
-│   │   ├── InventoryPage.jsx
-│   │   ├── InventoryDetailPage.jsx
-│   │   ├── TastingsPage.jsx
-│   │   ├── WishlistPage.jsx
-│   │   ├── TagsPage.jsx
-│   │   ├── AdminTagsPage.jsx
-│   │   ├── AdminUsersPage.jsx
-│   │   ├── AdminBottleSubmissionsPage.jsx
-│   │   └── AdminAuditLogsPage.jsx
-│   ├── styles/
-│   │   ├── _design-system.scss  # Core design tokens & mixins
-│   │   ├── _shared.module.scss  # Reusable component patterns
-│   │   ├── global.scss          # Global resets & base styles
-│   │   └── [Page].module.scss   # Page-specific styles
-│   ├── App.jsx                  # Route definitions
-│   └── main.jsx                 # Entry point
-├── package.json
-├── vite.config.js
-└── README.md
-```
-
-## Getting Started
+## Quick Start
 
 ### Prerequisites
-
 - Node.js 18+
 - npm or yarn
-- Running BarrelChatter API server (default: `http://localhost:4000`)
+- Running BarrelChatter API server
 
-### Installation
-
+### Development
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd barrelchatter-web
-
 # Install dependencies
 npm install
 
+# Configure API endpoint
+cp .env.example .env
+# Edit .env: REACT_APP_API_URL=http://localhost:3001
+
 # Start development server
-npm run dev
+npm start
 ```
-
-The app runs on `http://localhost:5173` by default.
-
-### Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-VITE_API_URL=http://localhost:4000
-```
-
-## Development
-
-### Available Scripts
-
-```bash
-npm run dev      # Start development server with HMR
-npm run build    # Build for production
-npm run preview  # Preview production build
-npm run lint     # Run ESLint
-```
-
-### Design System
-
-The application uses a custom bourbon-themed design system. See `/docs/design-system.md` for complete documentation.
-
-Key principles:
-- Dark lounge aesthetic with brass accents
-- 8px spacing scale
-- Consistent component patterns via SCSS mixins
-- Semantic color tokens for feedback states
-
-## Features
-
-### Current (Phase 1)
-
-- **Authentication:** Login, registration (invite-only), password reset
-- **Bottle Catalog:** Browse, search, filter verified bottles
-- **Personal Inventory:** Track owned bottles with status, location, purchase info
-- **Tasting Journal:** Log pours with ratings, notes, photos
-- **Wishlist:** Track desired bottles with price targets
-- **NFC Tags:** Claim and manage tags linked to bottles
-- **User Profiles:** View stats, update info, change password
-- **Admin Panel:** User management, tag administration, audit logs
-
-### Planned (Phase 2+)
-
-- Public signup and billing integration
-- Community pricing insights
-- Social features (follows, public tastings)
-- Wishlist alerts
-- Advanced analytics
-
-## API Integration
-
-The app communicates with the BarrelChatter API at `/v1/` endpoints. Authentication uses JWT tokens stored in localStorage.
-
-See `/docs/api-integration.md` for endpoint documentation.
-
-## Deployment
 
 ### Production Build
-
 ```bash
 npm run build
+# Output: /build directory ready for static hosting
 ```
 
-Output is generated in the `dist/` directory.
+---
 
-### Hosting
+## Application Structure
 
-Recommended: Static hosting (Vercel, Netlify, DigitalOcean App Platform) with reverse proxy to API.
+```
+src/
+├── api/                    # API client configuration
+│   └── client.js           # Axios instance with auth interceptors
+├── components/             # Reusable UI components
+│   ├── layout/             # App shell, navigation
+│   └── ...                 # Feature components
+├── context/                # React contexts (Auth)
+├── hooks/                  # Custom React hooks
+├── pages/                  # Route-level page components
+├── styles/                 # SCSS modules & design system
+└── App.jsx                 # Router configuration
+```
 
-Ensure CORS is configured on the API server for your production domain.
+---
+
+## Key Features
+
+### Core Functionality
+| Feature | Page | Description |
+|---------|------|-------------|
+| **Bottles** | `/app/bottles` | Global bottle catalog with search/filter |
+| **Inventory** | `/app/inventory` | Personal collection management |
+| **Tastings** | `/app/tastings` | Pour logging with ratings & notes |
+| **Wishlist** | `/app/wishlists` | Bottle hunting with price targets |
+| **Tags** | `/app/tags` | NFC tag management & assignment |
+| **Storage** | `/app/storage-locations` | Hierarchical storage organization |
+
+### Admin Features
+| Feature | Page | Description |
+|---------|------|-------------|
+| **Bottle Submissions** | `/app/admin/bottles-submissions` | Moderate user-submitted bottles |
+| **Tag Management** | `/app/admin/tags` | Register NFC UIDs |
+| **Tag Packs** | `/app/admin/tag-packs` | Create & manage tag bundles |
+| **Bulk Import** | `/app/admin/tags/bulk-import` | Rapid tag registration |
+| **User Management** | `/app/admin/users` | User & invite administration |
+| **Purchase Locations** | `/app/admin/purchase-locations` | Store catalog moderation |
+| **Audit Logs** | `/app/admin/audit-logs` | System activity monitoring |
+
+---
+
+## Authentication
+
+- **JWT-based** authentication via `AuthContext`
+- **Role-based** access control: `collector`, `moderator`, `admin`
+- Protected routes via `ProtectedRoute` component
+- Token refresh handled automatically by API client
+
+```jsx
+// Check user role
+const { user } = useAuth();
+if (user?.role === 'admin') { /* show admin features */ }
+```
+
+---
+
+## View Modes
+
+Most list pages support three view modes:
+- **List** — Dense table view with all details
+- **Cards** — Medium-density card grid
+- **Gallery** — Image-focused masonry layout
+
+---
 
 ## Documentation
 
-- [Project Index](docs/INDEX.md) - Complete documentation overview
-- [Design System](docs/design-system.md) - Styling guide
-- [Pages & Features](docs/pages.md) - Page-by-page documentation
-- [Components](docs/components.md) - Shared component reference
-- [API Integration](docs/api-integration.md) - Backend communication
-- [Authentication](docs/authentication.md) - Auth flow documentation
+| Document | Description |
+|----------|-------------|
+| [docs/INDEX.md](docs/INDEX.md) | Documentation hub |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture |
+| [docs/COMPONENTS.md](docs/COMPONENTS.md) | Component reference |
+| [docs/PAGES.md](docs/PAGES.md) | Page documentation |
+| [docs/STYLING.md](docs/STYLING.md) | Design system & SCSS |
+| [docs/API_INTEGRATION.md](docs/API_INTEGRATION.md) | API client patterns |
+| [docs/ADMIN_FEATURES.md](docs/ADMIN_FEATURES.md) | Admin panel guide |
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Framework** | React 18 |
+| **Routing** | React Router 6 |
+| **Styling** | SCSS Modules |
+| **HTTP Client** | Axios |
+| **State** | React Context + hooks |
+| **Build** | Create React App |
+
+### Key Dependencies
+```json
+{
+  "react": "^18.x",
+  "react-router-dom": "^6.x",
+  "axios": "^1.x",
+  "sass": "^1.x",
+  "qrcode.react": "^3.x"
+}
+```
+
+---
+
+## Project Status
+
+### Phase 1 — Private Multi-User App ✅
+- [x] Authentication (login, register, invite system)
+- [x] Bottle catalog with CRUD
+- [x] Inventory management
+- [x] Tasting journal
+- [x] Wishlist tracking
+- [x] NFC tag management
+- [x] Storage location hierarchy
+- [x] Admin panel (users, tags, moderation)
+
+### Phase 2 — Public Collector App 🔜
+- [ ] Public signup (OAuth)
+- [ ] Public bottle catalog
+- [ ] Community pricing insights
+- [ ] Social features (follow, share)
+- [ ] User profiles
+
+### Phase 3 — B2B / Venues 📅
+- [ ] Organization accounts
+- [ ] Venue inventory
+- [ ] Event management
+- [ ] White-label theming
+
+---
+
+## Environment Variables
+
+```bash
+# Required
+REACT_APP_API_URL=http://localhost:3001
+
+# Optional
+REACT_APP_ENV=development
+```
+
+---
+
+## Scripts
+
+```bash
+npm start          # Development server
+npm run build      # Production build
+npm test           # Run tests
+npm run lint       # ESLint check
+```
+
+---
 
 ## Contributing
 
-1. Create a feature branch from `main`
-2. Follow existing code style and patterns
-3. Update documentation for new features
-4. Submit a pull request
+1. Follow existing code patterns
+2. Use SCSS modules (not inline styles)
+3. Use `api` client for all HTTP requests
+4. Test all view modes (list/cards/gallery)
+5. Ensure mobile responsiveness
+
+---
 
 ## License
 
-Proprietary - BarrelChatter LLC
-
-## Support
-
-For questions or issues, contact the development team.
+Proprietary — BarrelChatter © 2024
