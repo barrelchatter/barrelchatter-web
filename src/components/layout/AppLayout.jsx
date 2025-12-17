@@ -91,6 +91,12 @@ function AppLayout() {
                   Purchase Locations
                 </NavLink>
               )}
+
+              {isAdmin && (
+                <NavLink to="/app/admin/tag-packs" className={navClass}>
+                  Tag Packs
+                </NavLink>
+              )}
             </>
           )}
         </nav>

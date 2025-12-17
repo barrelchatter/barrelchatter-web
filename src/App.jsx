@@ -19,6 +19,9 @@ import AdminAuditLogsPage from './pages/AdminAuditLogsPage.jsx';
 import AdminBottleSubmissionsPage from './pages/AdminBottleSubmissionsPage.jsx';
 import StorageLocationsPage from './pages/StorageLocationsPage.jsx';
 import AdminPurchaseLocationsPage from './pages/AdminPurchaseLocationsPage.jsx';
+import AdminTagPacksPage from './pages/AdminTagPacksPage.jsx';
+import AdminTagPackDetailPage from './pages/AdminTagPackDetailPage.jsx';
+import AdminBulkImportPage from './pages/AdminBulkImportPage.jsx';
 
 function App() {
   return (
@@ -100,8 +103,31 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route 
+          path="/app/admin/tag-packs" 
+          element={
+            <ProtectedRoute requireRoles={['admin']}>
+              <AdminTagPacksPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/app/admin/tag-packs/:id" 
+          element={
+            <ProtectedRoute requireRoles={['admin']}>
+              <AdminTagPackDetailPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/app/admin/tags/bulk-import" 
+          element={
+            <ProtectedRoute requireRoles={['admin']}>
+              <AdminBulkImportPage />
+            </ProtectedRoute>
+          } 
+        />
       </Route>
-
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/app" replace />} />
     </Routes>

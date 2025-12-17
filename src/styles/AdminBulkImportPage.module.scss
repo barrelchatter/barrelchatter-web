@@ -1,0 +1,422 @@
+// AdminBulkImportPage.module.scss
+@use '../styles/design-system' as *;
+
+.page {
+  padding: var(--bc-space-4);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.headerRow {
+  margin-bottom: var(--bc-space-6);
+
+  h1 {
+    margin: var(--bc-space-2) 0 0 0;
+    font-size: var(--bc-text-2xl);
+  }
+}
+
+.backLink {
+  color: var(--bc-text-tertiary);
+  text-decoration: none;
+  font-size: var(--bc-text-sm);
+
+  &:hover {
+    color: var(--bc-text-primary);
+  }
+}
+
+.subtitle {
+  margin: var(--bc-space-1) 0 0 0;
+  color: var(--bc-text-secondary);
+  font-size: var(--bc-text-sm);
+}
+
+.message {
+  text-align: center;
+  padding: var(--bc-space-4);
+  color: var(--bc-text-secondary);
+}
+
+.error {
+  padding: var(--bc-space-3);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--bc-radius-md);
+  color: #ef4444;
+  margin-bottom: var(--bc-space-4);
+}
+
+// Start Section
+.startSection {
+  text-align: center;
+  padding: var(--bc-space-8);
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-lg);
+  margin-bottom: var(--bc-space-6);
+}
+
+.startButton {
+  @include button-primary;
+  padding: var(--bc-space-4) var(--bc-space-8);
+  font-size: var(--bc-text-lg);
+}
+
+.startHint {
+  margin: var(--bc-space-4) 0 0 0;
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-sm);
+}
+
+// Start Form
+.startForm {
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-lg);
+  padding: var(--bc-space-6);
+  margin-bottom: var(--bc-space-6);
+
+  h2 {
+    margin: 0 0 var(--bc-space-4) 0;
+    font-size: var(--bc-text-lg);
+  }
+}
+
+.formLabel {
+  display: block;
+  margin-bottom: var(--bc-space-4);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}
+
+.formSelect,
+.formTextarea {
+  display: block;
+  width: 100%;
+  margin-top: var(--bc-space-1);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: var(--bc-bg-surface);
+  color: var(--bc-text-primary);
+  border: 1px solid var(--bc-border);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-sm);
+
+  &:focus {
+    outline: none;
+    border-color: var(--bc-accent);
+  }
+}
+
+.formTextarea {
+  resize: vertical;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-2);
+  margin-top: var(--bc-space-4);
+}
+
+.cancelButton {
+  @include button-secondary;
+}
+
+.submitButton {
+  @include button-primary;
+}
+
+// Active Session
+.activeSession {
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-lg);
+  overflow: hidden;
+}
+
+.sessionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bc-space-4);
+  background: rgba(34, 197, 94, 0.1);
+  border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.sessionInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+}
+
+.sessionBadge {
+  background: #22c55e;
+  color: white;
+  padding: 4px 12px;
+  border-radius: var(--bc-radius-full);
+  font-size: var(--bc-text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.sessionPack {
+  color: var(--bc-text-secondary);
+  font-size: var(--bc-text-sm);
+}
+
+.sessionStats {
+  display: flex;
+  gap: var(--bc-space-4);
+}
+
+.stat {
+  text-align: center;
+}
+
+.statValue {
+  display: block;
+  font-size: var(--bc-text-2xl);
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.statValueError {
+  display: block;
+  font-size: var(--bc-text-2xl);
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.statLabel {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  text-transform: uppercase;
+}
+
+// Scan Area
+.scanArea {
+  padding: var(--bc-space-6);
+  text-align: center;
+}
+
+.lastResult {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-3);
+  border-radius: var(--bc-radius-md);
+  margin-bottom: var(--bc-space-4);
+  font-size: var(--bc-text-sm);
+}
+
+.lastResult.success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.lastResult.failure {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.resultIcon {
+  font-size: var(--bc-text-lg);
+  font-weight: 700;
+}
+
+.inputArea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-3);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.inputLabel {
+  font-size: var(--bc-text-lg);
+  color: var(--bc-text-secondary);
+  font-weight: 500;
+}
+
+.uidInput {
+  padding: var(--bc-space-4);
+  background: var(--bc-bg-surface);
+  color: var(--bc-text-primary);
+  border: 2px solid var(--bc-border);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-lg);
+  font-family: monospace;
+  text-align: center;
+  text-transform: uppercase;
+
+  &:focus {
+    outline: none;
+    border-color: var(--bc-accent);
+  }
+
+  &::placeholder {
+    text-transform: none;
+  }
+}
+
+.addButton {
+  @include button-primary;
+  padding: var(--bc-space-3);
+  font-size: var(--bc-text-md);
+}
+
+.scanHint {
+  margin-top: var(--bc-space-4);
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-sm);
+}
+
+// Recent Log
+.recentLog {
+  padding: var(--bc-space-4);
+  border-top: 1px solid var(--bc-border-subtle);
+
+  h3 {
+    margin: 0 0 var(--bc-space-3) 0;
+    font-size: var(--bc-text-sm);
+    color: var(--bc-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.logList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-1);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.logEntry {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-2);
+  border-radius: var(--bc-radius-sm);
+  font-size: var(--bc-text-sm);
+}
+
+.logSuccess {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.logFailure {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.logIcon {
+  font-weight: 700;
+}
+
+.logSuccess .logIcon {
+  color: #22c55e;
+}
+
+.logFailure .logIcon {
+  color: #ef4444;
+}
+
+.logUid {
+  font-family: monospace;
+  color: var(--bc-text-primary);
+}
+
+.logError {
+  color: #ef4444;
+  font-size: var(--bc-text-xs);
+  margin-left: auto;
+}
+
+// Session Actions
+.sessionActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-4);
+  border-top: 1px solid var(--bc-border-subtle);
+}
+
+.abandonButton {
+  @include button-secondary;
+}
+
+.endButton {
+  @include button-primary;
+  background: linear-gradient(135deg, var(--bc-success), #16a34a);
+}
+
+// History Section
+.historySection {
+  margin-top: var(--bc-space-6);
+
+  h2 {
+    margin: 0 0 var(--bc-space-4) 0;
+    font-size: var(--bc-text-lg);
+  }
+}
+
+.emptyHistory {
+  text-align: center;
+  padding: var(--bc-space-4);
+  color: var(--bc-text-tertiary);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: var(--bc-space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--bc-border-subtle);
+  }
+
+  th {
+    font-size: var(--bc-text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--bc-text-tertiary);
+    background: var(--bc-bg-elevated);
+  }
+
+  td {
+    font-size: var(--bc-text-sm);
+    color: var(--bc-text-primary);
+  }
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--bc-radius-full);
+  font-size: var(--bc-text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status_active {
+  background: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+}
+
+.status_completed {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.status_abandoned {
+  background: rgba(156, 163, 175, 0.2);
+  color: #9ca3af;
+}

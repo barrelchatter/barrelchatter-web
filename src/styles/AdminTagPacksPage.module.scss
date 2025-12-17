@@ -1,0 +1,420 @@
+// AdminTagPacksPage.module.scss
+@use '../styles/design-system' as *;
+
+.page {
+  padding: var(--bc-space-4);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--bc-space-6);
+  gap: var(--bc-space-4);
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0 0 var(--bc-space-1) 0;
+    font-size: var(--bc-text-2xl);
+  }
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--bc-text-secondary);
+  font-size: var(--bc-text-sm);
+}
+
+.headerActions {
+  display: flex;
+  gap: var(--bc-space-2);
+}
+
+.primaryButton {
+  @include button-primary;
+}
+
+.secondaryButton {
+  @include button-secondary;
+  text-decoration: none;
+}
+
+// Stats
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--bc-space-3);
+  margin-bottom: var(--bc-space-6);
+}
+
+.statCard {
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-md);
+  padding: var(--bc-space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--bc-space-1);
+}
+
+.statValue {
+  font-size: var(--bc-text-2xl);
+  font-weight: 700;
+  color: var(--bc-accent);
+}
+
+.statLabel {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// Filters
+.filtersRow {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+  margin-bottom: var(--bc-space-4);
+}
+
+.filterSelect {
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: var(--bc-bg-elevated);
+  color: var(--bc-text-primary);
+  border: 1px solid var(--bc-border);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-sm);
+}
+
+.countLabel {
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-sm);
+}
+
+// Messages
+.error {
+  padding: var(--bc-space-3);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--bc-radius-md);
+  color: #ef4444;
+  margin-bottom: var(--bc-space-4);
+}
+
+.message {
+  padding: var(--bc-space-4);
+  color: var(--bc-text-secondary);
+  text-align: center;
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--bc-space-8);
+  color: var(--bc-text-secondary);
+
+  p {
+    margin-bottom: var(--bc-space-4);
+  }
+}
+
+// Table
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: var(--bc-space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--bc-border-subtle);
+  }
+
+  th {
+    font-size: var(--bc-text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--bc-text-tertiary);
+    background: var(--bc-bg-elevated);
+  }
+
+  td {
+    font-size: var(--bc-text-sm);
+    color: var(--bc-text-primary);
+  }
+
+  tbody tr:hover {
+    background: var(--bc-bg-hover);
+  }
+}
+
+.packCodeLink {
+  color: var(--bc-accent);
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.tagCount {
+  font-family: monospace;
+}
+
+.tagCountWarning {
+  color: #eab308;
+  font-size: var(--bc-text-xs);
+}
+
+.emailSmall {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+}
+
+// Status badges
+.statusBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--bc-radius-full);
+  font-size: var(--bc-text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusActive {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.statusClaimed {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.statusVoid {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.statusDefault {
+  background: var(--bc-bg-elevated);
+  color: var(--bc-text-secondary);
+}
+
+// Action buttons
+.actionButtons {
+  display: flex;
+  gap: var(--bc-space-2);
+}
+
+.viewButton,
+.assignButton,
+.voidButton {
+  padding: 4px 10px;
+  font-size: var(--bc-text-xs);
+  border-radius: var(--bc-radius-sm);
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+
+.viewButton {
+  background: var(--bc-bg-elevated);
+  color: var(--bc-text-primary);
+
+  &:hover {
+    background: var(--bc-bg-hover);
+  }
+}
+
+.assignButton {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.3);
+  }
+}
+
+.voidButton {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.2);
+  }
+}
+
+// Modal
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--bc-space-4);
+}
+
+.modal {
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-lg);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalSmall {
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-lg);
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bc-space-4);
+  border-bottom: 1px solid var(--bc-border-subtle);
+
+  h2 {
+    margin: 0;
+    font-size: var(--bc-text-lg);
+  }
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--bc-text-tertiary);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+
+  &:hover {
+    color: var(--bc-text-primary);
+  }
+}
+
+.modalBody {
+  padding: var(--bc-space-4);
+}
+
+.modalError {
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--bc-radius-md);
+  color: #ef4444;
+  margin-bottom: var(--bc-space-4);
+  font-size: var(--bc-text-sm);
+}
+
+.modalLabel {
+  display: block;
+  margin-bottom: var(--bc-space-4);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}
+
+.modalInput {
+  display: block;
+  width: 100%;
+  margin-top: var(--bc-space-1);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: var(--bc-bg-surface);
+  color: var(--bc-text-primary);
+  border: 1px solid var(--bc-border);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-sm);
+
+  &:focus {
+    outline: none;
+    border-color: var(--bc-accent);
+  }
+}
+
+.modalTextarea {
+  display: block;
+  width: 100%;
+  margin-top: var(--bc-space-1);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: var(--bc-bg-surface);
+  color: var(--bc-text-primary);
+  border: 1px solid var(--bc-border);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-sm);
+  resize: vertical;
+
+  &:focus {
+    outline: none;
+    border-color: var(--bc-accent);
+  }
+}
+
+.modalRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--bc-space-3);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-2);
+  margin-top: var(--bc-space-4);
+}
+
+.modalCancelButton {
+  @include button-secondary;
+}
+
+.modalSubmitButton {
+  @include button-primary;
+}
+
+.assignPackInfo {
+  background: var(--bc-bg-surface);
+  padding: var(--bc-space-3);
+  border-radius: var(--bc-radius-md);
+  margin-bottom: var(--bc-space-4);
+
+  strong {
+    display: block;
+    color: var(--bc-text-primary);
+    margin-bottom: 2px;
+  }
+
+  span {
+    display: block;
+    font-size: var(--bc-text-sm);
+    color: var(--bc-text-secondary);
+  }
+}
+
+.voidWarning {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: var(--bc-space-3);
+  border-radius: var(--bc-radius-md);
+  margin-bottom: var(--bc-space-4);
+  color: var(--bc-text-primary);
+  font-size: var(--bc-text-sm);
+}
+
+.voidConfirmButton {
+  @include button-danger;
+}
