@@ -1,0 +1,375 @@
+@use './design-system' as *;
+
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-2);
+}
+
+// ============================================================================
+// PENDING REQUEST DISPLAY
+// ============================================================================
+
+.pendingDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: var(--bc-radius-md);
+}
+
+.pendingInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pendingBadge {
+  font-size: var(--bc-text-xs);
+  font-weight: 600;
+  color: #eab308;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pendingName {
+  font-weight: 500;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pendingMeta {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-secondary);
+}
+
+// ============================================================================
+// SELECTED DISPLAY
+// ============================================================================
+
+.selectedDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: var(--bc-bg-surface);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-md);
+}
+
+.selectedInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.selectedName {
+  font-weight: 500;
+  font-size: var(--bc-text-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selectedMeta {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-secondary);
+}
+
+.clearButton {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-lg);
+  cursor: pointer;
+  padding: var(--bc-space-1);
+  line-height: 1;
+
+  &:hover {
+    color: var(--bc-text-primary);
+  }
+}
+
+// ============================================================================
+// SEARCH INPUT
+// ============================================================================
+
+.searchContainer {
+  position: relative;
+}
+
+.searchInput {
+  @include input-base;
+  width: 100%;
+}
+
+.loadingIndicator {
+  position: absolute;
+  right: var(--bc-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-sm);
+}
+
+// ============================================================================
+// DROPDOWN
+// ============================================================================
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin-top: var(--bc-space-1);
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-md);
+  box-shadow: var(--bc-shadow-lg);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.resultsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.resultItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--bc-transition-fast);
+
+  &:hover {
+    background: var(--bc-bg-hover);
+  }
+}
+
+.resultName {
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  color: var(--bc-text-primary);
+}
+
+.resultMeta {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-secondary);
+}
+
+.noResults {
+  padding: var(--bc-space-4) var(--bc-space-3);
+  text-align: center;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-tertiary);
+}
+
+.dropdownFooter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-1);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  border-top: 1px solid var(--bc-border-subtle);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.footerAction {
+  background: none;
+  border: none;
+  color: var(--bc-accent);
+  font-size: var(--bc-text-sm);
+  cursor: pointer;
+  text-align: left;
+  padding: var(--bc-space-1) 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.footerActionMuted {
+  background: none;
+  border: none;
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-xs);
+  cursor: pointer;
+  text-align: left;
+  padding: var(--bc-space-1) 0;
+
+  &:hover {
+    color: var(--bc-text-secondary);
+  }
+}
+
+// ============================================================================
+// LEGACY INPUTS
+// ============================================================================
+
+.legacyContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-2);
+}
+
+.legacyRow {
+  display: flex;
+  gap: var(--bc-space-2);
+}
+
+.legacyInput {
+  @include input-base;
+  flex: 1;
+}
+
+.legacyCityInput {
+  @include input-base;
+  flex: 2;
+}
+
+.legacyStateSelect {
+  @include select-base;
+  width: 80px;
+}
+
+.legacyBackLink {
+  background: none;
+  border: none;
+  color: var(--bc-accent);
+  font-size: var(--bc-text-xs);
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ============================================================================
+// CREATE FORM
+// ============================================================================
+
+.createForm {
+  padding: var(--bc-space-3);
+  background: var(--bc-bg-surface);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-md);
+}
+
+.createHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--bc-space-3);
+
+  h4 {
+    margin: 0;
+    font-size: var(--bc-text-md);
+  }
+}
+
+.createCloseButton {
+  background: none;
+  border: none;
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-xl);
+  cursor: pointer;
+  line-height: 1;
+
+  &:hover {
+    color: var(--bc-text-primary);
+  }
+}
+
+.createError {
+  @include alert-error;
+  margin-bottom: var(--bc-space-2);
+  padding: var(--bc-space-2);
+  font-size: var(--bc-text-xs);
+}
+
+.createSuccess {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+  padding: var(--bc-space-2);
+  border-radius: var(--bc-radius-sm);
+  font-size: var(--bc-text-xs);
+  margin-bottom: var(--bc-space-2);
+}
+
+.createRow {
+  margin-bottom: var(--bc-space-2);
+}
+
+.createRowDouble {
+  display: flex;
+  gap: var(--bc-space-2);
+  margin-bottom: var(--bc-space-2);
+
+  .createLabel {
+    flex: 1;
+  }
+}
+
+.createLabel {
+  @include label-base;
+  font-size: var(--bc-text-xs);
+}
+
+.createInput {
+  @include input-base;
+  padding: var(--bc-space-2);
+  font-size: var(--bc-text-sm);
+}
+
+.createSelect {
+  @include select-base;
+  padding: var(--bc-space-2);
+  font-size: var(--bc-text-sm);
+}
+
+.createActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-2);
+  margin-top: var(--bc-space-3);
+}
+
+.createCancelButton {
+  @include button-ghost;
+  padding: var(--bc-space-1) var(--bc-space-3);
+  font-size: var(--bc-text-xs);
+}
+
+.createSubmitButton {
+  @include button-primary;
+  padding: var(--bc-space-1) var(--bc-space-3);
+  font-size: var(--bc-text-xs);
+}
+
+.createNote {
+  margin: var(--bc-space-2) 0 0;
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  text-align: center;
+}

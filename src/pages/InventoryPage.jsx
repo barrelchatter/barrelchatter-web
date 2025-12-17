@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import NewBottleSubmissionModal from '../components/NewBottleSubmissionModal';
 import LogTastingModal from '../components/LogTastingModal';
 import StorageLocationSelect from '../components/StorageLocationSelect';
+import PurchaseLocationSelect from '../components/PurchaseLocationSelect';
 import api, { API_BASE_URL } from '../api/client';
 import styles from '../styles/InventoryPage.module.scss';
 
@@ -70,6 +71,10 @@ function InventoryPage() {
     status: 'sealed',
     storage_location_id: null,
     location_label: '',
+    purchase_location_id: null,
+    purchase_store: '',
+    purchase_city: '',
+    purchase_state: '',
     price_paid: '',
   });
   const [addFormError, setAddFormError] = useState('');
@@ -177,6 +182,26 @@ function InventoryPage() {
     }));
   }
 
+  function handlePurchaseLocationChange(locationId, location) {
+    setAddForm((prev) => ({
+      ...prev,
+      purchase_location_id: locationId,
+      purchase_store: locationId ? '' : prev.purchase_store,
+      purchase_city: locationId ? '' : prev.purchase_city,
+      purchase_state: locationId ? '' : prev.purchase_state,
+    }));
+  }
+
+  function handleLegacyPurchaseChange({ store, city, state }) {
+    setAddForm((prev) => ({
+      ...prev,
+      purchase_store: store,
+      purchase_city: city,
+      purchase_state: state,
+      purchase_location_id: null,
+    }));
+  }
+
   async function handleAddFormSubmit(e) {
     e.preventDefault();
     if (!addForm.bottle_id) {
@@ -210,6 +235,22 @@ function InventoryPage() {
         payload.location_label = addForm.location_label.trim();
       }
 
+      // Only include purchase_location_id if set
+      if (addForm.purchase_location_id) {
+        payload.purchase_location_id = addForm.purchase_location_id;
+      }
+
+      // Only include legacy purchase fields if they have values
+      if (addForm.purchase_store && addForm.purchase_store.trim()) {
+        payload.purchase_store = addForm.purchase_store.trim();
+      }
+      if (addForm.purchase_city && addForm.purchase_city.trim()) {
+        payload.purchase_city = addForm.purchase_city.trim();
+      }
+      if (addForm.purchase_state && addForm.purchase_state.trim()) {
+        payload.purchase_state = addForm.purchase_state.trim();
+      }
+
       await api.post('/v1/inventory', payload);
 
       // Reset form and reload
@@ -218,6 +259,10 @@ function InventoryPage() {
         status: 'sealed',
         storage_location_id: null,
         location_label: '',
+        purchase_location_id: null,
+        purchase_store: '',
+        purchase_city: '',
+        purchase_state: '',
         price_paid: '',
       });
       setShowAddForm(false);
@@ -373,6 +418,21 @@ function InventoryPage() {
                   showLegacy={true}
                   legacyValue={addForm.location_label}
                   onLegacyChange={handleLegacyLocationChange}
+                />
+              </label>
+            </div>
+
+            <div className={styles.addFormRow}>
+              <label className={styles.addFormLabel}>
+                Purchase Location
+                <PurchaseLocationSelect
+                  value={addForm.purchase_location_id}
+                  onChange={handlePurchaseLocationChange}
+                  showLegacy={true}
+                  legacyStore={addForm.purchase_store}
+                  legacyCity={addForm.purchase_city}
+                  legacyState={addForm.purchase_state}
+                  onLegacyChange={handleLegacyPurchaseChange}
                 />
               </label>
             </div>

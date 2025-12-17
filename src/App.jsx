@@ -18,6 +18,7 @@ import InventoryDetailPage from './pages/InventoryDetailPage.jsx';
 import AdminAuditLogsPage from './pages/AdminAuditLogsPage.jsx';
 import AdminBottleSubmissionsPage from './pages/AdminBottleSubmissionsPage.jsx';
 import StorageLocationsPage from './pages/StorageLocationsPage.jsx';
+import AdminPurchaseLocationsPage from './pages/AdminPurchaseLocationsPage.jsx';
 
 function App() {
   return (
@@ -88,6 +89,14 @@ function App() {
           element={
             <ProtectedRoute requireRoles={['admin']}>
               <AdminAuditLogsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/purchase-locations"
+          element={
+            <ProtectedRoute requireRoles={['admin']}>
+              <AdminPurchaseLocationsPage />
             </ProtectedRoute>
           }
         />

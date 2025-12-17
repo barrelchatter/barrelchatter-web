@@ -85,6 +85,12 @@ function AppLayout() {
                   Audit Logs
                 </NavLink>
               )}
+
+              {isAdmin && (
+                <NavLink to="/app/admin/purchase-locations" className={navClass}>
+                  Purchase Locations
+                </NavLink>
+              )}
             </>
           )}
         </nav>

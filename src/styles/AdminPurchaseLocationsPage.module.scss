@@ -1,0 +1,434 @@
+@use './design-system' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-4);
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--bc-space-4);
+
+  h1 {
+    margin: 0;
+    font-size: var(--bc-text-xl);
+  }
+}
+
+.subtitle {
+  margin: var(--bc-space-1) 0 0;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}
+
+.pendingBadge {
+  @include badge-accent;
+  font-size: var(--bc-text-sm);
+  padding: var(--bc-space-1) var(--bc-space-3);
+}
+
+// ============================================================================
+// FILTERS
+// ============================================================================
+
+.filtersRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bc-space-2);
+  align-items: center;
+}
+
+.searchInput {
+  @include input-base;
+  min-width: 200px;
+  padding: var(--bc-space-2) var(--bc-space-3);
+  font-size: var(--bc-text-sm);
+}
+
+.filterSelect {
+  @include select-base;
+  padding: var(--bc-space-2) var(--bc-space-3);
+  font-size: var(--bc-text-sm);
+  min-width: 140px;
+}
+
+.countLabel {
+  margin-left: auto;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-tertiary);
+}
+
+// ============================================================================
+// MESSAGES
+// ============================================================================
+
+.message {
+  font-size: var(--bc-text-base);
+  color: var(--bc-text-secondary);
+  padding: var(--bc-space-4);
+}
+
+.error {
+  @include alert-error;
+}
+
+.emptyState {
+  @include card;
+  padding: var(--bc-space-8);
+  text-align: center;
+  color: var(--bc-text-secondary);
+}
+
+// ============================================================================
+// TABLE
+// ============================================================================
+
+.tableWrapper {
+  @include table-wrapper;
+}
+
+.table {
+  @include table-base;
+
+  th, td {
+    vertical-align: top;
+  }
+}
+
+.nameLink {
+  background: none;
+  border: none;
+  color: var(--bc-text-primary);
+  font-weight: 500;
+  font-size: inherit;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+
+  &:hover {
+    color: var(--bc-accent);
+    text-decoration: underline;
+  }
+}
+
+.websiteLink {
+  margin-left: var(--bc-space-1);
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-xs);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--bc-accent);
+  }
+}
+
+.addressLine {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  margin-top: 2px;
+}
+
+.submittedBy {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+}
+
+// ============================================================================
+// STATUS BADGES
+// ============================================================================
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px var(--bc-space-2);
+  border-radius: var(--bc-radius-full);
+  font-size: var(--bc-text-xs);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.statusPending {
+  background: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+}
+
+.statusApproved {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.statusRejected {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+// ============================================================================
+// ACTION BUTTONS
+// ============================================================================
+
+.actionButtons {
+  display: flex;
+  gap: var(--bc-space-2);
+}
+
+.approveButton {
+  @include button-ghost;
+  padding: var(--bc-space-1) var(--bc-space-2);
+  font-size: var(--bc-text-xs);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+
+  &:hover {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: #22c55e;
+  }
+}
+
+.rejectButton {
+  @include button-ghost;
+  padding: var(--bc-space-1) var(--bc-space-2);
+  font-size: var(--bc-text-xs);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+  }
+}
+
+// ============================================================================
+// MODAL
+// ============================================================================
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--bc-space-4);
+}
+
+.modal {
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-lg);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--bc-shadow-xl);
+}
+
+.modalLarge {
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-lg);
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--bc-shadow-xl);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bc-space-4);
+  border-bottom: 1px solid var(--bc-border-subtle);
+
+  h2 {
+    margin: 0;
+    font-size: var(--bc-text-lg);
+  }
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-2xl);
+  cursor: pointer;
+  line-height: 1;
+
+  &:hover {
+    color: var(--bc-text-primary);
+  }
+}
+
+.modalBody {
+  padding: var(--bc-space-4);
+}
+
+.modalLocationInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--bc-space-3);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--bc-radius-md);
+  margin-bottom: var(--bc-space-4);
+
+  strong {
+    font-size: var(--bc-text-md);
+  }
+
+  span {
+    font-size: var(--bc-text-sm);
+    color: var(--bc-text-secondary);
+  }
+}
+
+.modalError {
+  @include alert-error;
+  margin-bottom: var(--bc-space-3);
+}
+
+.modalLabel {
+  @include label-base;
+  display: block;
+  margin-bottom: var(--bc-space-3);
+}
+
+.modalSelect {
+  @include select-base;
+}
+
+.modalTextarea {
+  @include input-base;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.modalInput {
+  @include input-base;
+}
+
+.moderateSection {
+  margin-bottom: var(--bc-space-4);
+  padding-bottom: var(--bc-space-4);
+  border-bottom: 1px solid var(--bc-border-subtle);
+}
+
+.editFieldsSection {
+  margin-bottom: var(--bc-space-4);
+  padding: var(--bc-space-3);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--bc-radius-md);
+
+  h4 {
+    margin: 0 0 var(--bc-space-1) 0;
+    font-size: var(--bc-text-md);
+  }
+}
+
+.editFieldsHint {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  margin: 0 0 var(--bc-space-3) 0;
+}
+
+.editFieldsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--bc-space-3);
+}
+
+.modalLabelFull {
+  @include label-base;
+  display: block;
+  grid-column: 1 / -1;
+}
+
+.logoPreview {
+  margin-top: var(--bc-space-2);
+  padding: var(--bc-space-2);
+  background: var(--bc-bg-surface);
+  border-radius: var(--bc-radius-sm);
+  text-align: center;
+
+  img {
+    max-width: 150px;
+    max-height: 80px;
+    object-fit: contain;
+  }
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-2);
+  margin-top: var(--bc-space-4);
+}
+
+.modalCancelButton {
+  @include button-secondary;
+}
+
+.modalApproveButton {
+  @include button-primary;
+  background: #22c55e;
+
+  &:hover {
+    background: #16a34a;
+  }
+}
+
+.modalRejectButton {
+  @include button-primary;
+  background: #ef4444;
+
+  &:hover {
+    background: #dc2626;
+  }
+}
+
+// ============================================================================
+// DETAIL VIEW
+// ============================================================================
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--bc-space-3);
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  a {
+    color: var(--bc-accent);
+    text-decoration: none;
+    word-break: break-all;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.detailLabel {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--bc-tracking-wide);
+}
+
+.detailActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-2);
+  margin-top: var(--bc-space-4);
+  padding-top: var(--bc-space-4);
+  border-top: 1px solid var(--bc-border-subtle);
+}

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api, { API_BASE_URL } from '../api/client';
 import StorageLocationSelect from '../components/StorageLocationSelect';
+import PurchaseLocationSelect from '../components/PurchaseLocationSelect';
 import styles from '../styles/InventoryDetailPage.module.scss';
 
 const apiBase = (API_BASE_URL || '').replace(/\/$/, '');
@@ -72,6 +73,10 @@ function InventoryDetailPage() {
   const [editForm, setEditForm] = useState({
     storage_location_id: null,
     location_label: '',
+    purchase_location_id: null,
+    purchase_store: '',
+    purchase_city: '',
+    purchase_state: '',
     status: 'sealed',
     bottle_serial_label: '',
     bottle_number: '',
@@ -149,6 +154,10 @@ function InventoryDetailPage() {
     setEditForm({
       storage_location_id: item.storage_location_id || null,
       location_label: item.location_label || '',
+      purchase_location_id: item.purchase_location_id || null,
+      purchase_store: item.purchase_store || '',
+      purchase_city: item.purchase_city || '',
+      purchase_state: item.purchase_state || '',
       status: item.status || 'sealed',
       bottle_serial_label: item.bottle_serial_label || '',
       bottle_number:
@@ -202,6 +211,26 @@ function InventoryDetailPage() {
     }));
   }
 
+  function handlePurchaseLocationChange(locationId) {
+    setEditForm((prev) => ({
+      ...prev,
+      purchase_location_id: locationId,
+      purchase_store: locationId ? '' : prev.purchase_store,
+      purchase_city: locationId ? '' : prev.purchase_city,
+      purchase_state: locationId ? '' : prev.purchase_state,
+    }));
+  }
+
+  function handleLegacyPurchaseChange({ store, city, state }) {
+    setEditForm((prev) => ({
+      ...prev,
+      purchase_store: store,
+      purchase_city: city,
+      purchase_state: state,
+      purchase_location_id: null,
+    }));
+  }
+
   function handleEditCancel() {
     setEditError('');
     setEditMode(false);
@@ -209,6 +238,10 @@ function InventoryDetailPage() {
       setEditForm({
         storage_location_id: item.storage_location_id || null,
         location_label: item.location_label || '',
+        purchase_location_id: item.purchase_location_id || null,
+        purchase_store: item.purchase_store || '',
+        purchase_city: item.purchase_city || '',
+        purchase_state: item.purchase_state || '',
         status: item.status || 'sealed',
         bottle_serial_label: item.bottle_serial_label || '',
         bottle_number:
@@ -249,6 +282,22 @@ function InventoryDetailPage() {
       // Only include location_label if it has a value (not empty, not null)
       if (editForm.location_label && editForm.location_label.trim()) {
         payload.location_label = editForm.location_label.trim();
+      }
+
+      // Only include purchase_location_id if set
+      if (editForm.purchase_location_id) {
+        payload.purchase_location_id = editForm.purchase_location_id;
+      }
+
+      // Only include legacy purchase fields if they have values
+      if (editForm.purchase_store && editForm.purchase_store.trim()) {
+        payload.purchase_store = editForm.purchase_store.trim();
+      }
+      if (editForm.purchase_city && editForm.purchase_city.trim()) {
+        payload.purchase_city = editForm.purchase_city.trim();
+      }
+      if (editForm.purchase_state && editForm.purchase_state.trim()) {
+        payload.purchase_state = editForm.purchase_state.trim();
       }
 
       const res = await api.patch(`/v1/inventory/${id}`, payload);
@@ -372,6 +421,20 @@ function InventoryDetailPage() {
                         showLegacy={true}
                         legacyValue={editForm.location_label}
                         onLegacyChange={handleLegacyLocationChange}
+                      />
+                    </label>
+
+                    <label className={styles.editLabel}>
+                      Purchase Location
+                      <PurchaseLocationSelect
+                        value={editForm.purchase_location_id}
+                        onChange={handlePurchaseLocationChange}
+                        inventoryId={id}
+                        showLegacy={true}
+                        legacyStore={editForm.purchase_store}
+                        legacyCity={editForm.purchase_city}
+                        legacyState={editForm.purchase_state}
+                        onLegacyChange={handleLegacyPurchaseChange}
                       />
                     </label>
 
