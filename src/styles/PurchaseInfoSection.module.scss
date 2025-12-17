@@ -1,0 +1,223 @@
+// PurchaseInfoSection.module.scss
+@use '../styles/design-system' as *;
+
+.section {
+  background: var(--bc-bg-surface);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-lg);
+  overflow: hidden;
+}
+
+.sectionHeader {
+  padding: var(--bc-space-3) var(--bc-space-4);
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--bc-border-subtle);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  margin: 0;
+  font-size: var(--bc-text-md);
+  font-weight: 600;
+  color: var(--bc-text-primary);
+}
+
+.sectionIcon {
+  font-size: var(--bc-text-lg);
+}
+
+.sectionContent {
+  padding: var(--bc-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-4);
+}
+
+// Form groups
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-1);
+  flex: 1;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  color: var(--bc-text-secondary);
+}
+
+.labelHint {
+  font-size: var(--bc-text-xs);
+  font-weight: 400;
+  color: var(--bc-text-tertiary);
+}
+
+.input {
+  @include input-base;
+}
+
+// Price row layout
+.priceRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--bc-space-4);
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Price input with currency symbol
+.priceInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currencySymbol {
+  position: absolute;
+  left: var(--bc-space-3);
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-sm);
+  pointer-events: none;
+}
+
+.priceInput {
+  padding-left: var(--bc-space-6) !important;
+}
+
+// Deal indicator
+.dealIndicator {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-sm);
+}
+
+.dealIndicator.great {
+  background: var(--bc-success-bg);
+  border: 1px solid var(--bc-success-border);
+  color: var(--bc-success);
+}
+
+.dealIndicator.good {
+  background: var(--bc-info-bg);
+  border: 1px solid var(--bc-info-border);
+  color: var(--bc-info);
+}
+
+.dealIndicator.fair {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--bc-border-default);
+  color: var(--bc-text-secondary);
+}
+
+.dealIndicator.above {
+  background: var(--bc-warning-bg);
+  border: 1px solid var(--bc-warning-border);
+  color: var(--bc-warning);
+}
+
+.dealIndicator.premium {
+  background: rgba(201, 166, 107, 0.15);
+  border: 1px solid var(--bc-border-accent);
+  color: var(--bc-accent);
+}
+
+.dealIcon {
+  font-size: var(--bc-text-base);
+}
+
+.dealMessage {
+  flex: 1;
+}
+
+.msrpComparison {
+  font-size: var(--bc-text-xs);
+  padding: 2px var(--bc-space-2);
+  border-radius: var(--bc-radius-full);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.belowMsrp {
+  color: var(--bc-success);
+}
+
+.aboveMsrp {
+  color: var(--bc-danger);
+}
+
+.atMsrp {
+  color: var(--bc-text-secondary);
+}
+
+// Pricing hint
+.pricingHint {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--bc-radius-md);
+}
+
+.hintIcon {
+  font-size: var(--bc-text-base);
+}
+
+.hintText {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+  
+  strong {
+    color: var(--bc-accent);
+    font-weight: 600;
+  }
+}
+
+// Read-only display
+.infoDisplay {
+  padding: var(--bc-space-2) 0;
+}
+
+.infoRow {
+  display: flex;
+  gap: var(--bc-space-4);
+  flex-wrap: wrap;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.infoLabel {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--bc-tracking-wider);
+}
+
+.infoValue {
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  color: var(--bc-text-primary);
+  
+  &.positive {
+    color: var(--bc-success);
+  }
+  
+  &.negative {
+    color: var(--bc-danger);
+  }
+}

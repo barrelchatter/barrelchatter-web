@@ -1,0 +1,97 @@
+// DealBadge.module.scss
+@use '../styles/design-system' as *;
+
+.badge {
+  @include badge-base;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bc-space-1);
+  white-space: nowrap;
+}
+
+// Size variants
+.sm {
+  padding: 2px var(--bc-space-1);
+  font-size: 10px;
+  
+  .icon {
+    font-size: 10px;
+  }
+}
+
+.md {
+  padding: 3px var(--bc-space-2);
+  font-size: var(--bc-text-xs);
+  
+  .icon {
+    font-size: var(--bc-text-xs);
+  }
+}
+
+.lg {
+  padding: var(--bc-space-1) var(--bc-space-3);
+  font-size: var(--bc-text-sm);
+  
+  .icon {
+    font-size: var(--bc-text-sm);
+  }
+}
+
+// Variant styles
+.great-deal {
+  background: var(--bc-success-bg);
+  border-color: var(--bc-success-border);
+  color: var(--bc-success);
+}
+
+.good-deal {
+  background: rgba(91, 155, 213, 0.12);
+  border-color: rgba(91, 155, 213, 0.4);
+  color: #5b9bd5;
+}
+
+.below-msrp {
+  background: var(--bc-success-bg);
+  border-color: var(--bc-success-border);
+  color: var(--bc-success);
+}
+
+.premium {
+  background: var(--bc-warning-bg);
+  border-color: var(--bc-warning-border);
+  color: var(--bc-warning);
+}
+
+.secondary {
+  background: rgba(201, 166, 107, 0.15);
+  border-color: var(--bc-border-accent);
+  color: var(--bc-accent);
+}
+
+.above-msrp {
+  background: var(--bc-danger-bg);
+  border-color: var(--bc-danger-border);
+  color: var(--bc-danger);
+}
+
+.icon {
+  line-height: 1;
+}
+
+.label {
+  font-weight: 500;
+}
+
+// Comparison text styles
+.comparisonText {
+  font-size: var(--bc-text-xs);
+  font-weight: 500;
+  
+  &.positive {
+    color: var(--bc-success);
+  }
+  
+  &.negative {
+    color: var(--bc-danger);
+  }
+}

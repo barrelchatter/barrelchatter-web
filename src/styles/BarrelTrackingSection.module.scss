@@ -1,0 +1,181 @@
+// BarrelTrackingSection.module.scss
+@use '../styles/design-system' as *;
+
+.section {
+  background: var(--bc-bg-surface);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-lg);
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bc-space-3) var(--bc-space-4);
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--bc-border-subtle);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  margin: 0;
+  font-size: var(--bc-text-md);
+  font-weight: 600;
+  color: var(--bc-text-primary);
+}
+
+.sectionIcon {
+  font-size: var(--bc-text-lg);
+}
+
+.sectionHint {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+}
+
+.sectionContent {
+  padding: var(--bc-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-4);
+}
+
+// Form groups
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-1);
+  flex: 1;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  color: var(--bc-text-secondary);
+}
+
+.labelHint {
+  font-size: var(--bc-text-xs);
+  font-weight: 400;
+  color: var(--bc-text-tertiary);
+}
+
+.input {
+  @include input-base;
+}
+
+// Row layouts
+.dateRow,
+.detailsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--bc-space-4);
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.msrpRow {
+  max-width: 200px;
+}
+
+// Price input
+.priceInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currencySymbol {
+  position: absolute;
+  left: var(--bc-space-3);
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-sm);
+  pointer-events: none;
+}
+
+.priceInput {
+  padding-left: var(--bc-space-6) !important;
+}
+
+// Calculated age display
+.calculatedAge {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: var(--bc-success-bg);
+  border: 1px solid var(--bc-success-border);
+  border-radius: var(--bc-radius-md);
+}
+
+.ageIcon {
+  font-size: var(--bc-text-base);
+}
+
+.ageText {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-success);
+  
+  strong {
+    font-weight: 600;
+  }
+}
+
+// Date validation error
+.dateError {
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: var(--bc-danger-bg);
+  border: 1px solid var(--bc-danger-border);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-danger);
+}
+
+// Read-only display styles
+.infoDisplay {
+  @include card;
+  padding: var(--bc-space-4);
+}
+
+.infoTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  margin: 0 0 var(--bc-space-4) 0;
+  font-size: var(--bc-text-md);
+  font-weight: 600;
+  color: var(--bc-text-primary);
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--bc-space-3);
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.infoLabel {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--bc-tracking-wider);
+}
+
+.infoValue {
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  color: var(--bc-text-primary);
+}

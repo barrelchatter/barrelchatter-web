@@ -473,3 +473,219 @@
   max-width: 280px;
   @include truncate;
 }
+
+
+/* Deal indicator in add form */
+.dealIndicator {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-sm);
+  margin-bottom: var(--bc-space-3);
+}
+
+.dealIndicator.great {
+  background: var(--bc-success-bg);
+  border: 1px solid var(--bc-success-border);
+  color: var(--bc-success);
+}
+
+.dealIndicator.good {
+  background: var(--bc-info-bg);
+  border: 1px solid var(--bc-info-border);
+  color: var(--bc-info);
+}
+
+.dealIndicator.fair {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--bc-border-default);
+  color: var(--bc-text-secondary);
+}
+
+.dealIndicator.above {
+  background: var(--bc-warning-bg);
+  border: 1px solid var(--bc-warning-border);
+  color: var(--bc-warning);
+}
+
+.dealIndicator.premium {
+  background: rgba(201, 166, 107, 0.15);
+  border: 1px solid var(--bc-border-accent);
+  color: var(--bc-accent);
+}
+
+.dealIcon {
+  font-size: var(--bc-text-base);
+}
+
+.dealMessage {
+  flex: 1;
+}
+
+.msrpComparison {
+  font-size: var(--bc-text-xs);
+  padding: 2px var(--bc-space-2);
+  border-radius: var(--bc-radius-full);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Pricing hint */
+.pricingHint {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+  margin-bottom: var(--bc-space-3);
+}
+
+.pricingHint strong {
+  color: var(--bc-accent);
+  font-weight: 600;
+}
+
+/* Price cell with deal badge */
+.priceCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+}
+
+/* Gallery view deal badge position */
+.galleryDealBadge {
+  position: absolute;
+  top: var(--bc-space-2);
+  right: var(--bc-space-2);
+}
+
+/* ===========================================
+ * BottlesPage.module.scss additions
+ * =========================================== */
+
+/* MSRP badge in cards */
+.msrpBadge {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-accent);
+  background: rgba(201, 166, 107, 0.15);
+  padding: 2px var(--bc-space-2);
+  border-radius: var(--bc-radius-full);
+  white-space: nowrap;
+}
+
+/* ===========================================
+ * BottleDetailPage.module.scss additions
+ * =========================================== */
+
+/* Barrel section spacing */
+.barrelSection {
+  margin-top: var(--bc-space-4);
+  padding-top: var(--bc-space-4);
+  border-top: 1px solid var(--bc-border-subtle);
+}
+
+/* ===========================================
+ * InventoryDetailPage.module.scss additions
+ * =========================================== */
+
+/* Side column for stats + pricing */
+.sideColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-4);
+}
+
+/* ===========================================
+ * WishlistPage.module.scss additions
+ * =========================================== */
+
+/* Pricing context in form */
+.pricingContext {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bc-space-3);
+  padding: var(--bc-space-3);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-md);
+  margin-bottom: var(--bc-space-3);
+  font-size: var(--bc-text-sm);
+}
+
+.pricingLabel {
+  color: var(--bc-text-tertiary);
+  font-weight: 500;
+}
+
+.pricingValue {
+  color: var(--bc-text-secondary);
+}
+
+.pricingValue strong {
+  color: var(--bc-accent);
+}
+
+/* Target price analysis */
+.targetAnalysis {
+  margin-bottom: var(--bc-space-3);
+  font-size: var(--bc-text-sm);
+}
+
+.targetWarning {
+  color: var(--bc-warning);
+}
+
+.targetGood {
+  color: var(--bc-success);
+}
+
+.targetNeutral {
+  color: var(--bc-text-secondary);
+}
+
+/* Price comparison badge in table */
+.comparisonBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: var(--bc-space-1);
+  padding: 1px var(--bc-space-1);
+  border-radius: var(--bc-radius-full);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.comparisonBadge.good {
+  background: var(--bc-success-bg);
+  color: var(--bc-success);
+}
+
+.comparisonBadge.warning {
+  background: var(--bc-warning-bg);
+  color: var(--bc-warning);
+}
+
+.comparisonBadge.neutral {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--bc-text-tertiary);
+}
+
+/* Average price in table */
+.avgPrice {
+  color: var(--bc-text-primary);
+}
+
+.sampleCount {
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-xs);
+  margin-left: var(--bc-space-1);
+}
+
+.noData {
+  color: var(--bc-text-tertiary);
+}

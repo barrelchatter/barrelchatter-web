@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api, { API_BASE_URL } from '../api/client';
+import BarrelTrackingSection from '../components/BarrelTrackingSection';
 import styles from '../styles/BottlesPage.module.scss';
 
 const apiBase = (API_BASE_URL || '').replace(/\/$/, '');
@@ -47,6 +48,12 @@ const INITIAL_FORM = {
   mash_bill: '',
   // long description
   description: '',
+  // Barrel tracking fields (Migration 011)
+  barrel_date: '',
+  bottle_date: '',
+  barrel_number: '',
+  rickhouse_location: '',
+  msrp: '',
 };
 
 function BottlesPage() {
@@ -73,6 +80,7 @@ function BottlesPage() {
     status: 'sealed',
     location_label: '',
     price_paid: '',
+    purchase_date: '', // Migration 011
   });
   const [invSubmitting, setInvSubmitting] = useState(false);
   const [invError, setInvError] = useState('');
@@ -171,6 +179,17 @@ function BottlesPage() {
         return;
       }
 
+      // Validate barrel dates (Migration 011)
+      if (form.barrel_date && form.bottle_date) {
+        const barrelDate = new Date(form.barrel_date);
+        const bottleDate = new Date(form.bottle_date);
+        if (bottleDate < barrelDate) {
+          setFormError('Bottle date cannot be before barrel date.');
+          setFormSubmitting(false);
+          return;
+        }
+      }
+
       const payload = {
         name: form.name.trim(),
         brand: form.brand.trim() || undefined,
@@ -187,6 +206,12 @@ function BottlesPage() {
         finish_description: form.finish_description.trim() || undefined,
         mash_bill: form.mash_bill.trim() || undefined,
         description: form.description.trim() || undefined,
+        // Barrel tracking fields (Migration 011)
+        barrel_date: form.barrel_date || null,
+        bottle_date: form.bottle_date || null,
+        barrel_number: form.barrel_number.trim() || null,
+        rickhouse_location: form.rickhouse_location.trim() || null,
+        msrp: form.msrp ? Number(form.msrp) : null,
       };
 
       const response = await api.post('/v1/bottles', payload);
@@ -240,6 +265,7 @@ function BottlesPage() {
       status: prev.status || 'sealed',
       location_label: prev.location_label || '',
       price_paid: prev.price_paid || '',
+      purchase_date: prev.purchase_date || '',
     }));
   }
 
@@ -266,6 +292,8 @@ function BottlesPage() {
         price_paid: invForm.price_paid
           ? Number(invForm.price_paid)
           : undefined,
+        // Purchase date (Migration 011 - for pricing analytics)
+        purchase_date: invForm.purchase_date || undefined,
       };
 
       await api.post('/v1/inventory', payload);
@@ -275,6 +303,7 @@ function BottlesPage() {
         status: 'sealed',
         location_label: '',
         price_paid: '',
+        purchase_date: '',
       });
     } catch (err) {
       console.error(err);
@@ -468,6 +497,18 @@ function BottlesPage() {
                   placeholder='e.g. "Mr. Dean" or "Spring 2024 Single Barrel"'
                 />
               </label>
+              <label className={styles.label}>
+                MSRP ($)
+                <input
+                  className={styles.input}
+                  type="number"
+                  step="0.01"
+                  name="msrp"
+                  value={form.msrp}
+                  onChange={handleFormChange}
+                  placeholder="e.g. 59.99"
+                />
+              </label>
             </div>
 
             <div className={styles.formRow}>
@@ -504,6 +545,14 @@ function BottlesPage() {
                 </label>
               </div>
             </div>
+
+            {/* Barrel Tracking Section (Migration 011) */}
+            {(form.is_single_barrel || form.is_limited_release) && (
+              <BarrelTrackingSection
+                formData={form}
+                onChange={handleFormChange}
+              />
+            )}
 
             <div className={styles.formRow}>
               <label className={styles.label}>
@@ -579,7 +628,7 @@ function BottlesPage() {
                     <th>Age</th>
                     <th>Release</th>
                     <th>Single / Limited</th>
-                    <th>Finish</th>
+                    <th>MSRP</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -615,7 +664,11 @@ function BottlesPage() {
                           <td>{bottle.age_statement || '—'}</td>
                           <td>{bottle.release_name || '—'}</td>
                           <td>{formatSingleLimited(bottle)}</td>
-                          <td>{bottle.finish_description || '—'}</td>
+                          <td>
+                            {bottle.msrp != null
+                              ? `$${Number(bottle.msrp).toFixed(2)}`
+                              : '—'}
+                          </td>
                           <td>
                             <div className={styles.rowActions}>
                               <button
@@ -705,6 +758,18 @@ function BottlesPage() {
                                         handleInvFormChange
                                       }
                                       placeholder="e.g. 60.00"
+                                    />
+                                  </label>
+                                  <label className={styles.invLabel}>
+                                    Purchase Date
+                                    <input
+                                      className={styles.input}
+                                      type="date"
+                                      name="purchase_date"
+                                      value={invForm.purchase_date}
+                                      onChange={
+                                        handleInvFormChange
+                                      }
                                     />
                                   </label>
                                 </div>
@@ -802,6 +867,12 @@ function BottlesPage() {
                           ? ` · ${bottle.age_statement}`
                           : ''}
                       </span>
+                      {/* MSRP display (Migration 011) */}
+                      {bottle.msrp && (
+                        <span className={styles.msrpBadge}>
+                          MSRP ${Number(bottle.msrp).toFixed(2)}
+                        </span>
+                      )}
                     </div>
 
                     {flags.length > 0 && (
@@ -886,6 +957,11 @@ function BottlesPage() {
                       )}
                       {bottle.proof != null && (
                         <span>{bottle.proof} proof</span>
+                      )}
+                      {bottle.msrp != null && (
+                        <span className={styles.msrpBadge}>
+                          ${Number(bottle.msrp).toFixed(2)}
+                        </span>
                       )}
                     </div>
                     <div className={styles.galleryLinkRow}>

@@ -1,118 +1,11 @@
-/**
- * BottleDetailPage - Photos Section Update
- * 
- * This file shows the updated photos section for BottleDetailPage.
- * Replace the existing photos section (around lines 300-400) with this code.
- * 
- * Also add these imports at the top:
- *   import PhotoUpload from '../components/PhotoUpload';
- * 
- * And remove the old photo upload state variables:
- *   - uploadFile, setUploadFile
- *   - uploadCaption, setUploadCaption
- *   - uploading, setUploading
- *   - uploadError, setUploadError
- *   - handlePhotoFileChange
- *   - handlePhotoUpload
- */
-
-// ============================================
-// UPDATED PHOTOS SECTION (replace existing)
-// ============================================
-
-// Add this import at the top of the file:
-// import PhotoUpload from '../components/PhotoUpload';
-
-// Replace the photo upload state with just error state:
-// const [photoError, setPhotoError] = useState('');
-
-// Replace the entire photos section JSX with:
-
-/*
-{/* Photos section *}
-<div className={styles.photosSection}>
-  <div className={styles.photosHeader}>
-    <div className={styles.infoLabel}>Photos</div>
-  </div>
-
-  {photoError && (
-    <div className={styles.photoError}>{photoError}</div>
-  )}
-
-  <PhotoUpload
-    bottleId={id}
-    onUploaded={(photo, photos, primaryUrl) => {
-      setBottle((prev) => ({
-        ...(prev || {}),
-        photos: photos || [],
-        primary_photo_url: primaryUrl ?? prev?.primary_photo_url ?? null,
-      }));
-      setPhotoError('');
-    }}
-    onError={(msg) => setPhotoError(msg)}
-  />
-
-  {bottle.photos && bottle.photos.length > 0 ? (
-    <div className={styles.photoGrid}>
-      {bottle.photos.map((photo) => (
-        <div key={photo.id} className={styles.photoCard}>
-          <div className={styles.photoThumbWrap}>
-            <img
-              src={photo.image_url}
-              alt={photo.caption || bottle.name}
-              className={styles.photoThumb}
-            />
-          </div>
-          <div className={styles.photoMetaRow}>
-            <div className={styles.photoCaption}>
-              {photo.caption || '\u00A0'}
-            </div>
-            <div className={styles.photoPrimaryArea}>
-              {photo.is_primary ? (
-                <span className={styles.photoPrimaryBadge}>
-                  Primary
-                </span>
-              ) : (
-                <button
-                  type="button"
-                  className={styles.photoPrimaryButton}
-                  onClick={() => handleMakePrimary(photo.id)}
-                >
-                  Make primary
-                </button>
-              )}
-              <button
-                type="button"
-                className={styles.photoRemoveButton}
-                onClick={() => handleRemovePhoto(photo.id)}
-              >
-                Remove
-              </button>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  ) : (
-    <div className={styles.photoEmpty}>
-      No photos yet. Upload a bottle shot to use in
-      gallery and list views.
-    </div>
-  )}
-</div>
-*/
-
-// ============================================
-// FULL UPDATED BottleDetailPage.jsx
-// ============================================
-// Below is the complete updated file for reference.
-// You can either apply the changes above or replace the entire file.
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api, { API_BASE_URL } from '../api/client';
 import { useAuth } from '../context/AuthContext.jsx';
 import PhotoUpload from '../components/PhotoUpload';
+import BottlePricingCard from '../components/BottlePricingCard';
+import { BarrelInfoDisplay } from '../components/BarrelTrackingSection';
+import BarrelTrackingSection from '../components/BarrelTrackingSection';
 import styles from '../styles/BottleDetailPage.module.scss';
 
 const apiBase = (API_BASE_URL || '').replace(/\/$/, '');
@@ -190,6 +83,12 @@ function BottleDetailPage() {
     limited_bottle_count: '',
     finish_description: '',
     mash_bill: '',
+    // Barrel tracking fields (Migration 011)
+    barrel_date: '',
+    bottle_date: '',
+    barrel_number: '',
+    rickhouse_location: '',
+    msrp: '',
   });
   const [editError, setEditError] = useState('');
   const [editSubmitting, setEditSubmitting] = useState(false);
@@ -199,6 +98,26 @@ function BottleDetailPage() {
 
   // Photo error state (upload handled by PhotoUpload component)
   const [photoError, setPhotoError] = useState('');
+
+  // Calculate user's average price paid for this bottle (for pricing card)
+  const userAvgPricePaid = useMemo(() => {
+    const pricesWithValues = inventory
+      .filter(inv => inv.price_paid != null && inv.price_paid > 0)
+      .map(inv => Number(inv.price_paid));
+    
+    if (pricesWithValues.length === 0) return null;
+    
+    const sum = pricesWithValues.reduce((a, b) => a + b, 0);
+    return sum / pricesWithValues.length;
+  }, [inventory]);
+
+  // Check if bottle has barrel tracking info
+  const hasBarrelInfo = bottle && (
+    bottle.barrel_date || 
+    bottle.bottle_date || 
+    bottle.barrel_number || 
+    bottle.rickhouse_location
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -282,6 +201,12 @@ function BottleDetailPage() {
           : '',
       finish_description: bottle.finish_description || '',
       mash_bill: bottle.mash_bill || '',
+      // Barrel tracking fields (Migration 011)
+      barrel_date: bottle.barrel_date || '',
+      bottle_date: bottle.bottle_date || '',
+      barrel_number: bottle.barrel_number || '',
+      rickhouse_location: bottle.rickhouse_location || '',
+      msrp: bottle.msrp != null ? String(bottle.msrp) : '',
     });
   }, [bottle]);
 
@@ -335,6 +260,12 @@ function BottleDetailPage() {
             : '',
         finish_description: bottle.finish_description || '',
         mash_bill: bottle.mash_bill || '',
+        // Barrel tracking fields (Migration 011)
+        barrel_date: bottle.barrel_date || '',
+        bottle_date: bottle.bottle_date || '',
+        barrel_number: bottle.barrel_number || '',
+        rickhouse_location: bottle.rickhouse_location || '',
+        msrp: bottle.msrp != null ? String(bottle.msrp) : '',
       });
     }
   }
@@ -349,6 +280,17 @@ function BottleDetailPage() {
         setEditError('Name is required.');
         setEditSubmitting(false);
         return;
+      }
+
+      // Validate barrel dates (Migration 011)
+      if (editForm.barrel_date && editForm.bottle_date) {
+        const barrelDate = new Date(editForm.barrel_date);
+        const bottleDate = new Date(editForm.bottle_date);
+        if (bottleDate < barrelDate) {
+          setEditError('Bottle date cannot be before barrel date.');
+          setEditSubmitting(false);
+          return;
+        }
       }
 
       const payload = {
@@ -368,6 +310,12 @@ function BottleDetailPage() {
         finish_description:
           editForm.finish_description.trim() || undefined,
         mash_bill: editForm.mash_bill.trim() || undefined,
+        // Barrel tracking fields (Migration 011)
+        barrel_date: editForm.barrel_date || null,
+        bottle_date: editForm.bottle_date || null,
+        barrel_number: editForm.barrel_number.trim() || null,
+        rickhouse_location: editForm.rickhouse_location.trim() || null,
+        msrp: editForm.msrp ? Number(editForm.msrp) : null,
       };
 
       const res = await api.patch(`/v1/bottles/${id}`, payload);
@@ -564,6 +512,15 @@ function BottleDetailPage() {
                         {bottle.mash_bill || '—'}
                       </div>
                     </div>
+                    {/* MSRP from Migration 011 */}
+                    {bottle.msrp && (
+                      <div className={styles.infoItem}>
+                        <div className={styles.infoLabel}>MSRP</div>
+                        <div className={styles.infoValue}>
+                          ${Number(bottle.msrp).toFixed(2)}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {bottle.description && (
@@ -574,6 +531,13 @@ function BottleDetailPage() {
                       <div className={styles.descriptionText}>
                         {bottle.description}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Barrel Information Display (Migration 011) */}
+                  {hasBarrelInfo && (
+                    <div className={styles.barrelSection}>
+                      <BarrelInfoDisplay bottle={bottle} />
                     </div>
                   )}
                 </>
@@ -670,6 +634,18 @@ function BottleDetailPage() {
                         onChange={handleEditChange}
                       />
                     </label>
+                    <label className={styles.editLabel}>
+                      MSRP ($)
+                      <input
+                        className={styles.editInput}
+                        type="number"
+                        step="0.01"
+                        name="msrp"
+                        value={editForm.msrp}
+                        onChange={handleEditChange}
+                        placeholder="e.g. 59.99"
+                      />
+                    </label>
                   </div>
                   <div className={styles.editRow}>
                     <div className={styles.editCheckboxRow}>
@@ -703,6 +679,15 @@ function BottleDetailPage() {
                       </label>
                     </div>
                   </div>
+
+                  {/* Barrel Tracking Section (Migration 011) */}
+                  {(editForm.is_single_barrel || editForm.is_limited_release) && (
+                    <BarrelTrackingSection
+                      formData={editForm}
+                      onChange={handleEditChange}
+                    />
+                  )}
+
                   <div className={styles.editRow}>
                     <label className={styles.editLabel}>
                       Finish
@@ -750,7 +735,7 @@ function BottleDetailPage() {
                 </form>
               )}
 
-              {/* Photos section - Updated for DO Spaces */}
+              {/* Photos section */}
               <div className={styles.photosSection}>
                 <div className={styles.photosHeader}>
                   <div className={styles.infoLabel}>Photos</div>
@@ -831,6 +816,12 @@ function BottleDetailPage() {
             </div>
 
             <div className={styles.sideCard}>
+              {/* Pricing Intelligence Card (Migration 011) */}
+              <BottlePricingCard 
+                bottleId={id}
+                userPricePaid={userAvgPricePaid}
+              />
+
               <h2 className={styles.sideTitle}>Wishlist & Stats</h2>
               {wishlist ? (
                 <div className={styles.wishlistBlock}>
@@ -916,6 +907,7 @@ function BottleDetailPage() {
                         <th>Status</th>
                         <th>Identity</th>
                         <th>Price Paid</th>
+                        <th>Purchased</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -939,6 +931,11 @@ function BottleDetailPage() {
                                 ? `$${Number(
                                     inv.price_paid
                                   ).toFixed(2)}`
+                                : '—'}
+                            </td>
+                            <td>
+                              {inv.purchase_date
+                                ? new Date(inv.purchase_date).toLocaleDateString()
                                 : '—'}
                             </td>
                           </tr>
