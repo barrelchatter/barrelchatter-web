@@ -52,6 +52,29 @@ function formatRating(t) {
   return t.rating;
 }
 
+const PHOTO_TYPE_LABELS = {
+  stock: 'Stock Photos',
+  charm: 'Charms',
+  tag: 'Tags',
+  packaging: 'Packaging',
+  other: 'Other',
+};
+
+function groupPhotosByType(photos) {
+  if (!photos || photos.length === 0) return {};
+
+  const grouped = {};
+  photos.forEach((photo) => {
+    const type = photo.photo_type || 'stock';
+    if (!grouped[type]) {
+      grouped[type] = [];
+    }
+    grouped[type].push(photo);
+  });
+
+  return grouped;
+}
+
 function BottleDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -66,6 +89,9 @@ function BottleDetailPage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Photo tab state
+  const [activePhotoTab, setActivePhotoTab] = useState('stock');
 
   // edit state
   const [editMode, setEditMode] = useState(false);
@@ -113,11 +139,34 @@ function BottleDetailPage() {
 
   // Check if bottle has barrel tracking info
   const hasBarrelInfo = bottle && (
-    bottle.barrel_date || 
-    bottle.bottle_date || 
-    bottle.barrel_number || 
+    bottle.barrel_date ||
+    bottle.bottle_date ||
+    bottle.barrel_number ||
     bottle.rickhouse_location
   );
+
+  // Group photos by type
+  const photosByType = useMemo(() => {
+    return groupPhotosByType(bottle?.photos || []);
+  }, [bottle?.photos]);
+
+  // Get available photo tabs (only types with photos)
+  const availablePhotoTabs = useMemo(() => {
+    const types = Object.keys(photosByType);
+    // Ensure 'stock' is first if it exists
+    return types.sort((a, b) => {
+      if (a === 'stock') return -1;
+      if (b === 'stock') return 1;
+      return 0;
+    });
+  }, [photosByType]);
+
+  // Auto-select first available tab when photos change
+  useEffect(() => {
+    if (availablePhotoTabs.length > 0 && !availablePhotoTabs.includes(activePhotoTab)) {
+      setActivePhotoTab(availablePhotoTabs[0]);
+    }
+  }, [availablePhotoTabs, activePhotoTab]);
 
   useEffect(() => {
     let isMounted = true;
@@ -759,53 +808,83 @@ function BottleDetailPage() {
                 />
 
                 {bottle.photos && bottle.photos.length > 0 ? (
-                  <div className={styles.photoGrid}>
-                    {bottle.photos.map((photo) => (
-                      <div
-                        key={photo.id}
-                        className={styles.photoCard}
-                      >
-                        <div className={styles.photoThumbWrap}>
-                          <img
-                            src={photo.image_url}
-                            alt={photo.caption || bottle.name}
-                            className={styles.photoThumb}
-                          />
-                        </div>
-                        <div className={styles.photoMetaRow}>
-                          <div className={styles.photoCaption}>
-                            {photo.caption || '\u00A0'}
+                  <>
+                    {/* Photo type tabs */}
+                    {availablePhotoTabs.length > 1 && (
+                      <div className={styles.photoTabs}>
+                        {availablePhotoTabs.map((type) => (
+                          <button
+                            key={type}
+                            type="button"
+                            className={
+                              activePhotoTab === type
+                                ? styles.photoTabActive
+                                : styles.photoTab
+                            }
+                            onClick={() => setActivePhotoTab(type)}
+                          >
+                            {PHOTO_TYPE_LABELS[type] || type}
+                            <span className={styles.photoTabCount}>
+                              {photosByType[type]?.length || 0}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Photos for active tab */}
+                    <div className={styles.photoGrid}>
+                      {(photosByType[activePhotoTab] || []).map((photo) => (
+                        <div
+                          key={photo.id}
+                          className={styles.photoCard}
+                        >
+                          <div className={styles.photoThumbWrap}>
+                            <img
+                              src={photo.image_url}
+                              alt={photo.caption || bottle.name}
+                              className={styles.photoThumb}
+                            />
+                            {/* Photo type badge */}
+                            <span className={styles.photoTypeBadge}>
+                              {PHOTO_TYPE_LABELS[photo.photo_type || 'stock']}
+                            </span>
                           </div>
-                          <div className={styles.photoPrimaryArea}>
-                            {photo.is_primary ? (
-                              <span className={styles.photoPrimaryBadge}>
-                                Primary
-                              </span>
-                            ) : (
+                          <div className={styles.photoMetaRow}>
+                            <div className={styles.photoCaption}>
+                              {photo.caption || '\u00A0'}
+                            </div>
+                            <div className={styles.photoPrimaryArea}>
+                              {photo.is_primary ? (
+                                <span className={styles.photoPrimaryBadge}>
+                                  Primary
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className={styles.photoPrimaryButton}
+                                  onClick={() =>
+                                    handleMakePrimary(photo.id)
+                                  }
+                                >
+                                  Make primary
+                                </button>
+                              )}
                               <button
                                 type="button"
-                                className={styles.photoPrimaryButton}
+                                className={styles.photoRemoveButton}
                                 onClick={() =>
-                                  handleMakePrimary(photo.id)
+                                  handleRemovePhoto(photo.id)
                                 }
                               >
-                                Make primary
+                                Remove
                               </button>
-                            )}
-                            <button
-                              type="button"
-                              className={styles.photoRemoveButton}
-                              onClick={() =>
-                                handleRemovePhoto(photo.id)
-                              }
-                            >
-                              Remove
-                            </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  </>
                 ) : (
                   <div className={styles.photoEmpty}>
                     No photos yet. Upload a bottle shot to use in

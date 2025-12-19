@@ -1,19 +1,24 @@
 import React, { useState, useRef } from 'react';
 import { useSpacesUpload } from '../hooks/useSpacesUpload';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 import styles from '../styles/PhotoUpload.module.scss';
 
 /**
  * PhotoUpload component for uploading bottle photos to DO Spaces.
- * 
+ *
  * Props:
  *   bottleId    - The bottle ID to associate the photo with
  *   onUploaded  - Callback when upload completes: (photo, allPhotos, primaryUrl) => void
  *   onError     - Optional error callback
  */
 function PhotoUpload({ bottleId, onUploaded, onError }) {
+  const { user } = useAuth();
+  const isModeratorOrAdmin = user?.role === 'moderator' || user?.role === 'admin';
+
   const fileInputRef = useRef(null);
   const [caption, setCaption] = useState('');
+  const [photoType, setPhotoType] = useState('stock');
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [registering, setRegistering] = useState(false);
@@ -51,6 +56,7 @@ function PhotoUpload({ bottleId, onUploaded, onError }) {
     setSelectedFile(null);
     setPreviewUrl(null);
     setCaption('');
+    setPhotoType('stock');
     reset();
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -68,10 +74,16 @@ function PhotoUpload({ bottleId, onUploaded, onError }) {
       });
 
       // Step 2: Register the photo with our API
+      // Admin/moderator can directly add photos, regular users submit for review
       setRegistering(true);
-      const response = await api.post(`/v1/bottles/${bottleId}/photos`, {
+      const endpoint = isModeratorOrAdmin
+        ? `/v1/bottles/${bottleId}/photos`
+        : `/v1/bottles/${bottleId}/photo-submissions`;
+
+      const response = await api.post(endpoint, {
         image_url: publicUrl,
         caption: caption.trim() || null,
+        photo_type: photoType,
       });
 
       const { photo, photos, primary_photo_url } = response.data;
@@ -138,18 +150,37 @@ function PhotoUpload({ bottleId, onUploaded, onError }) {
         </button>
       )}
 
-      {/* Caption input */}
+      {/* Photo Type & Caption inputs */}
       {selectedFile && (
-        <div className={styles.captionRow}>
-          <input
-            type="text"
-            className={styles.captionInput}
-            placeholder="Add a caption (optional)"
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            disabled={isProcessing}
-          />
-        </div>
+        <>
+          <div className={styles.photoTypeRow}>
+            <label className={styles.photoTypeLabel}>
+              Photo Type
+              <select
+                className={styles.photoTypeSelect}
+                value={photoType}
+                onChange={(e) => setPhotoType(e.target.value)}
+                disabled={isProcessing}
+              >
+                <option value="stock">Stock Photo</option>
+                <option value="charm">Charm</option>
+                <option value="tag">Tag</option>
+                <option value="packaging">Packaging</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+          </div>
+          <div className={styles.captionRow}>
+            <input
+              type="text"
+              className={styles.captionInput}
+              placeholder="Add a caption (optional)"
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+              disabled={isProcessing}
+            />
+          </div>
+        </>
       )}
 
       {/* Progress bar */}

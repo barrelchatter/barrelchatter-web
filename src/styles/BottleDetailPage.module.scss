@@ -386,6 +386,65 @@
 }
 
 // ============================================================================
+// PHOTO TABS
+// ============================================================================
+
+.photoTabs {
+  display: flex;
+  gap: var(--bc-space-2);
+  margin-bottom: var(--bc-space-3);
+  flex-wrap: wrap;
+}
+
+.photoTab,
+.photoTabActive {
+  @include button-secondary;
+  @include button-sm;
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+}
+
+.photoTabActive {
+  border-color: var(--bc-border-accent);
+  background: rgba(201, 166, 107, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(201, 166, 107, 0.2);
+}
+
+.photoTabCount {
+  font-size: var(--bc-text-xs);
+  padding: 1px var(--bc-space-1);
+  border-radius: var(--bc-radius-full);
+  background: rgba(0, 0, 0, 0.3);
+  min-width: 18px;
+  text-align: center;
+}
+
+.photoTabActive .photoTabCount {
+  background: rgba(201, 166, 107, 0.2);
+  color: var(--bc-accent);
+}
+
+// ============================================================================
+// PHOTO TYPE BADGE
+// ============================================================================
+
+.photoTypeBadge {
+  position: absolute;
+  top: var(--bc-space-2);
+  left: var(--bc-space-2);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--bc-tracking-wide);
+  color: var(--bc-text-inverse);
+  background: rgba(0, 0, 0, 0.75);
+  padding: 3px var(--bc-space-2);
+  border-radius: var(--bc-radius-sm);
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+// ============================================================================
 // SIDE CARD
 // ============================================================================
 
