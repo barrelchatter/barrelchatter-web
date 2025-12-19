@@ -277,12 +277,26 @@ export const authAPI = {
   me: () => api.get('/auth/me'),
 };
 
+export const bottlesAPI = {
+  list: (params) => api.get('/bottles', params),
+  get: (id) => api.get(`/bottles/${id}`),
+  create: (data) => api.post('/bottles', data),
+  update: (id, data) => api.put(`/bottles/${id}`, data),
+};
+
 export const inventoryAPI = {
   list: (params) => api.get('/inventory', params),
   get: (id) => api.get(`/inventory/${id}`),
   create: (data) => api.post('/inventory', data),
   update: (id, data) => api.put(`/inventory/${id}`, data),
   delete: (id) => api.delete(`/inventory/${id}`),
+};
+
+export const notificationsAPI = {
+  list: () => api.get('/notifications'),
+  markAsRead: (id) => api.post(`/notifications/${id}/read`),
+  getPreferences: () => api.get('/notifications/preferences'),
+  updatePreferences: (data) => api.patch('/notifications/preferences', data),
 };
 
 export const adminTagsAPI = {
@@ -375,6 +389,28 @@ export default function ProtectedRoute() {
   return <Outlet />;
 }
 ```
+
+## Navigation Changes
+
+### Updated Sidebar Navigation
+
+The sidebar navigation has been updated to use consistent terminology:
+
+- **"Bottles"** → **"Catalog"** - Browse global bottle database
+- **"Inventory"** → **"My Collection"** - User's personal inventory
+
+### Bottles/Catalog Page
+
+The BottlesPage.jsx now includes a **"My Submissions"** tab that allows users to:
+- View bottles they've submitted to the catalog
+- Filter by status (pending, approved, rejected)
+- Uses `created_by_user_id` and `status` query parameters
+
+### Profile Page - Notifications Tab
+
+ProfilePage.jsx has been enhanced with a **Notifications** tab for managing email preferences:
+- Email notification settings (submission approved/rejected, wishlist alerts)
+- Push notification preferences (managed via mobile app)
 
 ## Admin Section
 
