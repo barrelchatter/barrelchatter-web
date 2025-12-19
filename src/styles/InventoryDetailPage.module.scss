@@ -378,6 +378,22 @@
   &:hover { filter: brightness(1.08); }
 }
 
+.moveButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid var(--bc-border-strong, rgba(255, 255, 255, 0.18));
+  border-radius: var(--bc-radius-md, 10px);
+  color: var(--bc-text-primary, #f0e6d6);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  &:hover { background: var(--bc-bg-hover, #2e2e2e); }
+}
+
 /* Tastings Tab */
 .sectionHeader {
   display: flex;
@@ -479,4 +495,94 @@
   font-size: 14px;
   line-height: 1.6;
   color: var(--bc-text-secondary, #b8a890);
+}
+
+/* Move Bottle Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modalContent {
+  background: var(--bc-bg-elevated, #252525);
+  border: 1px solid var(--bc-border-default, rgba(255, 255, 255, 0.1));
+  border-radius: var(--bc-radius-xl, 20px);
+  box-shadow: var(--bc-shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.5));
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--bc-border-subtle, rgba(255, 255, 255, 0.06));
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--bc-text-primary, #f0e6d6);
+  }
+}
+
+.modalClose {
+  background: transparent;
+  border: none;
+  color: var(--bc-text-secondary, #b8a890);
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+  &:hover { color: var(--bc-text-primary, #f0e6d6); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.modalBody {
+  padding: 24px;
+}
+
+.modalDescription {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--bc-text-secondary, #b8a890);
+  line-height: 1.5;
+}
+
+.moveLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  span {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--bc-text-secondary, #b8a890);
+  }
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--bc-border-subtle, rgba(255, 255, 255, 0.06));
 }

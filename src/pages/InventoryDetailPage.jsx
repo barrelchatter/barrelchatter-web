@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
 import LogTastingModal from '../components/LogTastingModal';
+import StorageLocationSelect from '../components/StorageLocationSelect';
 import styles from '../styles/InventoryDetailPage.module.scss';
 
 function InventoryDetailPage() {
@@ -18,6 +19,9 @@ function InventoryDetailPage() {
   const [activeTab, setActiveTab] = useState('details');
   const [showTastingModal, setShowTastingModal] = useState(false);
   const [tastings, setTastings] = useState([]);
+  const [showMoveModal, setShowMoveModal] = useState(false);
+  const [moveLocation, setMoveLocation] = useState(null);
+  const [moveSubmitting, setMoveSubmitting] = useState(false);
 
   // Fetch inventory item
   const fetchItem = useCallback(async () => {
@@ -63,6 +67,7 @@ function InventoryDetailPage() {
     try {
       const response = await api.patch(`/v1/inventory/${id}`, {
         status: editForm.status,
+        storage_location_id: editForm.storage_location_id || null,
         location_label: editForm.location_label,
         notes: editForm.notes,
         msrp: editForm.msrp ? parseFloat(editForm.msrp) : null,
@@ -105,6 +110,34 @@ function InventoryDetailPage() {
   function handleCancel() {
     setEditForm(item);
     setEditing(false);
+  }
+
+  // Move bottle to new location
+  async function handleMoveBottle() {
+    if (!moveLocation && !editForm.location_label) {
+      alert('Please select a location');
+      return;
+    }
+
+    setMoveSubmitting(true);
+    try {
+      const response = await api.patch(`/v1/inventory/${id}`, {
+        storage_location_id: moveLocation || null,
+        location_label: moveLocation ? '' : editForm.location_label,
+      });
+
+      const updated = response.data?.inventory || response.data;
+      setItem(updated);
+      setEditForm(updated);
+      setShowMoveModal(false);
+      setMoveLocation(null);
+    } catch (err) {
+      console.error('Error moving bottle:', err);
+      const message = err?.response?.data?.error || err.message || 'Failed to move bottle';
+      alert(message);
+    } finally {
+      setMoveSubmitting(false);
+    }
   }
 
   // Format currency
@@ -210,11 +243,20 @@ function InventoryDetailPage() {
 
       {/* Quick Actions */}
       <div className={styles.quickActions}>
-        <button 
+        <button
           className={styles.logPourButton}
           onClick={() => setShowTastingModal(true)}
         >
           🥃 Log a Pour
+        </button>
+        <button
+          className={styles.moveButton}
+          onClick={() => {
+            setMoveLocation(item.storage_location_id || null);
+            setShowMoveModal(true);
+          }}
+        >
+          📍 Move Bottle
         </button>
       </div>
 
@@ -280,12 +322,21 @@ function InventoryDetailPage() {
                   </label>
 
                   <label className={styles.editField}>
-                    <span>Location</span>
-                    <input
-                      type="text"
-                      value={editForm.location_label || ''}
-                      onChange={(e) => handleFieldChange('location_label', e.target.value)}
-                      placeholder="e.g., Home Bar"
+                    <span>Storage Location</span>
+                    <StorageLocationSelect
+                      value={editForm.storage_location_id || null}
+                      onChange={(locationId) => {
+                        handleFieldChange('storage_location_id', locationId);
+                        if (locationId) {
+                          handleFieldChange('location_label', '');
+                        }
+                      }}
+                      showLegacy={true}
+                      legacyValue={editForm.location_label || ''}
+                      onLegacyChange={(value) => {
+                        handleFieldChange('location_label', value);
+                        handleFieldChange('storage_location_id', null);
+                      }}
                     />
                   </label>
                 </div>
@@ -317,7 +368,9 @@ function InventoryDetailPage() {
 
                   <div className={styles.infoItem}>
                     <span className={styles.infoLabel}>Location</span>
-                    <span className={styles.infoValue}>{item.location_label || '—'}</span>
+                    <span className={styles.infoValue}>
+                      {item.storage_location?.full_path || item.storage_location?.name || item.location_label || '—'}
+                    </span>
                   </div>
 
                   {item.opened_at && (
@@ -525,6 +578,64 @@ function InventoryDetailPage() {
         }}
         inventoryItem={item}
       />
+
+      {/* Move Bottle Modal */}
+      {showMoveModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowMoveModal(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>Move Bottle</h2>
+              <button
+                className={styles.modalClose}
+                onClick={() => setShowMoveModal(false)}
+                disabled={moveSubmitting}
+              >
+                ×
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <p className={styles.modalDescription}>
+                Select a new storage location for "{bottleName}"
+              </p>
+              <label className={styles.moveLabel}>
+                <span>New Location</span>
+                <StorageLocationSelect
+                  value={moveLocation}
+                  onChange={(locationId) => {
+                    setMoveLocation(locationId);
+                    if (locationId) {
+                      setEditForm(prev => ({ ...prev, location_label: '' }));
+                    }
+                  }}
+                  showLegacy={true}
+                  legacyValue={editForm.location_label || ''}
+                  onLegacyChange={(value) => {
+                    setEditForm(prev => ({ ...prev, location_label: value }));
+                    setMoveLocation(null);
+                  }}
+                  disabled={moveSubmitting}
+                />
+              </label>
+            </div>
+            <div className={styles.modalFooter}>
+              <button
+                className={styles.cancelButton}
+                onClick={() => setShowMoveModal(false)}
+                disabled={moveSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.saveButton}
+                onClick={handleMoveBottle}
+                disabled={moveSubmitting}
+              >
+                {moveSubmitting ? 'Moving...' : 'Move Bottle'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
