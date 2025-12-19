@@ -167,7 +167,7 @@
 }
 
 .actionsCol {
-  width: 240px;
+  width: 300px;
 }
 
 .badge {
@@ -380,4 +380,145 @@
 .pageNumber {
   color: var(--bc-text-secondary);
   font-size: 0.875rem;
+}
+
+// ============================================================================
+// MODAL STYLES
+// ============================================================================
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--bc-bg-elevated);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--bc-border-subtle);
+
+  h2 { margin: 0; font-size: 1.25rem; }
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--bc-text-secondary);
+  cursor: pointer;
+  &:hover { color: var(--bc-text-primary); }
+}
+
+.modalBody {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--bc-border-subtle);
+}
+
+.detailSection {
+  margin-bottom: 1.5rem;
+  h3 { margin: 0 0 0.75rem; font-size: 1rem; color: var(--bc-text-secondary); }
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.statCard {
+  background: var(--bc-bg-surface);
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.statValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--bc-accent);
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--bc-text-secondary);
+}
+
+// Ensure badge classes work in modal
+.badgeCollector {
+  @include badge-accent;
+}
+
+// ============================================================================
+// BULK BAR
+// ============================================================================
+
+.bulkBar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bc-bg-surface);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+// ============================================================================
+// ADVANCED FILTERS
+// ============================================================================
+
+.advancedFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--bc-border-subtle);
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--bc-text-secondary);
+
+    input[type="date"] {
+      width: 140px;
+    }
+
+    input[type="checkbox"] {
+      accent-color: var(--bc-accent);
+    }
+  }
 }

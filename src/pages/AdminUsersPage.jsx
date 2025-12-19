@@ -56,6 +56,24 @@ function AdminUsersPage() {
   const [actionBusyId, setActionBusyId] = useState(null);
   const [resetResult, setResetResult] = useState('');
 
+  // Feature 1: User detail modal
+  const [detailUser, setDetailUser] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+
+  // Feature 2: Bulk operations
+  const [selectedUsers, setSelectedUsers] = useState(new Set());
+  const [bulkAction, setBulkAction] = useState('');
+  const [bulkBusy, setBulkBusy] = useState(false);
+
+  // Feature 3: CSV export
+  const [exporting, setExporting] = useState(false);
+
+  // Feature 4: Advanced filters
+  const [createdAfter, setCreatedAfter] = useState('');
+  const [lastLoginAfter, setLastLoginAfter] = useState('');
+  const [showLocked, setShowLocked] = useState(false);
+  const [showNeverLoggedIn, setShowNeverLoggedIn] = useState(false);
+
   // Invites
   const [invites, setInvites] = useState([]);
   const [invitesLoading, setInvitesLoading] = useState(false);
@@ -85,6 +103,10 @@ function AdminUsersPage() {
       if (userQuery.trim()) params.q = userQuery.trim();
       if (userRole) params.role = userRole;
       if (userStatus) params.status = userStatus;
+      if (createdAfter) params.created_after = createdAfter;
+      if (lastLoginAfter) params.last_login_after = lastLoginAfter;
+      if (showLocked) params.locked_only = 'true';
+      if (showNeverLoggedIn) params.never_logged_in = 'true';
       params.sort_by = sortBy;
       params.sort_order = sortOrder;
       params.limit = pageSize;
@@ -358,6 +380,98 @@ function AdminUsersPage() {
     }
   }
 
+  // Feature 1: User detail modal
+  async function loadUserDetail(id) {
+    setDetailLoading(true);
+    try {
+      const res = await api.get(`/v1/admin/users/${id}`);
+      setDetailUser(res.data.user ? { ...res.data.user, stats: res.data.stats, recent_activity: res.data.recent_activity } : res.data);
+    } catch (err) {
+      toast.error('Failed to load user details');
+    } finally {
+      setDetailLoading(false);
+    }
+  }
+
+  // Feature 2: Bulk operations
+  function toggleSelectUser(id) {
+    setSelectedUsers(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    if (selectedUsers.size === users.length) {
+      setSelectedUsers(new Set());
+    } else {
+      setSelectedUsers(new Set(users.map(u => u.id)));
+    }
+  }
+
+  async function executeBulkAction() {
+    if (!bulkAction || selectedUsers.size === 0) return;
+    if (!window.confirm(`Apply "${bulkAction}" to ${selectedUsers.size} user(s)?`)) return;
+
+    setBulkBusy(true);
+    try {
+      const ids = Array.from(selectedUsers);
+      let endpoint, body;
+
+      if (bulkAction === 'lock') {
+        endpoint = '/v1/admin/users/bulk/lock';
+        body = { user_ids: ids };
+      } else if (bulkAction === 'unlock') {
+        endpoint = '/v1/admin/users/bulk/unlock';
+        body = { user_ids: ids };
+      } else if (bulkAction.startsWith('role-')) {
+        endpoint = '/v1/admin/users/bulk/update-role';
+        body = { user_ids: ids, role: bulkAction.replace('role-', '') };
+      }
+
+      const res = await api.post(endpoint, body);
+      toast.success(`Updated ${res.data.updated} user(s)`);
+      if (res.data.failed?.length) {
+        toast.warning(`${res.data.failed.length} user(s) could not be updated`);
+      }
+      setSelectedUsers(new Set());
+      setBulkAction('');
+      await loadUsers();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Bulk action failed');
+    } finally {
+      setBulkBusy(false);
+    }
+  }
+
+  // Feature 3: CSV export
+  async function exportUsers() {
+    setExporting(true);
+    try {
+      const params = new URLSearchParams();
+      if (userQuery.trim()) params.append('search', userQuery.trim());
+      if (userRole) params.append('role', userRole);
+
+      const res = await api.get(`/v1/admin/users/export?${params.toString()}`, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `users-export-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast.success('Export downloaded');
+    } catch (err) {
+      toast.error('Export failed');
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.headerRow}>
@@ -466,9 +580,50 @@ function AdminUsersPage() {
               <button className={styles.secondaryBtn} type="button" onClick={loadUsers}>
                 Refresh
               </button>
+              <button className={styles.secondaryBtn} onClick={exportUsers} disabled={exporting}>
+                {exporting ? 'Exporting...' : 'Export CSV'}
+              </button>
+            </div>
+
+            <div className={styles.advancedFilters}>
+              <label>
+                <span>Created after:</span>
+                <input type="date" value={createdAfter} onChange={e => { setCreatedAfter(e.target.value); setPage(0); }} className={styles.input} />
+              </label>
+              <label>
+                <span>Last login after:</span>
+                <input type="date" value={lastLoginAfter} onChange={e => { setLastLoginAfter(e.target.value); setPage(0); }} className={styles.input} />
+              </label>
+              <label>
+                <input type="checkbox" checked={showLocked} onChange={e => { setShowLocked(e.target.checked); setPage(0); }} />
+                <span>Show only locked</span>
+              </label>
+              <label>
+                <input type="checkbox" checked={showNeverLoggedIn} onChange={e => { setShowNeverLoggedIn(e.target.checked); setPage(0); }} />
+                <span>Never logged in</span>
+              </label>
             </div>
 
             {usersError && <div className={styles.error}>{usersError}</div>}
+
+            {selectedUsers.size > 0 && (
+              <div className={styles.bulkBar}>
+                <span>{selectedUsers.size} user(s) selected</span>
+                <select value={bulkAction} onChange={e => setBulkAction(e.target.value)} className={styles.select}>
+                  <option value="">Choose action...</option>
+                  <option value="lock">Lock accounts</option>
+                  <option value="unlock">Unlock accounts</option>
+                  <option value="role-collector">Set role: Collector</option>
+                  <option value="role-moderator">Set role: Moderator</option>
+                  <option value="role-admin">Set role: Admin</option>
+                </select>
+                <button onClick={executeBulkAction} disabled={!bulkAction || bulkBusy} className={styles.primaryBtn}>
+                  {bulkBusy ? 'Processing...' : 'Apply'}
+                </button>
+                <button onClick={() => setSelectedUsers(new Set())} className={styles.secondaryBtn}>Clear</button>
+              </div>
+            )}
+
             {usersLoading ? (
               <div className={styles.loading}>Loading users…</div>
             ) : users.length === 0 ? (
@@ -482,6 +637,7 @@ function AdminUsersPage() {
                 <table className={styles.table}>
                   <thead>
                     <tr>
+                      <th><input type="checkbox" onChange={toggleSelectAll} checked={selectedUsers.size === users.length && users.length > 0} /></th>
                       <th onClick={() => handleSort('name')} className={styles.sortableHeader}>
                         Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
                       </th>
@@ -509,6 +665,7 @@ function AdminUsersPage() {
                       return (
                         <React.Fragment key={u.id}>
                           <tr className={locked ? styles.rowMuted : ''}>
+                            <td><input type="checkbox" checked={selectedUsers.has(u.id)} onChange={() => toggleSelectUser(u.id)} /></td>
                             <td>{u.name}</td>
                             <td>
                               {u.email}
@@ -536,6 +693,15 @@ function AdminUsersPage() {
                             <td>{formatDate(u.created_at)}</td>
                             <td>{formatDate(u.last_login_at)}</td>
                             <td className={styles.actionsCol}>
+                              <button
+                                className={styles.smallBtn}
+                                type="button"
+                                onClick={() => loadUserDetail(u.id)}
+                                disabled={actionBusyId === u.id}
+                              >
+                                View
+                              </button>
+
                               <button
                                 className={styles.smallBtn}
                                 type="button"
@@ -578,7 +744,7 @@ function AdminUsersPage() {
 
                           {isEditing && (
                             <tr className={styles.editRow}>
-                              <td colSpan={7}>
+                              <td colSpan={8}>
                                 <form className={styles.editForm} onSubmit={saveEdit}>
                                   <div className={styles.editGrid}>
                                     <label className={styles.field}>
@@ -866,6 +1032,44 @@ function AdminUsersPage() {
             )}
           </div>
         </>
+      )}
+
+      {detailUser && (
+        <div className={styles.modalOverlay} onClick={() => setDetailUser(null)}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>User Details</h2>
+              <button onClick={() => setDetailUser(null)} className={styles.modalClose}>×</button>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.detailSection}>
+                <h3>Basic Info</h3>
+                <div className={styles.detailGrid}>
+                  <div><strong>Name:</strong> {detailUser.name}</div>
+                  <div><strong>Email:</strong> {detailUser.email}</div>
+                  <div><strong>Role:</strong> <span className={styles[`badge${detailUser.role.charAt(0).toUpperCase() + detailUser.role.slice(1)}`]}>{detailUser.role}</span></div>
+                  <div><strong>Status:</strong> {detailUser.locked_at ? 'Locked' : 'Active'}</div>
+                  <div><strong>Created:</strong> {formatDate(detailUser.created_at)}</div>
+                  <div><strong>Last Login:</strong> {detailUser.last_login_at ? formatDate(detailUser.last_login_at) : 'Never'}</div>
+                </div>
+              </div>
+              {detailUser.stats && (
+                <div className={styles.detailSection}>
+                  <h3>Stats</h3>
+                  <div className={styles.statsGrid}>
+                    <div className={styles.statCard}><span className={styles.statValue}>{detailUser.stats.bottles}</span><span className={styles.statLabel}>Bottles</span></div>
+                    <div className={styles.statCard}><span className={styles.statValue}>{detailUser.stats.tastings}</span><span className={styles.statLabel}>Tastings</span></div>
+                    <div className={styles.statCard}><span className={styles.statValue}>{detailUser.stats.showcases}</span><span className={styles.statLabel}>Showcases</span></div>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className={styles.modalFooter}>
+              <button onClick={() => { startEdit(detailUser); setDetailUser(null); }} className={styles.secondaryBtn}>Edit User</button>
+              <button onClick={() => setDetailUser(null)} className={styles.primaryBtn}>Close</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
