@@ -209,7 +209,7 @@ function HomePage() {
           <div className={styles.statsGrid}>
             <Link to="/app/inventory" className={styles.statCard}>
               <div className={styles.statValue}>{stats.totalInventory}</div>
-              <div className={styles.statLabel}>Bottles in Collection</div>
+              <div className={styles.statLabel}>Bottles in My Collection</div>
             </Link>
             <Link to="/app/tastings" className={styles.statCard}>
               <div className={styles.statValue}>{stats.totalTastings}</div>
@@ -221,7 +221,7 @@ function HomePage() {
             </div>
             <Link to="/app/bottles" className={styles.statCard}>
               <div className={styles.statValue}>{stats.totalBottles}</div>
-              <div className={styles.statLabel}>Bottles in Catalog</div>
+              <div className={styles.statLabel}>Catalog Entries</div>
             </Link>
           </div>
 
@@ -294,7 +294,7 @@ function HomePage() {
               <div className={styles.emptyState}>
                 <p>No activity yet. Add some bottles to your collection!</p>
                 <Link to="/app/bottles" className={styles.ctaButton}>
-                  Browse Bottles
+                  Browse Catalog
                 </Link>
               </div>
             ) : (
@@ -371,11 +371,11 @@ function HomePage() {
               </Link>
               <Link to="/app/bottles" className={styles.quickAction}>
                 <span className={styles.quickActionIcon}>🍾</span>
-                <span className={styles.quickActionLabel}>Add Bottle</span>
+                <span className={styles.quickActionLabel}>Submit Whiskey</span>
               </Link>
               <Link to="/app/inventory" className={styles.quickAction}>
                 <span className={styles.quickActionIcon}>📦</span>
-                <span className={styles.quickActionLabel}>View Collection</span>
+                <span className={styles.quickActionLabel}>My Collection</span>
               </Link>
               <Link to="/app/wishlists" className={styles.quickAction}>
                 <span className={styles.quickActionIcon}>⭐</span>

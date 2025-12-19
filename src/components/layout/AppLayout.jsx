@@ -32,10 +32,10 @@ function AppLayout() {
 
           {/* Core user flow */}
           <NavLink to="/app/bottles" className={navClass}>
-            Bottles
+            Catalog
           </NavLink>
           <NavLink to="/app/inventory" className={navClass}>
-            Inventory
+            My Collection
           </NavLink>
           <NavLink to="/app/tastings" className={navClass}>
             Tastings

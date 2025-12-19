@@ -149,7 +149,7 @@ function LogTastingModal({
                 <div className={styles.loadingText}>Loading bottles...</div>
               ) : inventory.length === 0 ? (
                 <div className={styles.emptyText}>
-                  No bottles in inventory. Add some bottles first.
+                  No bottles in collection. Add some bottles first.
                 </div>
               ) : (
                 <select

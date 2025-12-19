@@ -401,7 +401,7 @@ function BottleDetailPage() {
         <div className={styles.headerTitleBlock}>
           <span className={styles.headerBreadcrumb}>
             <Link to="/app/bottles" className={styles.breadcrumbLink}>
-              Bottles
+              Catalog
             </Link>{' '}
             / Details
           </span>
@@ -879,7 +879,7 @@ function BottleDetailPage() {
                 </div>
               )}
               <div className={styles.sideNote}>
-                Inventory and tastings below are filtered to this bottle.
+                Collection items and tastings below are filtered to this bottle.
               </div>
             </div>
           </div>
@@ -887,7 +887,7 @@ function BottleDetailPage() {
           <div className={styles.sectionsRow}>
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
-                <h2>Your Inventory</h2>
+                <h2>Your Collection</h2>
                 <span className={styles.sectionCount}>
                   {inventory.length} item
                   {inventory.length === 1 ? '' : 's'}
@@ -897,7 +897,7 @@ function BottleDetailPage() {
                 {inventory.length === 0 ? (
                   <div className={styles.message}>
                     You don&apos;t currently have this bottle in your
-                    inventory.
+                    collection.
                   </div>
                 ) : (
                   <table className={styles.table}>

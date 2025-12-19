@@ -188,7 +188,7 @@ function NewBottleSubmissionModal({ isOpen, initialName, onClose, onCreated }) {
         </div>
         <p className={styles.subtitle}>
           Can&apos;t find your bottle in the catalog? Submit it for review.
-          You&apos;ll still be able to use it in your own inventory
+          You&apos;ll still be able to use it in your own collection
           immediately while our moderators review it.
         </p>
 
@@ -384,7 +384,7 @@ function NewBottleSubmissionModal({ isOpen, initialName, onClose, onCreated }) {
             >
               {submitting && submitMode === 'inventory'
                 ? 'Submitting...'
-                : 'Submit & add to inventory'}
+                : 'Submit & add to collection'}
             </button>
           </div>
         </div>

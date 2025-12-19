@@ -320,9 +320,9 @@ function BottlesPage() {
     <div className={styles.page}>
       <div className={styles.headerRow}>
         <div>
-          <h1>Bottles</h1>
+          <h1>Catalog</h1>
           <p className={styles.subtitle}>
-            Canonical bottle catalog &mdash; shared across inventory,
+            Canonical bottle catalog &mdash; shared across collections,
             tastings, wishlists, and tags.
           </p>
         </div>
@@ -331,7 +331,7 @@ function BottlesPage() {
           className={styles.addButton}
           onClick={() => setShowForm((v) => !v)}
         >
-          {showForm ? 'Cancel' : 'Add Bottle'}
+          {showForm ? 'Cancel' : 'Submit New Whiskey'}
         </button>
       </div>
 
@@ -403,7 +403,7 @@ function BottlesPage() {
 
       {showForm && (
         <div className={styles.formCard}>
-          <h2 className={styles.formTitle}>Add Bottle</h2>
+          <h2 className={styles.formTitle}>Submit New Whiskey</h2>
           {formError && <div className={styles.formError}>{formError}</div>}
           <form className={styles.form} onSubmit={handleFormSubmit}>
             <div className={styles.formRow}>
@@ -678,7 +678,7 @@ function BottlesPage() {
                                   handleOpenInventoryForm(bottle.id)
                                 }
                               >
-                                Add to Inventory
+                                Add to My Collection
                               </button>
                               <button
                                 type="button"
@@ -799,7 +799,7 @@ function BottlesPage() {
                                   >
                                     {invSubmitting
                                       ? 'Adding...'
-                                      : 'Add to Inventory'}
+                                      : 'Add to My Collection'}
                                   </button>
                                 </div>
                               </form>
@@ -896,7 +896,7 @@ function BottlesPage() {
                           handleOpenInventoryForm(bottle.id)
                         }
                       >
-                        Add to Inventory
+                        Add to My Collection
                       </button>
                       <button
                         type="button"

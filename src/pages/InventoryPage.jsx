@@ -336,7 +336,7 @@ function InventoryPage() {
     <div className={styles.page}>
       <div className={styles.headerRow}>
         <div>
-          <h1>Inventory</h1>
+          <h1>My Collection</h1>
           <p className={styles.subtitle}>Your physical bottles across all locations.</p>
         </div>
         <div className={styles.headerRight}>
@@ -345,13 +345,13 @@ function InventoryPage() {
           <div className={styles.headerActions}>
             <input
               type="text"
-              placeholder="Search your inventory…"
+              placeholder="Search your collection…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={styles.searchInput}
             />
             <button type="button" onClick={() => setShowAddForm((v) => !v)} className={styles.addButton}>
-              {showAddForm ? 'Cancel' : 'Add Bottle'}
+              {showAddForm ? 'Cancel' : 'Add to Collection'}
             </button>
             <button type="button" onClick={() => setShowNewBottleModal(true)} className={styles.submitButton}>
               Submit New
@@ -368,7 +368,7 @@ function InventoryPage() {
 
       {showAddForm && (
         <div className={styles.addFormCard}>
-          <h2 className={styles.addFormTitle}>Add to Inventory</h2>
+          <h2 className={styles.addFormTitle}>Add to Collection</h2>
           {addFormError && <div className={styles.addFormError}>{addFormError}</div>}
 
           <form className={styles.addForm} onSubmit={handleAddFormSubmit}>
@@ -443,16 +443,16 @@ function InventoryPage() {
 
             <div className={styles.addFormActions}>
               <button type="button" className={styles.addFormCancelButton} onClick={() => { setShowAddForm(false); setSelectedBottlePricing(null); }} disabled={addFormSubmitting}>Cancel</button>
-              <button type="submit" className={styles.addFormSubmitButton} disabled={addFormSubmitting}>{addFormSubmitting ? 'Adding...' : 'Add to Inventory'}</button>
+              <button type="submit" className={styles.addFormSubmitButton} disabled={addFormSubmitting}>{addFormSubmitting ? 'Adding...' : 'Add to Collection'}</button>
             </div>
           </form>
         </div>
       )}
 
-      {loading && <div className={styles.message}>Loading inventory...</div>}
+      {loading && <div className={styles.message}>Loading collection...</div>}
       {error && !loading && <div className={styles.error}>{error}</div>}
-      {!loading && !error && !hasAnyItems && <div className={styles.message}>No inventory items yet. Add bottles from the Bottles page, or submit a new bottle to start tracking your collection.</div>}
-      {!loading && !error && hasAnyItems && !hasVisibleItems && <div className={styles.message}>No inventory items matched this search. Try a different term, or submit a new bottle if you&apos;re trying to track something new.</div>}
+      {!loading && !error && !hasAnyItems && <div className={styles.message}>No bottles in your collection yet. Add bottles from the Catalog page, or submit a new bottle to start tracking your collection.</div>}
+      {!loading && !error && hasAnyItems && !hasVisibleItems && <div className={styles.message}>No bottles matched this search. Try a different term, or submit a new bottle if you&apos;re trying to track something new.</div>}
 
       {!loading && !error && hasAnyItems && hasVisibleItems && (
         <>
@@ -499,7 +499,7 @@ function InventoryPage() {
                         <td>{formatDate(inv.purchase_date)}</td>
                         <td>
                           <div className={styles.rowActions}>
-                            <Link to={`/app/inventory/${inv.id}`} className={styles.smallLinkButton}>Inventory</Link>
+                            <Link to={`/app/inventory/${inv.id}`} className={styles.smallLinkButton}>Details</Link>
                             {bottle.id && <Link to={`/app/bottles/${bottle.id}`} className={styles.smallLinkButton}>Bottle</Link>}
                             <button type="button" className={styles.smallLinkButton} onClick={() => openLogModal(inv)}>Log tasting</button>
                           </div>
@@ -539,7 +539,7 @@ function InventoryPage() {
                     </div>
                     {inv.purchase_date && <div className={styles.cardMetaRow}><span><strong>Purchased:</strong> {formatDate(inv.purchase_date)}</span></div>}
                     <div className={styles.cardActions}>
-                      <Link to={`/app/inventory/${inv.id}`} className={styles.smallLinkButton}>Inventory details</Link>
+                      <Link to={`/app/inventory/${inv.id}`} className={styles.smallLinkButton}>Collection details</Link>
                       {bottle.id && <Link to={`/app/bottles/${bottle.id}`} className={styles.smallLinkButton}>Bottle details</Link>}
                       <button type="button" className={styles.smallLinkButton} onClick={() => openLogModal(inv)}>Log tasting</button>
                     </div>

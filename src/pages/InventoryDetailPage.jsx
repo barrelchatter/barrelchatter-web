@@ -88,7 +88,7 @@ function InventoryDetailPage() {
 
   // Delete item
   async function handleDelete() {
-    if (!window.confirm('Are you sure you want to delete this bottle from your inventory?')) {
+    if (!window.confirm('Are you sure you want to delete this bottle from your collection?')) {
       return;
     }
 
@@ -137,7 +137,7 @@ function InventoryDetailPage() {
           <h2>Error</h2>
           <p>{error}</p>
           <Link to="/app/inventory" className={styles.backLink}>
-            ← Back to Inventory
+            ← Back to My Collection
           </Link>
         </div>
       </div>
@@ -149,9 +149,9 @@ function InventoryDetailPage() {
       <div className={styles.container}>
         <div className={styles.error}>
           <h2>Not Found</h2>
-          <p>This inventory item could not be found.</p>
+          <p>This collection item could not be found.</p>
           <Link to="/app/inventory" className={styles.backLink}>
-            ← Back to Inventory
+            ← Back to My Collection
           </Link>
         </div>
       </div>
@@ -166,7 +166,7 @@ function InventoryDetailPage() {
       {/* Header */}
       <header className={styles.header}>
         <Link to="/app/inventory" className={styles.backLink}>
-          ← Back to Inventory
+          ← Back to My Collection
         </Link>
 
         <div className={styles.headerMain}>
