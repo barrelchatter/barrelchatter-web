@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api, { API_BASE_URL } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import BarrelTrackingSection from '../components/BarrelTrackingSection';
 import styles from '../styles/BottlesPage.module.scss';
 
@@ -57,6 +58,11 @@ const INITIAL_FORM = {
 };
 
 function BottlesPage() {
+  const { user } = useAuth();
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState('browse');
+
   const [bottles, setBottles] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -88,6 +94,13 @@ function BottlesPage() {
   // view mode: 'list' | 'cards' | 'gallery'
   const [viewMode, setViewMode] = useState('list');
 
+  // My Submissions state
+  const [submissions, setSubmissions] = useState([]);
+  const [submissionsTotal, setSubmissionsTotal] = useState(0);
+  const [submissionsLoading, setSubmissionsLoading] = useState(false);
+  const [submissionsError, setSubmissionsError] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+
   function formatSingleLimited(bottle) {
     const flags = [];
     if (bottle.is_single_barrel) flags.push('Single barrel');
@@ -100,6 +113,41 @@ function BottlesPage() {
     }
     if (!flags.length) return '—';
     return flags.join(' • ');
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return '—';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch {
+      return '—';
+    }
+  }
+
+  function renderSubmissionStatus(bottle) {
+    if (!bottle.status) return null;
+
+    const statusConfig = {
+      pending: { label: 'Pending', className: styles.statusPending },
+      approved: { label: 'Approved', className: styles.statusApproved },
+      rejected: { label: 'Rejected', className: styles.statusRejected },
+    };
+
+    const config = statusConfig[bottle.status] || {
+      label: bottle.status,
+      className: styles.statusDefault,
+    };
+
+    return (
+      <span className={config.className} title={bottle.review_notes || ''}>
+        {config.label}
+        {bottle.status === 'rejected' && bottle.review_notes && ' ⓘ'}
+      </span>
+    );
   }
 
   async function loadBottles({ showSpinner = true } = {}) {
@@ -148,11 +196,47 @@ function BottlesPage() {
     }
   }
 
+  async function loadSubmissions() {
+    if (!user) return;
+
+    setSubmissionsLoading(true);
+    setSubmissionsError('');
+
+    try {
+      const params = new URLSearchParams();
+      params.set('limit', 100);
+      params.set('offset', 0);
+      params.set('created_by_user_id', user.id);
+      if (statusFilter) params.set('status', statusFilter);
+
+      const response = await api.get(`/v1/bottles?${params.toString()}`);
+      const data = response.data;
+
+      setSubmissions(data.bottles || []);
+      setSubmissionsTotal(data.total || 0);
+    } catch (err) {
+      console.error(err);
+      const message =
+        err?.response?.data?.error ||
+        'Failed to load submissions. The API may need to be updated to support filtering by creator.';
+      setSubmissionsError(message);
+    } finally {
+      setSubmissionsLoading(false);
+    }
+  }
+
   useEffect(() => {
     loadBottles();
     loadWishlists();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'submissions') {
+      loadSubmissions();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, statusFilter]);
 
   function handleSearchSubmit(e) {
     e.preventDefault();
@@ -326,86 +410,112 @@ function BottlesPage() {
             tastings, wishlists, and tags.
           </p>
         </div>
-        <button
-          type="button"
-          className={styles.addButton}
-          onClick={() => setShowForm((v) => !v)}
-        >
-          {showForm ? 'Cancel' : 'Submit New Whiskey'}
-        </button>
-      </div>
-
-      <div className={styles.toolbar}>
-        <form className={styles.searchRow} onSubmit={handleSearchSubmit}>
-          <input
-            className={styles.searchInput}
-            type="text"
-            placeholder="Search by name, brand, or distillery..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <input
-            className={styles.typeInput}
-            type="text"
-            placeholder="Type (e.g. Bourbon, Rye)"
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-          />
-          <button
-            type="submit"
-            className={styles.searchButton}
-            disabled={loadingList}
-          >
-            {loadingList ? 'Searching...' : 'Search'}
-          </button>
-        </form>
-        <div className={styles.toolbarRight}>
-          <div className={styles.count}>
-            {total} bottle{total === 1 ? '' : 's'}
-          </div>
-          <div className={styles.viewToggle}>
+        <div className={styles.headerActions}>
+          <div className={styles.tabs}>
             <button
               type="button"
               className={
-                viewMode === 'list'
-                  ? styles.viewModeButtonActive
-                  : styles.viewModeButton
+                activeTab === 'browse' ? styles.tabActive : styles.tab
               }
-              onClick={() => setViewMode('list')}
+              onClick={() => setActiveTab('browse')}
             >
-              List
+              Browse Catalog
             </button>
             <button
               type="button"
               className={
-                viewMode === 'cards'
-                  ? styles.viewModeButtonActive
-                  : styles.viewModeButton
+                activeTab === 'submissions' ? styles.tabActive : styles.tab
               }
-              onClick={() => setViewMode('cards')}
+              onClick={() => setActiveTab('submissions')}
             >
-              Cards
-            </button>
-            <button
-              type="button"
-              className={
-                viewMode === 'gallery'
-                  ? styles.viewModeButtonActive
-                  : styles.viewModeButton
-              }
-              onClick={() => setViewMode('gallery')}
-            >
-              Gallery
+              My Submissions
             </button>
           </div>
+          {activeTab === 'browse' && (
+            <button
+              type="button"
+              className={styles.addButton}
+              onClick={() => setShowForm((v) => !v)}
+            >
+              {showForm ? 'Cancel' : 'Submit New Whiskey'}
+            </button>
+          )}
         </div>
       </div>
 
-      {showForm && (
-        <div className={styles.formCard}>
-          <h2 className={styles.formTitle}>Submit New Whiskey</h2>
-          {formError && <div className={styles.formError}>{formError}</div>}
-          <form className={styles.form} onSubmit={handleFormSubmit}>
+      {activeTab === 'browse' && (
+        <>
+          <div className={styles.toolbar}>
+            <form className={styles.searchRow} onSubmit={handleSearchSubmit}>
+              <input
+                className={styles.searchInput}
+                type="text"
+                placeholder="Search by name, brand, or distillery..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <input
+                className={styles.typeInput}
+                type="text"
+                placeholder="Type (e.g. Bourbon, Rye)"
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+              />
+              <button
+                type="submit"
+                className={styles.searchButton}
+                disabled={loadingList}
+              >
+                {loadingList ? 'Searching...' : 'Search'}
+              </button>
+            </form>
+            <div className={styles.toolbarRight}>
+              <div className={styles.count}>
+                {total} bottle{total === 1 ? '' : 's'}
+              </div>
+              <div className={styles.viewToggle}>
+                <button
+                  type="button"
+                  className={
+                    viewMode === 'list'
+                      ? styles.viewModeButtonActive
+                      : styles.viewModeButton
+                  }
+                  onClick={() => setViewMode('list')}
+                >
+                  List
+                </button>
+                <button
+                  type="button"
+                  className={
+                    viewMode === 'cards'
+                      ? styles.viewModeButtonActive
+                      : styles.viewModeButton
+                  }
+                  onClick={() => setViewMode('cards')}
+                >
+                  Cards
+                </button>
+                <button
+                  type="button"
+                  className={
+                    viewMode === 'gallery'
+                      ? styles.viewModeButtonActive
+                      : styles.viewModeButton
+                  }
+                  onClick={() => setViewMode('gallery')}
+                >
+                  Gallery
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {showForm && (
+            <div className={styles.formCard}>
+              <h2 className={styles.formTitle}>Submit New Whiskey</h2>
+              {formError && <div className={styles.formError}>{formError}</div>}
+              <form className={styles.form} onSubmit={handleFormSubmit}>
             <div className={styles.formRow}>
               <label className={styles.label}>
                 Name *
@@ -603,378 +713,482 @@ function BottlesPage() {
               </button>
             </div>
           </form>
-        </div>
+            </div>
+          )}
+
+          {loading && <div className={styles.message}>Loading bottles...</div>}
+          {error && <div className={styles.error}>{error}</div>}
+
+          {!loading && !error && bottles.length === 0 && (
+            <div className={styles.message}>No bottles found.</div>
+          )}
+
+          {!loading && !error && bottles.length > 0 && (
+            <>
+              {viewMode === 'list' && (
+                <div className={styles.tableWrapper}>
+                  <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Brand</th>
+                      <th>Distillery</th>
+                      <th>Type</th>
+                      <th>Proof</th>
+                      <th>Age</th>
+                      <th>Release</th>
+                      <th>Single / Limited</th>
+                      <th>MSRP</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bottles.map((bottle) => {
+                      const wishlisted =
+                        bottle.id && wishlistByBottle[bottle.id];
+  
+                      return (
+                        <React.Fragment key={bottle.id}>
+                          <tr>
+                            <td>
+                              <Link
+                                to={`/app/bottles/${bottle.id}`}
+                                className={styles.nameLink}
+                              >
+                                {bottle.name || 'Unknown bottle'}
+                              </Link>
+                              <div className={styles.subRow}>
+                                {bottle.brand || 'Unknown Brand'}
+                                {bottle.type ? ` • ${bottle.type}` : ''}
+                              </div>
+                              {renderStatusChip(bottle, styles)}
+                            </td>
+                            <td>{bottle.brand || '—'}</td>
+                            <td>{bottle.distillery || '—'}</td>
+                            <td>{bottle.type || '—'}</td>
+                            <td>
+                              {bottle.proof != null
+                                ? bottle.proof
+                                : '—'}
+                            </td>
+                            <td>{bottle.age_statement || '—'}</td>
+                            <td>{bottle.release_name || '—'}</td>
+                            <td>{formatSingleLimited(bottle)}</td>
+                            <td>
+                              {bottle.msrp != null
+                                ? `$${Number(bottle.msrp).toFixed(2)}`
+                                : '—'}
+                            </td>
+                            <td>
+                              <div className={styles.rowActions}>
+                                <button
+                                  type="button"
+                                  className={styles.smallButton}
+                                  onClick={() =>
+                                    handleOpenInventoryForm(bottle.id)
+                                  }
+                                >
+                                  Add to My Collection
+                                </button>
+                                <button
+                                  type="button"
+                                  className={
+                                    wishlisted
+                                      ? styles.wishlistButtonOn
+                                      : styles.wishlistButton
+                                  }
+                                  onClick={() =>
+                                    handleWishlistAdd(bottle)
+                                  }
+                                  disabled={!!wishlisted}
+                                >
+                                  {wishlisted
+                                    ? 'On Wishlist'
+                                    : 'Add to Wishlist'}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                          {invFormOpenFor === bottle.id && (
+                            <tr className={styles.invFormRow}>
+                              <td colSpan={10}>
+                                <form
+                                  className={styles.invForm}
+                                  onSubmit={handleInventorySubmit}
+                                >
+                                  <div
+                                    className={styles.invFormFields}
+                                  >
+                                    <label className={styles.invLabel}>
+                                      Location *
+                                      <input
+                                        className={styles.input}
+                                        type="text"
+                                        name="location_label"
+                                        value={invForm.location_label}
+                                        onChange={
+                                          handleInvFormChange
+                                        }
+                                        placeholder="e.g. Home - Cabinet A / Shelf 2"
+                                      />
+                                    </label>
+                                    <label className={styles.invLabel}>
+                                      Status
+                                      <select
+                                        className={styles.input}
+                                        name="status"
+                                        value={invForm.status}
+                                        onChange={
+                                          handleInvFormChange
+                                        }
+                                      >
+                                        <option value="sealed">
+                                          Sealed
+                                        </option>
+                                        <option value="open">
+                                          Open
+                                        </option>
+                                        <option value="finished">
+                                          Finished
+                                        </option>
+                                        <option value="sample">
+                                          Sample
+                                        </option>
+                                      </select>
+                                    </label>
+                                    <label className={styles.invLabel}>
+                                      Price Paid
+                                      <input
+                                        className={styles.input}
+                                        type="number"
+                                        step="0.01"
+                                        name="price_paid"
+                                        value={invForm.price_paid}
+                                        onChange={
+                                          handleInvFormChange
+                                        }
+                                        placeholder="e.g. 60.00"
+                                      />
+                                    </label>
+                                    <label className={styles.invLabel}>
+                                      Purchase Date
+                                      <input
+                                        className={styles.input}
+                                        type="date"
+                                        name="purchase_date"
+                                        value={invForm.purchase_date}
+                                        onChange={
+                                          handleInvFormChange
+                                        }
+                                      />
+                                    </label>
+                                  </div>
+                                  {invError && (
+                                    <div className={styles.invError}>
+                                      {invError}
+                                    </div>
+                                  )}
+                                  <div className={styles.invActions}>
+                                    <button
+                                      type="button"
+                                      className={
+                                        styles.invCancelButton
+                                      }
+                                      onClick={() =>
+                                        setInvFormOpenFor(null)
+                                      }
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      type="submit"
+                                      className={
+                                        styles.invSaveButton
+                                      }
+                                      disabled={invSubmitting}
+                                    >
+                                      {invSubmitting
+                                        ? 'Adding...'
+                                        : 'Add to My Collection'}
+                                    </button>
+                                  </div>
+                                </form>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+  
+            {viewMode === 'cards' && (
+              <div className={styles.cardGrid}>
+                {bottles.map((bottle) => {
+                  const wishlisted =
+                    bottle.id && wishlistByBottle[bottle.id];
+                  const flags = [];
+                  if (bottle.is_single_barrel) flags.push('Single barrel');
+                  if (bottle.is_limited_release) {
+                    if (bottle.limited_bottle_count != null) {
+                      flags.push(
+                        `Limited (${bottle.limited_bottle_count})`
+                      );
+                    } else {
+                      flags.push('Limited');
+                    }
+                  }
+                  if (bottle.finish_description) {
+                    flags.push(bottle.finish_description);
+                  }
+  
+                  return (
+                    <div key={bottle.id} className={styles.card}>
+                      <div className={styles.cardHeader}>
+                        <div>
+                          <div className={styles.cardTitle}>
+                            <Link
+                              to={`/app/bottles/${bottle.id}`}
+                              className={styles.nameLink}
+                            >
+                              {bottle.name}
+                            </Link>
+                          </div>
+                          <div className={styles.cardSubtitle}>
+                            {bottle.brand || 'Unknown Brand'}
+                            {bottle.type ? ` • ${bottle.type}` : ''}
+                          </div>
+                          {bottle.release_name && (
+                            <div className={styles.releaseName}>
+                              {bottle.release_name}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+  
+                      <div className={styles.metaRow}>
+                        <span className={styles.metaLeft}>
+                          {bottle.proof != null
+                            ? `${bottle.proof} proof`
+                            : ''}
+                          {bottle.age_statement
+                            ? ` · ${bottle.age_statement}`
+                            : ''}
+                        </span>
+                        {/* MSRP display (Migration 011) */}
+                        {bottle.msrp && (
+                          <span className={styles.msrpBadge}>
+                            MSRP ${Number(bottle.msrp).toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+  
+                      {flags.length > 0 && (
+                        <div className={styles.releaseChips}>
+                          {flags.map((flag) => (
+                            <span
+                              key={flag}
+                              className={styles.releaseChip}
+                            >
+                              {flag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+  
+                      <div className={styles.cardActions}>
+                        <button
+                          type="button"
+                          className={styles.smallButton}
+                          onClick={() =>
+                            handleOpenInventoryForm(bottle.id)
+                          }
+                        >
+                          Add to My Collection
+                        </button>
+                        <button
+                          type="button"
+                          className={
+                            wishlisted
+                              ? styles.wishlistButtonOn
+                              : styles.wishlistButton
+                          }
+                          onClick={() => handleWishlistAdd(bottle)}
+                          disabled={!!wishlisted}
+                        >
+                          {wishlisted
+                            ? 'On Wishlist'
+                            : 'Add to Wishlist'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+  
+            {viewMode === 'gallery' && (
+              <div className={styles.galleryGrid}>
+                {bottles.map((bottle) => (
+                  <div
+                    key={bottle.id}
+                    className={styles.galleryCard}
+                  >
+                    <div className={styles.galleryImageWrap}>
+                      {bottle.primary_photo_url ? (
+                        <img
+                          src={resolveImageUrl(bottle.primary_photo_url)}
+                          alt={bottle.name}
+                          className={styles.galleryImage}
+                        />
+                      ) : (
+                        <div className={styles.galleryPlaceholder}>
+                          <span>{bottle.name.charAt(0)}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className={styles.galleryBody}>
+                      <div className={styles.galleryTitle}>
+                        <Link
+                          to={`/app/bottles/${bottle.id}`}
+                          className={styles.nameLink}
+                        >
+                          {bottle.name}
+                        </Link>
+                      </div>
+                      <div className={styles.gallerySubtitle}>
+                        {bottle.brand || 'Unknown Brand'}
+                      </div>
+                      <div className={styles.galleryMetaRow}>
+                        {bottle.type && (
+                          <span>{bottle.type}</span>
+                        )}
+                        {bottle.proof != null && (
+                          <span>{bottle.proof} proof</span>
+                        )}
+                        {bottle.msrp != null && (
+                          <span className={styles.msrpBadge}>
+                            ${Number(bottle.msrp).toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                      <div className={styles.galleryLinkRow}>
+                        <Link
+                          to={`/app/bottles/${bottle.id}`}
+                          className={styles.galleryDetailsLink}
+                        >
+                          View details →
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              )}
+            </>
+          )}
+        </>
       )}
 
-      {loading && <div className={styles.message}>Loading bottles...</div>}
-      {error && <div className={styles.error}>{error}</div>}
-
-      {!loading && !error && bottles.length === 0 && (
-        <div className={styles.message}>No bottles found.</div>
-      )}
-
-      {!loading && !error && bottles.length > 0 && (
+      {activeTab === 'submissions' && (
         <>
-          {viewMode === 'list' && (
+          <div className={styles.submissionsToolbar}>
+            <div className={styles.filters}>
+              <select
+                className={styles.statusSelect}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div className={styles.count}>
+              {submissionsTotal} submission{submissionsTotal === 1 ? '' : 's'}
+            </div>
+          </div>
+
+          {submissionsLoading && (
+            <div className={styles.message}>Loading your submissions...</div>
+          )}
+
+          {submissionsError && (
+            <div className={styles.error}>
+              {submissionsError}
+              <div className={styles.apiNote}>
+                <strong>Note for Amy (API developer):</strong> The API needs to support filtering bottles by <code>created_by_user_id</code>.
+                Please add this query parameter to <code>GET /v1/bottles</code> endpoint.
+              </div>
+            </div>
+          )}
+
+          {!submissionsLoading && !submissionsError && submissions.length === 0 && (
+            <div className={styles.emptyState}>
+              <div className={styles.emptyStateIcon}>📝</div>
+              <h3 className={styles.emptyStateTitle}>You haven't submitted any whiskeys yet</h3>
+              <p className={styles.emptyStateText}>
+                Submit a new whiskey to the catalog to get started. Your submissions will appear here.
+              </p>
+              <button
+                type="button"
+                className={styles.addButton}
+                onClick={() => {
+                  setActiveTab('browse');
+                  setShowForm(true);
+                }}
+              >
+                Submit New Whiskey
+              </button>
+            </div>
+          )}
+
+          {!submissionsLoading && !submissionsError && submissions.length > 0 && (
             <div className={styles.tableWrapper}>
               <table className={styles.table}>
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>Brand</th>
-                    <th>Distillery</th>
                     <th>Type</th>
-                    <th>Proof</th>
-                    <th>Age</th>
-                    <th>Release</th>
-                    <th>Single / Limited</th>
-                    <th>MSRP</th>
+                    <th>Status</th>
+                    <th>Submitted Date</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {bottles.map((bottle) => {
-                    const wishlisted =
-                      bottle.id && wishlistByBottle[bottle.id];
-
-                    return (
-                      <React.Fragment key={bottle.id}>
-                        <tr>
-                          <td>
-                            <Link
-                              to={`/app/bottles/${bottle.id}`}
-                              className={styles.nameLink}
-                            >
-                              {bottle.name || 'Unknown bottle'}
-                            </Link>
-                            <div className={styles.subRow}>
-                              {bottle.brand || 'Unknown Brand'}
-                              {bottle.type ? ` • ${bottle.type}` : ''}
-                            </div>
-                            {renderStatusChip(bottle, styles)}
-                          </td>
-                          <td>{bottle.brand || '—'}</td>
-                          <td>{bottle.distillery || '—'}</td>
-                          <td>{bottle.type || '—'}</td>
-                          <td>
-                            {bottle.proof != null
-                              ? bottle.proof
-                              : '—'}
-                          </td>
-                          <td>{bottle.age_statement || '—'}</td>
-                          <td>{bottle.release_name || '—'}</td>
-                          <td>{formatSingleLimited(bottle)}</td>
-                          <td>
-                            {bottle.msrp != null
-                              ? `$${Number(bottle.msrp).toFixed(2)}`
-                              : '—'}
-                          </td>
-                          <td>
-                            <div className={styles.rowActions}>
-                              <button
-                                type="button"
-                                className={styles.smallButton}
-                                onClick={() =>
-                                  handleOpenInventoryForm(bottle.id)
-                                }
-                              >
-                                Add to My Collection
-                              </button>
-                              <button
-                                type="button"
-                                className={
-                                  wishlisted
-                                    ? styles.wishlistButtonOn
-                                    : styles.wishlistButton
-                                }
-                                onClick={() =>
-                                  handleWishlistAdd(bottle)
-                                }
-                                disabled={!!wishlisted}
-                              >
-                                {wishlisted
-                                  ? 'On Wishlist'
-                                  : 'Add to Wishlist'}
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                        {invFormOpenFor === bottle.id && (
-                          <tr className={styles.invFormRow}>
-                            <td colSpan={10}>
-                              <form
-                                className={styles.invForm}
-                                onSubmit={handleInventorySubmit}
-                              >
-                                <div
-                                  className={styles.invFormFields}
-                                >
-                                  <label className={styles.invLabel}>
-                                    Location *
-                                    <input
-                                      className={styles.input}
-                                      type="text"
-                                      name="location_label"
-                                      value={invForm.location_label}
-                                      onChange={
-                                        handleInvFormChange
-                                      }
-                                      placeholder="e.g. Home - Cabinet A / Shelf 2"
-                                    />
-                                  </label>
-                                  <label className={styles.invLabel}>
-                                    Status
-                                    <select
-                                      className={styles.input}
-                                      name="status"
-                                      value={invForm.status}
-                                      onChange={
-                                        handleInvFormChange
-                                      }
-                                    >
-                                      <option value="sealed">
-                                        Sealed
-                                      </option>
-                                      <option value="open">
-                                        Open
-                                      </option>
-                                      <option value="finished">
-                                        Finished
-                                      </option>
-                                      <option value="sample">
-                                        Sample
-                                      </option>
-                                    </select>
-                                  </label>
-                                  <label className={styles.invLabel}>
-                                    Price Paid
-                                    <input
-                                      className={styles.input}
-                                      type="number"
-                                      step="0.01"
-                                      name="price_paid"
-                                      value={invForm.price_paid}
-                                      onChange={
-                                        handleInvFormChange
-                                      }
-                                      placeholder="e.g. 60.00"
-                                    />
-                                  </label>
-                                  <label className={styles.invLabel}>
-                                    Purchase Date
-                                    <input
-                                      className={styles.input}
-                                      type="date"
-                                      name="purchase_date"
-                                      value={invForm.purchase_date}
-                                      onChange={
-                                        handleInvFormChange
-                                      }
-                                    />
-                                  </label>
-                                </div>
-                                {invError && (
-                                  <div className={styles.invError}>
-                                    {invError}
-                                  </div>
-                                )}
-                                <div className={styles.invActions}>
-                                  <button
-                                    type="button"
-                                    className={
-                                      styles.invCancelButton
-                                    }
-                                    onClick={() =>
-                                      setInvFormOpenFor(null)
-                                    }
-                                  >
-                                    Cancel
-                                  </button>
-                                  <button
-                                    type="submit"
-                                    className={
-                                      styles.invSaveButton
-                                    }
-                                    disabled={invSubmitting}
-                                  >
-                                    {invSubmitting
-                                      ? 'Adding...'
-                                      : 'Add to My Collection'}
-                                  </button>
-                                </div>
-                              </form>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {viewMode === 'cards' && (
-            <div className={styles.cardGrid}>
-              {bottles.map((bottle) => {
-                const wishlisted =
-                  bottle.id && wishlistByBottle[bottle.id];
-                const flags = [];
-                if (bottle.is_single_barrel) flags.push('Single barrel');
-                if (bottle.is_limited_release) {
-                  if (bottle.limited_bottle_count != null) {
-                    flags.push(
-                      `Limited (${bottle.limited_bottle_count})`
-                    );
-                  } else {
-                    flags.push('Limited');
-                  }
-                }
-                if (bottle.finish_description) {
-                  flags.push(bottle.finish_description);
-                }
-
-                return (
-                  <div key={bottle.id} className={styles.card}>
-                    <div className={styles.cardHeader}>
-                      <div>
-                        <div className={styles.cardTitle}>
+                  {submissions.map((bottle) => (
+                    <tr key={bottle.id}>
+                      <td>
+                        <Link
+                          to={`/app/bottles/${bottle.id}`}
+                          className={styles.nameLink}
+                        >
+                          {bottle.name || 'Unknown bottle'}
+                        </Link>
+                        <div className={styles.subRow}>
+                          {bottle.brand || 'Unknown Brand'}
+                        </div>
+                      </td>
+                      <td>{bottle.type || '—'}</td>
+                      <td>{renderSubmissionStatus(bottle)}</td>
+                      <td>{formatDate(bottle.created_at || bottle.submitted_at)}</td>
+                      <td>
+                        <div className={styles.rowActions}>
                           <Link
                             to={`/app/bottles/${bottle.id}`}
-                            className={styles.nameLink}
+                            className={styles.smallButton}
                           >
-                            {bottle.name}
+                            View Details
                           </Link>
                         </div>
-                        <div className={styles.cardSubtitle}>
-                          {bottle.brand || 'Unknown Brand'}
-                          {bottle.type ? ` • ${bottle.type}` : ''}
-                        </div>
-                        {bottle.release_name && (
-                          <div className={styles.releaseName}>
-                            {bottle.release_name}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className={styles.metaRow}>
-                      <span className={styles.metaLeft}>
-                        {bottle.proof != null
-                          ? `${bottle.proof} proof`
-                          : ''}
-                        {bottle.age_statement
-                          ? ` · ${bottle.age_statement}`
-                          : ''}
-                      </span>
-                      {/* MSRP display (Migration 011) */}
-                      {bottle.msrp && (
-                        <span className={styles.msrpBadge}>
-                          MSRP ${Number(bottle.msrp).toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-
-                    {flags.length > 0 && (
-                      <div className={styles.releaseChips}>
-                        {flags.map((flag) => (
-                          <span
-                            key={flag}
-                            className={styles.releaseChip}
-                          >
-                            {flag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className={styles.cardActions}>
-                      <button
-                        type="button"
-                        className={styles.smallButton}
-                        onClick={() =>
-                          handleOpenInventoryForm(bottle.id)
-                        }
-                      >
-                        Add to My Collection
-                      </button>
-                      <button
-                        type="button"
-                        className={
-                          wishlisted
-                            ? styles.wishlistButtonOn
-                            : styles.wishlistButton
-                        }
-                        onClick={() => handleWishlistAdd(bottle)}
-                        disabled={!!wishlisted}
-                      >
-                        {wishlisted
-                          ? 'On Wishlist'
-                          : 'Add to Wishlist'}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {viewMode === 'gallery' && (
-            <div className={styles.galleryGrid}>
-              {bottles.map((bottle) => (
-                <div
-                  key={bottle.id}
-                  className={styles.galleryCard}
-                >
-                  <div className={styles.galleryImageWrap}>
-                    {bottle.primary_photo_url ? (
-                      <img
-                        src={resolveImageUrl(bottle.primary_photo_url)}
-                        alt={bottle.name}
-                        className={styles.galleryImage}
-                      />
-                    ) : (
-                      <div className={styles.galleryPlaceholder}>
-                        <span>{bottle.name.charAt(0)}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className={styles.galleryBody}>
-                    <div className={styles.galleryTitle}>
-                      <Link
-                        to={`/app/bottles/${bottle.id}`}
-                        className={styles.nameLink}
-                      >
-                        {bottle.name}
-                      </Link>
-                    </div>
-                    <div className={styles.gallerySubtitle}>
-                      {bottle.brand || 'Unknown Brand'}
-                    </div>
-                    <div className={styles.galleryMetaRow}>
-                      {bottle.type && (
-                        <span>{bottle.type}</span>
-                      )}
-                      {bottle.proof != null && (
-                        <span>{bottle.proof} proof</span>
-                      )}
-                      {bottle.msrp != null && (
-                        <span className={styles.msrpBadge}>
-                          ${Number(bottle.msrp).toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-                    <div className={styles.galleryLinkRow}>
-                      <Link
-                        to={`/app/bottles/${bottle.id}`}
-                        className={styles.galleryDetailsLink}
-                      >
-                        View details →
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </>
