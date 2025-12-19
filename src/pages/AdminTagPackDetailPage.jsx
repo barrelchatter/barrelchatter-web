@@ -38,6 +38,18 @@ function AdminTagPackDetailPage() {
   const [addTagsError, setAddTagsError] = useState('');
   const [addTagsResult, setAddTagsResult] = useState(null);
 
+  // Void modal
+  const [showVoid, setShowVoid] = useState(false);
+  const [voidReason, setVoidReason] = useState('');
+  const [voidSubmitting, setVoidSubmitting] = useState(false);
+  const [voidError, setVoidError] = useState('');
+
+  // Assign modal
+  const [showAssign, setShowAssign] = useState(false);
+  const [assignEmail, setAssignEmail] = useState('');
+  const [assignSubmitting, setAssignSubmitting] = useState(false);
+  const [assignError, setAssignError] = useState('');
+
   async function loadPack() {
     setLoading(true);
     setError('');
@@ -107,6 +119,65 @@ function AdminTagPackDetailPage() {
     }
   }
 
+  async function handleRemoveTag(tagId) {
+    if (!confirm('Remove this tag from the pack?')) {
+      return;
+    }
+
+    try {
+      await api.post(`/v1/admin/tag-packs/${id}/remove-tags`, {
+        tag_ids: [tagId],
+      });
+      await loadPack();
+    } catch (err) {
+      console.error(err);
+      alert(err?.response?.data?.error || 'Failed to remove tag');
+    }
+  }
+
+  async function handleVoidSubmit(e) {
+    e.preventDefault();
+    setVoidSubmitting(true);
+    setVoidError('');
+
+    try {
+      await api.post(`/v1/admin/tag-packs/${id}/void`, {
+        reason: voidReason.trim(),
+      });
+
+      setShowVoid(false);
+      setVoidReason('');
+      await loadPack();
+    } catch (err) {
+      console.error(err);
+      setVoidError(err?.response?.data?.error || 'Failed to void pack');
+    } finally {
+      setVoidSubmitting(false);
+    }
+  }
+
+  async function handleAssignSubmit(e) {
+    e.preventDefault();
+    setAssignSubmitting(true);
+    setAssignError('');
+
+    try {
+      const res = await api.post(`/v1/admin/tag-packs/${id}/assign-to-user`, {
+        user_email: assignEmail.trim(),
+      });
+
+      alert(`Pack assigned! ${res.data.tags_claimed} tags claimed by ${res.data.user.email}`);
+      setShowAssign(false);
+      setAssignEmail('');
+      await loadPack();
+    } catch (err) {
+      console.error(err);
+      setAssignError(err?.response?.data?.error || 'Failed to assign pack');
+    } finally {
+      setAssignSubmitting(false);
+    }
+  }
+
   function getStatusBadgeClass(status) {
     switch (status) {
       case 'active':
@@ -161,6 +232,20 @@ function AdminTagPackDetailPage() {
                 onClick={() => setShowAddTags(true)}
               >
                 Add Tags
+              </button>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => setShowAssign(true)}
+              >
+                Assign to User
+              </button>
+              <button
+                type="button"
+                className={styles.dangerButton}
+                onClick={() => setShowVoid(true)}
+              >
+                Void Pack
               </button>
               <button
                 type="button"
@@ -282,6 +367,7 @@ function AdminTagPackDetailPage() {
                   <th>Label</th>
                   <th>Registered To</th>
                   <th>Linked Bottle</th>
+                  {pack.status === 'active' && <th>Actions</th>}
                 </tr>
               </thead>
               <tbody>
@@ -303,6 +389,17 @@ function AdminTagPackDetailPage() {
                       ) : '—'}
                     </td>
                     <td>{tag.bottle_name || '—'}</td>
+                    {pack.status === 'active' && (
+                      <td>
+                        <button
+                          type="button"
+                          className={styles.removeButton}
+                          onClick={() => handleRemoveTag(tag.id)}
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -422,7 +519,7 @@ function AdminTagPackDetailPage() {
             </div>
             <div className={styles.modalBody}>
               {addTagsError && <div className={styles.modalError}>{addTagsError}</div>}
-              
+
               {addTagsResult && (
                 <div className={styles.modalSuccess}>
                   Added {addTagsResult.added} tags.
@@ -462,6 +559,117 @@ function AdminTagPackDetailPage() {
                     disabled={addTagsSubmitting}
                   >
                     {addTagsSubmitting ? 'Adding...' : 'Add Tags'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Void Modal */}
+      {showVoid && (
+        <div className={styles.modalOverlay} onClick={() => setShowVoid(false)}>
+          <div className={styles.modalSmall} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>Void Pack</h2>
+              <button type="button" className={styles.modalClose} onClick={() => setShowVoid(false)}>
+                ×
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.voidWarning}>
+                Are you sure you want to void pack <strong>{pack.pack_code}</strong>?
+                This action cannot be undone.
+              </div>
+
+              {voidError && <div className={styles.modalError}>{voidError}</div>}
+
+              <form onSubmit={handleVoidSubmit}>
+                <label className={styles.modalLabel}>
+                  Reason *
+                  <textarea
+                    className={styles.modalTextarea}
+                    value={voidReason}
+                    onChange={(e) => setVoidReason(e.target.value)}
+                    placeholder="Why is this pack being voided?"
+                    rows={3}
+                    disabled={voidSubmitting}
+                    required
+                  />
+                </label>
+
+                <div className={styles.modalActions}>
+                  <button
+                    type="button"
+                    className={styles.modalCancelButton}
+                    onClick={() => setShowVoid(false)}
+                    disabled={voidSubmitting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className={styles.dangerConfirmButton}
+                    disabled={voidSubmitting}
+                  >
+                    {voidSubmitting ? 'Voiding...' : 'Void Pack'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Assign Modal */}
+      {showAssign && (
+        <div className={styles.modalOverlay} onClick={() => setShowAssign(false)}>
+          <div className={styles.modalSmall} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>Assign Pack to User</h2>
+              <button type="button" className={styles.modalClose} onClick={() => setShowAssign(false)}>
+                ×
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.assignPackInfo}>
+                <strong>{pack.pack_code}</strong>
+                <span>{pack.name}</span>
+                <span>{tags.length} tags</span>
+              </div>
+
+              {assignError && <div className={styles.modalError}>{assignError}</div>}
+
+              <form onSubmit={handleAssignSubmit}>
+                <label className={styles.modalLabel}>
+                  User Email *
+                  <input
+                    type="email"
+                    className={styles.modalInput}
+                    value={assignEmail}
+                    onChange={(e) => setAssignEmail(e.target.value)}
+                    placeholder="user@example.com"
+                    disabled={assignSubmitting}
+                    required
+                  />
+                </label>
+
+                <div className={styles.modalActions}>
+                  <button
+                    type="button"
+                    className={styles.modalCancelButton}
+                    onClick={() => setShowAssign(false)}
+                    disabled={assignSubmitting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className={styles.modalSubmitButton}
+                    disabled={assignSubmitting}
+                  >
+                    {assignSubmitting ? 'Assigning...' : 'Assign Pack'}
                   </button>
                 </div>
               </form>
