@@ -326,13 +326,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--bc-space-1) var(--bc-space-2);
+  padding: var(--bc-space-2) var(--bc-space-2);
   gap: var(--bc-space-1);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .photoCaption {
   font-size: var(--bc-text-xs);
-  color: var(--bc-text-secondary);
+  color: var(--bc-text-primary);
+  font-weight: 500;
   @include truncate;
 }
 
@@ -347,25 +349,33 @@
   font-size: var(--bc-text-xs);
   text-transform: uppercase;
   letter-spacing: var(--bc-tracking-wide);
-  color: var(--bc-accent);
+  color: var(--bc-text-inverse);
+  background: var(--bc-accent);
+  padding: 2px var(--bc-space-2);
+  border-radius: var(--bc-radius-full);
+  font-weight: 600;
 }
 
 .photoPrimaryButton,
 .photoRemoveButton {
   @include button-ghost;
   font-size: var(--bc-text-xs);
-  padding: 0;
-  text-decoration: underline;
-  
+  padding: 2px var(--bc-space-1);
+  text-decoration: none;
+  color: var(--bc-text-primary);
+  font-weight: 500;
+
   &:hover {
-    background: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--bc-accent);
   }
 }
 
 .photoRemoveButton {
-  color: var(--bc-text-tertiary);
-  
+  color: var(--bc-text-secondary);
+
   &:hover {
+    background: rgba(196, 92, 82, 0.15);
     color: var(--bc-danger);
   }
 }
