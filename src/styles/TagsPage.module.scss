@@ -142,6 +142,10 @@
   background: rgba(0, 0, 0, 0.2);
   border-radius: var(--bc-radius-md);
   font-size: var(--bc-text-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--bc-space-4);
 }
 
 .lookupLinkedLabel {
@@ -208,4 +212,58 @@
 
 .table {
   @include table-base;
+}
+
+// ============================================================================
+// DANGER ZONE (in lookup result)
+// ============================================================================
+
+.lookupDangerZone {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+  padding-top: var(--bc-space-3);
+  border-top: 1px solid var(--bc-border-default);
+}
+
+.dangerButton {
+  @include button-danger;
+}
+
+.dangerHint {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+}
+
+// ============================================================================
+// TABLE ACTIONS
+// ============================================================================
+
+.actions {
+  display: flex;
+  gap: var(--bc-space-2);
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  @include button-secondary;
+  @include button-sm;
+}
+
+.dangerActionButton {
+  @include button-base;
+  @include button-sm;
+  background: transparent;
+  color: var(--bc-danger);
+  border: 1px solid var(--bc-danger);
+
+  &:hover:not(:disabled) {
+    background: var(--bc-danger);
+    color: white;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

@@ -22,6 +22,10 @@ function TagsPage() {
   const [assignLoading, setAssignLoading] = useState(false);
   const [claimLoading, setClaimLoading] = useState(false);
 
+  const [selectedTag, setSelectedTag] = useState(null);
+  const [unlinkLoading, setUnlinkLoading] = useState(false);
+  const [releaseLoading, setReleaseLoading] = useState(false);
+
   async function loadTags() {
     setLoading(true);
     setError('');
@@ -135,6 +139,43 @@ function TagsPage() {
       setLookupError(message);
     } finally {
       setAssignLoading(false);
+    }
+  }
+
+  async function handleUnlink(tagId) {
+    if (!window.confirm('Unlink this tag from its bottle? The tag will remain in your account.')) return;
+    setUnlinkLoading(tagId);
+    try {
+      await api.post(`/v1/tags/${tagId}/unlink`);
+      await loadTags();
+      // If this is the currently looked-up tag, refresh lookup too
+      if (lookupResult?.tag?.id === tagId) {
+        await handleLookup({ preventDefault: () => {} });
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err?.response?.data?.error || 'Failed to unlink tag.');
+    } finally {
+      setUnlinkLoading(null);
+    }
+  }
+
+  async function handleRelease(tagId) {
+    if (!window.confirm('Release this tag? This will remove it from your account and make it available for others to claim. This cannot be undone.')) return;
+    setReleaseLoading(tagId);
+    try {
+      await api.delete(`/v1/tags/${tagId}`);
+      await loadTags();
+      // Clear lookup if this was the looked-up tag
+      if (lookupResult?.tag?.id === tagId) {
+        setLookupResult(null);
+        setScanUid('');
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err?.response?.data?.error || 'Failed to release tag.');
+    } finally {
+      setReleaseLoading(null);
     }
   }
 
@@ -285,6 +326,30 @@ function TagsPage() {
                 Location: {inventory.location_label}
               </div>
             </div>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={() => handleUnlink(tag.id)}
+              disabled={unlinkLoading === tag.id}
+            >
+              {unlinkLoading === tag.id ? 'Unlinking...' : 'Unlink from Bottle'}
+            </button>
+          </div>
+        )}
+
+        {(state === 'mine_linked' || state === 'mine_unlinked') && (
+          <div className={styles.lookupDangerZone}>
+            <button
+              type="button"
+              className={styles.dangerButton}
+              onClick={() => handleRelease(tag.id)}
+              disabled={releaseLoading === tag.id}
+            >
+              {releaseLoading === tag.id ? 'Releasing...' : 'Release Tag'}
+            </button>
+            <span className={styles.dangerHint}>
+              This removes the tag from your account permanently.
+            </span>
           </div>
         )}
 
@@ -369,6 +434,7 @@ function TagsPage() {
                 <th>Status</th>
                 <th>Bottle</th>
                 <th>Location</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -380,6 +446,36 @@ function TagsPage() {
                   <td>{entry.bottle?.name || '—'}</td>
                   <td>
                     {entry.inventory?.location_label || '—'}
+                  </td>
+                  <td className={styles.actions}>
+                    <button
+                      className={styles.actionButton}
+                      onClick={() => {
+                        setScanUid(entry.tag.nfc_uid);
+                        handleLookup({ preventDefault: () => {} });
+                      }}
+                      title="Edit / Manage"
+                    >
+                      Edit
+                    </button>
+                    {entry.inventory && (
+                      <button
+                        className={styles.actionButton}
+                        onClick={() => handleUnlink(entry.tag.id)}
+                        disabled={unlinkLoading === entry.tag.id}
+                        title="Unlink from bottle"
+                      >
+                        {unlinkLoading === entry.tag.id ? '...' : 'Unlink'}
+                      </button>
+                    )}
+                    <button
+                      className={styles.dangerActionButton}
+                      onClick={() => handleRelease(entry.tag.id)}
+                      disabled={releaseLoading === entry.tag.id}
+                      title="Release tag"
+                    >
+                      {releaseLoading === entry.tag.id ? '...' : 'Release'}
+                    </button>
                   </td>
                 </tr>
               ))}
