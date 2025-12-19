@@ -217,6 +217,9 @@ function AdminUsersPage() {
   }
 
   async function lockUser(id) {
+    if (!window.confirm('Lock this user account? They will not be able to log in.')) {
+      return;
+    }
     setActionBusyId(id);
     setResetResult('');
     try {
@@ -231,6 +234,9 @@ function AdminUsersPage() {
   }
 
   async function unlockUser(id) {
+    if (!window.confirm('Unlock this user account?')) {
+      return;
+    }
     setActionBusyId(id);
     setResetResult('');
     try {
@@ -245,6 +251,9 @@ function AdminUsersPage() {
   }
 
   async function resetPassword(id) {
+    if (!window.confirm('Generate a password reset token for this user?')) {
+      return;
+    }
     setActionBusyId(id);
     setResetResult('');
     try {
@@ -291,6 +300,9 @@ function AdminUsersPage() {
   }
 
   async function revokeInvite(id) {
+    if (!window.confirm('Revoke this invite? It cannot be undone.')) {
+      return;
+    }
     setActionBusyId(id);
     setInvitesError('');
     try {
@@ -418,7 +430,11 @@ function AdminUsersPage() {
             {usersLoading ? (
               <div className={styles.loading}>Loading users…</div>
             ) : filteredUsers.length === 0 ? (
-              <div className={styles.empty}>No users found.</div>
+              <div className={styles.empty}>
+                {userQuery.trim() || userRole || userStatus
+                  ? 'No users match your filters. Try adjusting your search criteria.'
+                  : 'No users found.'}
+              </div>
             ) : (
               <div className={styles.tableWrap}>
                 <table className={styles.table}>
@@ -440,9 +456,21 @@ function AdminUsersPage() {
                         <React.Fragment key={u.id}>
                           <tr className={locked ? styles.rowMuted : ''}>
                             <td>{u.name}</td>
-                            <td>{u.email}</td>
                             <td>
-                              <span className={styles.badge}>{u.role}</span>
+                              {u.email}
+                              <button
+                                className={styles.copyBtn}
+                                type="button"
+                                onClick={() => copyToClipboard(u.email)}
+                                title="Copy email"
+                              >
+                                copy
+                              </button>
+                            </td>
+                            <td>
+                              <span className={u.role === 'admin' ? styles.badgeAdmin : u.role === 'moderator' ? styles.badgeModerator : styles.badge}>
+                                {u.role}
+                              </span>
                             </td>
                             <td>
                               {locked ? (
@@ -580,7 +608,33 @@ function AdminUsersPage() {
           {resetResult && (
             <div className={styles.panel}>
               <div className={styles.panelHeader}>Password reset result</div>
-              <pre className={styles.codeBlock}>{resetResult}</pre>
+              <div className={styles.resetResultCard}>
+                {(() => {
+                  try {
+                    const data = JSON.parse(resetResult);
+                    const token = data.reset_token || data.token;
+                    const expires = data.expires_at || data.expires;
+                    return (
+                      <>
+                        <div className={styles.resetTokenLabel}>Reset Token:</div>
+                        <div className={styles.resetTokenValue}>{token}</div>
+                        {expires && (
+                          <div className={styles.resetExpires}>Expires: {formatDate(expires)}</div>
+                        )}
+                        <button
+                          type="button"
+                          className={styles.secondaryBtn}
+                          onClick={() => copyToClipboard(token)}
+                        >
+                          Copy Token
+                        </button>
+                      </>
+                    );
+                  } catch (e) {
+                    return <pre className={styles.codeBlock}>{resetResult}</pre>;
+                  }
+                })()}
+              </div>
             </div>
           )}
         </>
@@ -632,7 +686,24 @@ function AdminUsersPage() {
                     className={styles.secondaryBtn}
                     onClick={() => copyToClipboard(inviteCreatedToken)}
                   >
-                    Copy
+                    Copy Token
+                  </button>
+                </div>
+                <div className={styles.inviteUrlRow}>
+                  <strong>Invite URL:</strong>
+                  <div className={styles.token}>
+                    https://app.barrelchatter.com/register?invite={inviteCreatedToken}
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.secondaryBtn}
+                    onClick={() =>
+                      copyToClipboard(
+                        `https://app.barrelchatter.com/register?invite=${inviteCreatedToken}`
+                      )
+                    }
+                  >
+                    Copy URL
                   </button>
                 </div>
               </div>
@@ -653,7 +724,7 @@ function AdminUsersPage() {
             {invitesLoading ? (
               <div className={styles.loading}>Loading invites…</div>
             ) : invites.length === 0 ? (
-              <div className={styles.empty}>No invites yet.</div>
+              <div className={styles.empty}>No invites have been created yet.</div>
             ) : (
               <div className={styles.tableWrap}>
                 <table className={styles.table}>
