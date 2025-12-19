@@ -412,6 +412,18 @@ ProfilePage.jsx has been enhanced with a **Notifications** tab for managing emai
 - Email notification settings (submission approved/rejected, wishlist alerts)
 - Push notification preferences (managed via mobile app)
 
+### Tags Page
+
+TagsPage.jsx provides user-facing tag management capabilities:
+- **Tag Lookup** - Look up tags by NFC UID to check ownership and linked bottles
+- **Tag List** - View all tags owned by the user with linked inventory information
+- **Tag Actions**:
+  - **Edit Label** - Update tag's custom label (uses PUT /v1/tags/:id)
+  - **Unlink** - Disconnect tag from bottle while keeping ownership (uses POST /v1/tags/:id/unlink)
+  - **Release** - Return tag to unassigned status (uses DELETE /v1/tags/:id)
+- **Claim & Link** - Claim unassigned tags and assign them to inventory items
+- **Danger Zone** - Clear visual separation for destructive actions (unlink, release)
+
 ## Admin Section
 
 ### Admin Layout
