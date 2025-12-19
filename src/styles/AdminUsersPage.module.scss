@@ -325,3 +325,59 @@
   padding-top: 0.75rem;
   border-top: 1px solid var(--bc-border-subtle);
 }
+
+// ============================================================================
+// SORTING & PAGINATION
+// ============================================================================
+
+.sortableHeader {
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    color: var(--bc-accent);
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-top: 1px solid var(--bc-border-subtle);
+  margin-top: 1rem;
+}
+
+.pageInfo {
+  color: var(--bc-text-secondary);
+  font-size: 0.875rem;
+}
+
+.pageControls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pageBtn {
+  padding: 0.5rem 1rem;
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: 4px;
+  color: var(--bc-text-primary);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--bc-bg-surface);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.pageNumber {
+  color: var(--bc-text-secondary);
+  font-size: 0.875rem;
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -33,6 +33,11 @@ function AdminUsersPage() {
   const [userQuery, setUserQuery] = useState('');
   const [userRole, setUserRole] = useState('');
   const [userStatus, setUserStatus] = useState('');
+  const [sortBy, setSortBy] = useState('created_at');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(20);
+  const [totalUsers, setTotalUsers] = useState(0);
 
   const [createEmail, setCreateEmail] = useState('');
   const [createName, setCreateName] = useState('');
@@ -62,24 +67,6 @@ function AdminUsersPage() {
   const [inviteBusy, setInviteBusy] = useState(false);
   const [inviteCreatedToken, setInviteCreatedToken] = useState('');
 
-  const filteredUsers = useMemo(() => {
-    const q = userQuery.trim().toLowerCase();
-    return (users || []).filter((u) => {
-      const matchesQ =
-        !q ||
-        (u.name || '').toLowerCase().includes(q) ||
-        (u.email || '').toLowerCase().includes(q);
-      const matchesRole = !userRole || u.role === userRole;
-      const isActive = u.is_active !== false && !u.locked_at;
-      const matchesStatus =
-        !userStatus ||
-        (userStatus === 'active' && isActive) ||
-        (userStatus === 'locked' && !isActive);
-
-      return matchesQ && matchesRole && matchesStatus;
-    });
-  }, [users, userQuery, userRole, userStatus]);
-
   if (!user || user.role !== 'admin') {
     return (
       <div className={styles.page}>
@@ -98,8 +85,13 @@ function AdminUsersPage() {
       if (userQuery.trim()) params.q = userQuery.trim();
       if (userRole) params.role = userRole;
       if (userStatus) params.status = userStatus;
+      params.sort_by = sortBy;
+      params.sort_order = sortOrder;
+      params.limit = pageSize;
+      params.offset = page * pageSize;
       const res = await api.get('/v1/admin/users', { params });
       setUsers(res.data.users || []);
+      setTotalUsers(res.data.total || 0);
     } catch (err) {
       console.error(err);
       const errorMsg = err?.response?.data?.error || 'Failed to load users.';
@@ -129,7 +121,7 @@ function AdminUsersPage() {
   useEffect(() => {
     loadUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sortBy, sortOrder, page]);
 
   useEffect(() => {
     if (tab === 'invites' && invites.length === 0 && !invitesLoading) {
@@ -154,6 +146,16 @@ function AdminUsersPage() {
     setEditEmail('');
     setEditRole('collector');
     setEditActive(true);
+  }
+
+  function handleSort(column) {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(column);
+      setSortOrder('asc');
+    }
+    setPage(0);
   }
 
   async function createUser(e) {
@@ -431,12 +433,18 @@ function AdminUsersPage() {
                 className={styles.input}
                 placeholder="Search name/email…"
                 value={userQuery}
-                onChange={(e) => setUserQuery(e.target.value)}
+                onChange={(e) => {
+                  setUserQuery(e.target.value);
+                  setPage(0);
+                }}
               />
               <select
                 className={styles.select}
                 value={userRole}
-                onChange={(e) => setUserRole(e.target.value)}
+                onChange={(e) => {
+                  setUserRole(e.target.value);
+                  setPage(0);
+                }}
               >
                 <option value="">All roles</option>
                 <option value="collector">collector</option>
@@ -446,7 +454,10 @@ function AdminUsersPage() {
               <select
                 className={styles.select}
                 value={userStatus}
-                onChange={(e) => setUserStatus(e.target.value)}
+                onChange={(e) => {
+                  setUserStatus(e.target.value);
+                  setPage(0);
+                }}
               >
                 <option value="">All statuses</option>
                 <option value="active">active</option>
@@ -460,7 +471,7 @@ function AdminUsersPage() {
             {usersError && <div className={styles.error}>{usersError}</div>}
             {usersLoading ? (
               <div className={styles.loading}>Loading users…</div>
-            ) : filteredUsers.length === 0 ? (
+            ) : users.length === 0 ? (
               <div className={styles.empty}>
                 {userQuery.trim() || userRole || userStatus
                   ? 'No users match your filters. Try adjusting your search criteria.'
@@ -471,15 +482,27 @@ function AdminUsersPage() {
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Role</th>
+                      <th onClick={() => handleSort('name')} className={styles.sortableHeader}>
+                        Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+                      </th>
+                      <th onClick={() => handleSort('email')} className={styles.sortableHeader}>
+                        Email {sortBy === 'email' && (sortOrder === 'asc' ? '↑' : '↓')}
+                      </th>
+                      <th onClick={() => handleSort('role')} className={styles.sortableHeader}>
+                        Role {sortBy === 'role' && (sortOrder === 'asc' ? '↑' : '↓')}
+                      </th>
                       <th>Status</th>
+                      <th onClick={() => handleSort('created_at')} className={styles.sortableHeader}>
+                        Created {sortBy === 'created_at' && (sortOrder === 'asc' ? '↑' : '↓')}
+                      </th>
+                      <th onClick={() => handleSort('last_login_at')} className={styles.sortableHeader}>
+                        Last Login {sortBy === 'last_login_at' && (sortOrder === 'asc' ? '↑' : '↓')}
+                      </th>
                       <th className={styles.actionsCol}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredUsers.map((u) => {
+                    {users.map((u) => {
                       const locked = u.is_active === false || !!u.locked_at;
                       const isEditing = editingId === u.id;
 
@@ -510,6 +533,8 @@ function AdminUsersPage() {
                                 <span className={styles.statusActive}>active</span>
                               )}
                             </td>
+                            <td>{formatDate(u.created_at)}</td>
+                            <td>{formatDate(u.last_login_at)}</td>
                             <td className={styles.actionsCol}>
                               <button
                                 className={styles.smallBtn}
@@ -553,7 +578,7 @@ function AdminUsersPage() {
 
                           {isEditing && (
                             <tr className={styles.editRow}>
-                              <td colSpan={5}>
+                              <td colSpan={7}>
                                 <form className={styles.editForm} onSubmit={saveEdit}>
                                   <div className={styles.editGrid}>
                                     <label className={styles.field}>
@@ -632,6 +657,31 @@ function AdminUsersPage() {
                     })}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {!usersLoading && users.length > 0 && (
+              <div className={styles.pagination}>
+                <span className={styles.pageInfo}>
+                  Showing {page * pageSize + 1}-{Math.min((page + 1) * pageSize, totalUsers)} of {totalUsers} users
+                </span>
+                <div className={styles.pageControls}>
+                  <button
+                    onClick={() => setPage(p => p - 1)}
+                    disabled={page === 0}
+                    className={styles.pageBtn}
+                  >
+                    Previous
+                  </button>
+                  <span className={styles.pageNumber}>Page {page + 1}</span>
+                  <button
+                    onClick={() => setPage(p => p + 1)}
+                    disabled={(page + 1) * pageSize >= totalUsers}
+                    className={styles.pageBtn}
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             )}
           </div>
