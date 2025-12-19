@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import styles from '../styles/AdminUsersPage.module.scss';
 
 function formatDate(value) {
@@ -21,6 +22,7 @@ function inviteStatus(inv) {
 
 function AdminUsersPage() {
   const { user } = useAuth();
+  const toast = useToast();
 
   const [tab, setTab] = useState('users');
 
@@ -100,7 +102,9 @@ function AdminUsersPage() {
       setUsers(res.data.users || []);
     } catch (err) {
       console.error(err);
-      setUsersError(err?.response?.data?.error || 'Failed to load users.');
+      const errorMsg = err?.response?.data?.error || 'Failed to load users.';
+      setUsersError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setUsersLoading(false);
     }
@@ -114,7 +118,9 @@ function AdminUsersPage() {
       setInvites(res.data.invites || []);
     } catch (err) {
       console.error(err);
-      setInvitesError(err?.response?.data?.error || 'Failed to load invites.');
+      const errorMsg = err?.response?.data?.error || 'Failed to load invites.';
+      setInvitesError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setInvitesLoading(false);
     }
@@ -175,17 +181,24 @@ function AdminUsersPage() {
       setCreateName('');
       setCreateRole('collector');
       setCreatePassword('');
-      setCreateResult('User created.');
+
+      // Show success toast
+      toast.success('User created successfully');
+
       // Some APIs return temp password info — show it if present.
       if (res?.data?.temp_password || res?.data?.reset_token) {
-        setCreateResult(
-          `User created. ${res.data.temp_password ? 'Temp password: ' + res.data.temp_password : ''}${res.data.reset_token ? ' Reset token: ' + res.data.reset_token : ''}`.trim()
-        );
+        const resultMsg = `User created. ${res.data.temp_password ? 'Temp password: ' + res.data.temp_password : ''}${res.data.reset_token ? ' Reset token: ' + res.data.reset_token : ''}`.trim();
+        setCreateResult(resultMsg);
+      } else {
+        setCreateResult('User created.');
       }
+
       await loadUsers();
     } catch (err) {
       console.error(err);
-      setCreateResult(err?.response?.data?.error || 'Failed to create user.');
+      const errorMsg = err?.response?.data?.error || 'Failed to create user.';
+      setCreateResult(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setCreateBusy(false);
     }
@@ -206,11 +219,14 @@ function AdminUsersPage() {
         is_active: !!editActive,
       };
       await api.patch(`/v1/admin/users/${editingId}`, payload);
+      toast.success('User updated successfully');
       await loadUsers();
       cancelEdit();
     } catch (err) {
       console.error(err);
-      setUsersError(err?.response?.data?.error || 'Failed to update user.');
+      const errorMsg = err?.response?.data?.error || 'Failed to update user.';
+      setUsersError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setEditBusy(false);
     }
@@ -224,10 +240,13 @@ function AdminUsersPage() {
     setResetResult('');
     try {
       await api.post(`/v1/admin/users/${id}/lock`);
+      toast.success('User account locked');
       await loadUsers();
     } catch (err) {
       console.error(err);
-      setUsersError(err?.response?.data?.error || 'Failed to lock user.');
+      const errorMsg = err?.response?.data?.error || 'Failed to lock user.';
+      setUsersError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setActionBusyId(null);
     }
@@ -241,10 +260,13 @@ function AdminUsersPage() {
     setResetResult('');
     try {
       await api.post(`/v1/admin/users/${id}/unlock`);
+      toast.success('User account unlocked');
       await loadUsers();
     } catch (err) {
       console.error(err);
-      setUsersError(err?.response?.data?.error || 'Failed to unlock user.');
+      const errorMsg = err?.response?.data?.error || 'Failed to unlock user.';
+      setUsersError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setActionBusyId(null);
     }
@@ -259,9 +281,12 @@ function AdminUsersPage() {
     try {
       const res = await api.post(`/v1/admin/users/${id}/reset-password`);
       setResetResult(JSON.stringify(res.data, null, 2));
+      toast.success('Password reset token generated');
     } catch (err) {
       console.error(err);
-      setUsersError(err?.response?.data?.error || 'Failed to reset password.');
+      const errorMsg = err?.response?.data?.error || 'Failed to reset password.';
+      setUsersError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setActionBusyId(null);
     }
@@ -290,10 +315,13 @@ function AdminUsersPage() {
 
       setInviteCreatedToken(token || '');
       setInviteEmail('');
+      toast.success('Invite created');
       await loadInvites();
     } catch (err) {
       console.error(err);
-      setInvitesError(err?.response?.data?.error || 'Failed to create invite.');
+      const errorMsg = err?.response?.data?.error || 'Failed to create invite.';
+      setInvitesError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setInviteBusy(false);
     }
@@ -307,10 +335,13 @@ function AdminUsersPage() {
     setInvitesError('');
     try {
       await api.post(`/v1/admin/invites/${id}/revoke`);
+      toast.success('Invite revoked');
       await loadInvites();
     } catch (err) {
       console.error(err);
-      setInvitesError(err?.response?.data?.error || 'Failed to revoke invite.');
+      const errorMsg = err?.response?.data?.error || 'Failed to revoke invite.';
+      setInvitesError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setActionBusyId(null);
     }

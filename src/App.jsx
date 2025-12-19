@@ -22,10 +22,14 @@ import AdminPurchaseLocationsPage from './pages/AdminPurchaseLocationsPage.jsx';
 import AdminTagPacksPage from './pages/AdminTagPacksPage.jsx';
 import AdminTagPackDetailPage from './pages/AdminTagPackDetailPage.jsx';
 import AdminBulkImportPage from './pages/AdminBulkImportPage.jsx';
+import { ToastProvider } from './context/ToastContext.jsx';
+import ToastContainer from './components/ToastContainer.jsx';
 
 function App() {
   return (
-    <Routes>
+    <ToastProvider>
+      <ToastContainer />
+      <Routes>
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -131,6 +135,7 @@ function App() {
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/app" replace />} />
     </Routes>
+    </ToastProvider>
   );
 }
 
