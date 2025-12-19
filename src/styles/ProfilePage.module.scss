@@ -328,3 +328,111 @@
     border-color: var(--bc-border-accent, rgba(201, 166, 107, 0.4));
   }
 }
+
+// Notifications Tab
+.notificationsTab {
+  // Container styles inherited from .content
+}
+
+.sectionDescription {
+  margin: var(--bc-space-2, 8px) 0 var(--bc-space-5, 20px);
+  font-size: 14px;
+  color: var(--bc-text-secondary, #b8a890);
+  line-height: 1.5;
+}
+
+.preferencesGroup {
+  margin-top: var(--bc-space-5, 20px);
+  padding-top: var(--bc-space-4, 16px);
+  border-top: 1px solid var(--bc-border-subtle, rgba(255, 255, 255, 0.06));
+
+  &:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+}
+
+.groupTitle {
+  margin: 0 0 var(--bc-space-2, 8px);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bc-text-primary, #f0e6d6);
+}
+
+.groupSubtext {
+  margin: 0 0 var(--bc-space-3, 12px);
+  font-size: 12px;
+  color: var(--bc-text-tertiary, #7a6f60);
+  font-style: italic;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3, 12px);
+  padding: var(--bc-space-3, 12px) 0;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+
+  &:hover:not(:has(input:disabled)) {
+    opacity: 0.9;
+  }
+}
+
+.checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--bc-border-strong, rgba(255, 255, 255, 0.18));
+  border-radius: var(--bc-radius-sm, 6px);
+  background: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    border-color: var(--bc-accent, #c9a66b);
+  }
+
+  &:checked {
+    background: linear-gradient(135deg, var(--bc-accent, #c9a66b), var(--bc-accent-deep, #5a3e36));
+    border-color: var(--bc-accent, #c9a66b);
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 5px;
+      height: 9px;
+      border: solid var(--bc-text-inverse, #1a1612);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.checkboxText {
+  font-size: 14px;
+  color: var(--bc-text-primary, #f0e6d6);
+  line-height: 1.4;
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.saveButtonContainer {
+  margin-top: var(--bc-space-6, 24px);
+  display: flex;
+  justify-content: flex-end;
+}

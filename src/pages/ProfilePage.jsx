@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../api/client';
+import { useToast } from '../context/ToastContext';
 import styles from '../styles/ProfilePage.module.scss';
 
 function ProfilePage() {
+  const { success, error: showError } = useToast();
   const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -11,6 +13,11 @@ function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [activeTab, setActiveTab] = useState('profile');
+
+  // Notification preferences state
+  const [notifPrefs, setNotifPrefs] = useState(null);
+  const [loadingPrefs, setLoadingPrefs] = useState(false);
+  const [savingPrefs, setSavingPrefs] = useState(false);
 
   const fetchProfile = useCallback(async () => {
     setLoading(true);
@@ -59,6 +66,26 @@ function ProfilePage() {
     fetchProfile();
   }, [fetchProfile]);
 
+  const fetchNotificationPreferences = useCallback(async () => {
+    setLoadingPrefs(true);
+    try {
+      const response = await api.get('/v1/notification-preferences');
+      // API returns preferences object
+      setNotifPrefs(response.data || {});
+    } catch (err) {
+      console.error('Error fetching notification preferences:', err);
+      showError(err?.response?.data?.error || 'Failed to load notification preferences');
+    } finally {
+      setLoadingPrefs(false);
+    }
+  }, [showError]);
+
+  useEffect(() => {
+    if (activeTab === 'notifications' && notifPrefs === null) {
+      fetchNotificationPreferences();
+    }
+  }, [activeTab, notifPrefs, fetchNotificationPreferences]);
+
   function handleFieldChange(field, value) {
     setEditForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -93,6 +120,24 @@ function ProfilePage() {
       location_state: profile?.location_state || profile?.location?.state || '',
     });
     setEditing(false);
+  }
+
+  function handleNotifPrefChange(field, value) {
+    setNotifPrefs((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleSaveNotifPrefs() {
+    setSavingPrefs(true);
+    try {
+      const response = await api.patch('/v1/notification-preferences', notifPrefs);
+      setNotifPrefs(response.data || notifPrefs);
+      success('Notification preferences saved successfully');
+    } catch (err) {
+      console.error('Error saving notification preferences:', err);
+      showError(err?.response?.data?.error || err.message || 'Failed to save notification preferences');
+    } finally {
+      setSavingPrefs(false);
+    }
   }
 
   if (loading) {
@@ -182,6 +227,12 @@ function ProfilePage() {
           onClick={() => setActiveTab('account')}
         >
           Account
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'notifications' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('notifications')}
+        >
+          Notifications
         </button>
       </div>
 
@@ -302,6 +353,90 @@ function ProfilePage() {
               <h3 className={styles.sectionTitle}>Security</h3>
               <button className={styles.secondaryButton}>Change Password</button>
             </section>
+          </div>
+        )}
+
+        {activeTab === 'notifications' && (
+          <div className={styles.notificationsTab}>
+            {loadingPrefs ? (
+              <div className={styles.loading}>Loading notification preferences...</div>
+            ) : (
+              <>
+                <section className={styles.section}>
+                  <h3 className={styles.sectionTitle}>Notification Settings</h3>
+                  <p className={styles.sectionDescription}>
+                    Choose how you want to be notified about activity on BarrelChatter.
+                  </p>
+
+                  <div className={styles.preferencesGroup}>
+                    <h4 className={styles.groupTitle}>Bottle Submissions</h4>
+
+                    <label className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={notifPrefs?.email_submission_approved || false}
+                        onChange={(e) => handleNotifPrefChange('email_submission_approved', e.target.checked)}
+                        className={styles.checkbox}
+                      />
+                      <span className={styles.checkboxText}>
+                        Email me when my submission is approved
+                      </span>
+                    </label>
+
+                    <label className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={notifPrefs?.email_submission_rejected || false}
+                        onChange={(e) => handleNotifPrefChange('email_submission_rejected', e.target.checked)}
+                        className={styles.checkbox}
+                      />
+                      <span className={styles.checkboxText}>
+                        Email me when my submission is rejected
+                      </span>
+                    </label>
+                  </div>
+
+                  <div className={styles.preferencesGroup}>
+                    <h4 className={styles.groupTitle}>Wishlist Alerts</h4>
+                    <p className={styles.groupSubtext}>Coming soon</p>
+
+                    <label className={styles.checkboxLabel} title="Coming soon">
+                      <input
+                        type="checkbox"
+                        checked={false}
+                        disabled
+                        className={styles.checkbox}
+                      />
+                      <span className={`${styles.checkboxText} ${styles.disabled}`}>
+                        Email me about price drops
+                      </span>
+                    </label>
+
+                    <label className={styles.checkboxLabel} title="Coming soon">
+                      <input
+                        type="checkbox"
+                        checked={false}
+                        disabled
+                        className={styles.checkbox}
+                      />
+                      <span className={`${styles.checkboxText} ${styles.disabled}`}>
+                        Email me when bottles become available
+                      </span>
+                    </label>
+                  </div>
+                </section>
+
+                <div className={styles.saveButtonContainer}>
+                  <button
+                    className={styles.saveButton}
+                    onClick={handleSaveNotifPrefs}
+                    disabled={savingPrefs}
+                  >
+                    {savingPrefs ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
