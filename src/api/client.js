@@ -40,4 +40,12 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Inventory Photos API
+export const inventoryPhotosAPI = {
+  list: (inventoryId) => api.get(`/v1/inventory/${inventoryId}/photos`),
+  add: (inventoryId, data) => api.post(`/v1/inventory/${inventoryId}/photos`, data),
+  setPrimary: (inventoryId, photoId) => api.post(`/v1/inventory/${inventoryId}/photos/${photoId}/primary`),
+  delete: (inventoryId, photoId) => api.delete(`/v1/inventory/${inventoryId}/photos/${photoId}`),
+};
+
 export default api;

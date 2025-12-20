@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
 import LogTastingModal from '../components/LogTastingModal';
 import StorageLocationSelect from '../components/StorageLocationSelect';
+import InventoryPhotoGallery from '../components/InventoryPhotoGallery';
 import styles from '../styles/InventoryDetailPage.module.scss';
 
 function InventoryDetailPage() {
@@ -280,6 +281,12 @@ function InventoryDetailPage() {
           Details
         </button>
         <button
+          className={`${styles.tab} ${activeTab === 'photos' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('photos')}
+        >
+          Photos ({item?.photos?.length || 0})
+        </button>
+        <button
           className={`${styles.tab} ${activeTab === 'tastings' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('tastings')}
         >
@@ -382,6 +389,21 @@ function InventoryDetailPage() {
                 </div>
               )}
             </section>
+          </div>
+        )}
+
+        {activeTab === 'photos' && (
+          <div className={styles.detailsTab}>
+            <InventoryPhotoGallery
+              inventoryId={id}
+              photos={item?.photos || []}
+              primaryPhotoUrl={item?.primary_photo_url}
+              catalogPhotoUrl={bottle?.image_url || bottle?.primary_photo_url}
+              onPhotosChange={() => {
+                // Refresh inventory data to get updated photos
+                fetchItem();
+              }}
+            />
           </div>
         )}
 
