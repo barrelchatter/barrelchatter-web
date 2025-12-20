@@ -1,5 +1,5 @@
 @use 'design-system' as *;
-@use 'menu-themes' as *;
+// Note: menu-themes are imported in global.scss for non-hashed class names
 
 // ============================================================================
 // PUBLIC MENU PAGE - Shareable whiskey collection menu

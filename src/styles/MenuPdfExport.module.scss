@@ -1,0 +1,276 @@
+@use 'design-system' as *;
+
+// ============================================================================
+// MENU PDF EXPORT MODAL
+// ============================================================================
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--bc-space-4);
+}
+
+.modal {
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-xl);
+  width: 100%;
+  max-width: 700px;
+  max-height: calc(100vh - var(--bc-space-8));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bc-space-4) var(--bc-space-5);
+  border-bottom: 1px solid var(--bc-border-subtle);
+
+  h2 {
+    font-size: var(--bc-text-lg);
+    color: var(--bc-text-primary);
+    margin: 0;
+  }
+}
+
+.closeButton {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: var(--bc-radius-sm);
+  color: var(--bc-text-secondary);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--bc-bg-surface);
+    color: var(--bc-text-primary);
+  }
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--bc-space-12);
+  color: var(--bc-text-secondary);
+  gap: var(--bc-space-4);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--bc-border-default);
+  border-top-color: var(--bc-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ----------------------------------------------------------------------------
+// PREVIEW AREA
+// ----------------------------------------------------------------------------
+
+.preview {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--bc-space-4);
+  background: var(--bc-bg-base);
+}
+
+// ----------------------------------------------------------------------------
+// PDF CONTENT - This is what gets exported
+// ----------------------------------------------------------------------------
+
+.pdfContent {
+  background: var(--menu-bg-base, #1a1610);
+  color: var(--menu-text-primary, #f5f0e8);
+  font-family: var(--menu-font-body, system-ui, sans-serif);
+  padding: 24px;
+  border-radius: 8px;
+  min-height: 400px;
+}
+
+.pdfHeader {
+  text-align: center;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--menu-border-accent, rgba(212, 160, 60, 0.2));
+}
+
+.pdfBrand {
+  font-size: 11px;
+  color: var(--menu-accent, #d4a03c);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.pdfTitle {
+  font-family: var(--menu-font-heading, Georgia, serif);
+  font-size: 28px;
+  color: var(--menu-text-primary, #f5f0e8);
+  letter-spacing: 1px;
+  margin: 0 0 8px;
+}
+
+.pdfSubtitle {
+  font-size: 14px;
+  color: var(--menu-text-secondary, #b8a890);
+  margin: 0;
+}
+
+// ----------------------------------------------------------------------------
+// PDF LIST
+// ----------------------------------------------------------------------------
+
+.pdfList {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdfItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--menu-border-subtle, rgba(255, 255, 255, 0.08));
+  gap: 16px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.pdfItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pdfItemName {
+  font-family: var(--menu-font-heading, Georgia, serif);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--menu-text-primary, #f5f0e8);
+}
+
+.pdfItemDistillery {
+  font-size: 13px;
+  color: var(--menu-text-secondary, #b8a890);
+}
+
+.pdfItemDetails {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.pdfItemAge {
+  font-size: 13px;
+  color: var(--menu-text-secondary, #b8a890);
+}
+
+.pdfItemProof {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--menu-accent, #d4a03c);
+}
+
+.pdfItemType {
+  font-size: 11px;
+  color: var(--menu-text-tertiary, #8a7860);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--menu-bg-surface, rgba(255, 255, 255, 0.05));
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+// ----------------------------------------------------------------------------
+// PDF FOOTER
+// ----------------------------------------------------------------------------
+
+.pdfFooter {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--menu-border-subtle, rgba(255, 255, 255, 0.08));
+  text-align: center;
+
+  p {
+    font-size: 11px;
+    color: var(--menu-text-tertiary, #8a7860);
+    margin: 0;
+  }
+}
+
+// ----------------------------------------------------------------------------
+// ACTIONS
+// ----------------------------------------------------------------------------
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-3);
+  padding: var(--bc-space-4) var(--bc-space-5);
+  border-top: 1px solid var(--bc-border-subtle);
+  background: var(--bc-bg-surface);
+}
+
+.cancelButton {
+  padding: var(--bc-space-2) var(--bc-space-5);
+  background: transparent;
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-secondary);
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--bc-bg-hover);
+    color: var(--bc-text-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.downloadButton {
+  padding: var(--bc-space-2) var(--bc-space-5);
+  background: var(--bc-accent);
+  border: none;
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-inverse);
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--bc-accent-hover);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

@@ -3,6 +3,7 @@ import { Link, Eye, ExternalLink, Trash2, Copy, RefreshCw, Plus, Edit2, Download
 import { menusAPI, storageLocationsAPI } from '../api/client';
 import { useToast } from '../context/ToastContext';
 import MenuEditModal from '../components/MenuEditModal';
+import MenuPdfExport from '../components/MenuPdfExport';
 import styles from '../styles/MenusPage.module.scss';
 
 function MenusPage() {
@@ -17,6 +18,7 @@ function MenusPage() {
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [editingMenu, setEditingMenu] = useState(null);
+  const [pdfExportMenu, setPdfExportMenu] = useState(null);
 
   // Action loading states
   const [actionLoading, setActionLoading] = useState({});
@@ -168,9 +170,9 @@ function MenusPage() {
     }
   };
 
-  // Download PDF (placeholder - will implement in separate component)
+  // Download PDF
   const handleDownloadPdf = (menu) => {
-    showToast('PDF export coming soon!', 'info');
+    setPdfExportMenu(menu);
   };
 
   // Theme display names
@@ -346,6 +348,14 @@ function MenusPage() {
             setShowModal(false);
             setEditingMenu(null);
           }}
+        />
+      )}
+
+      {pdfExportMenu && (
+        <MenuPdfExport
+          menu={pdfExportMenu}
+          onClose={() => setPdfExportMenu(null)}
+          onError={(msg) => showToast(msg, 'error')}
         />
       )}
     </div>
