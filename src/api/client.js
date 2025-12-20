@@ -79,4 +79,15 @@ export const storageLocationsAPI = {
   get: (id) => api.get(`/v1/storage-locations/${id}`),
 };
 
+// Purchase Locations API
+export const purchaseLocationsAPI = {
+  list: (params) => api.get('/v1/purchase-locations', { params }),
+  get: (id) => api.get(`/v1/purchase-locations/${id}`),
+  create: (data) => api.post('/v1/purchase-locations', data),
+  mySubmissions: (status) =>
+    api.get('/v1/purchase-locations/my-submissions', { params: { status } }),
+  nearby: (lat, lng, radius) =>
+    api.get('/v1/purchase-locations/nearby', { params: { lat, lng, radius } }),
+};
+
 export default api;

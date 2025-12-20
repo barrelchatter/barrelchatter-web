@@ -1,0 +1,469 @@
+@use './design-system' as *;
+
+// ============================================================================
+// PURCHASE LOCATIONS PAGE
+// ============================================================================
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-4);
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--bc-space-4);
+  flex-wrap: wrap;
+}
+
+.headerContent {
+  h1 {
+    margin: 0;
+    font-size: var(--bc-text-xl);
+  }
+}
+
+.subtitle {
+  margin: var(--bc-space-1) 0 0;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}
+
+.addButton {
+  @include button-primary;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+}
+
+// ============================================================================
+// TABS
+// ============================================================================
+
+.tabs {
+  display: flex;
+  gap: var(--bc-space-2);
+  border-bottom: 1px solid var(--bc-border-subtle);
+  padding-bottom: var(--bc-space-3);
+}
+
+.tab,
+.activeTab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-2) var(--bc-space-4);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--bc-transition-base);
+  color: var(--bc-text-secondary);
+
+  &:hover {
+    color: var(--bc-text-primary);
+    background: var(--bc-bg-hover);
+  }
+}
+
+.activeTab {
+  color: var(--bc-text-primary);
+  background: var(--bc-bg-surface);
+  border-color: var(--bc-border-accent);
+}
+
+.tabBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--bc-space-2);
+  background: var(--bc-accent);
+  color: var(--bc-text-inverse);
+  border-radius: var(--bc-radius-full);
+  font-size: var(--bc-text-xs);
+  font-weight: 600;
+}
+
+// ============================================================================
+// TAB CONTENT
+// ============================================================================
+
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-4);
+}
+
+// ============================================================================
+// FILTERS
+// ============================================================================
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: var(--bc-bg-surface);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-md);
+  transition: border-color var(--bc-transition-base);
+
+  &:focus-within {
+    border-color: var(--bc-accent);
+  }
+
+  svg {
+    color: var(--bc-text-tertiary);
+    flex-shrink: 0;
+  }
+
+  input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--bc-text-primary);
+    font-size: var(--bc-text-sm);
+    outline: none;
+
+    &::placeholder {
+      color: var(--bc-text-tertiary);
+    }
+  }
+}
+
+.filterSelect {
+  @include select-base;
+  min-width: 140px;
+}
+
+.countLabel {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-tertiary);
+  margin-left: auto;
+}
+
+.radiusControl {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+
+  label {
+    font-size: var(--bc-text-sm);
+    color: var(--bc-text-secondary);
+    font-weight: 500;
+  }
+}
+
+// ============================================================================
+// LOADING AND ERROR
+// ============================================================================
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--bc-space-10) var(--bc-space-4);
+  font-size: var(--bc-text-base);
+  color: var(--bc-text-secondary);
+}
+
+.error {
+  @include alert-error;
+}
+
+// ============================================================================
+// EMPTY STATE
+// ============================================================================
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--bc-space-10) var(--bc-space-4);
+  text-align: center;
+
+  svg {
+    color: var(--bc-text-tertiary);
+    margin-bottom: var(--bc-space-4);
+    opacity: 0.5;
+  }
+
+  h3 {
+    margin: 0 0 var(--bc-space-2);
+    font-size: var(--bc-text-lg);
+    color: var(--bc-text-primary);
+  }
+
+  p {
+    margin: 0 0 var(--bc-space-4);
+    font-size: var(--bc-text-sm);
+    color: var(--bc-text-secondary);
+    max-width: 400px;
+  }
+}
+
+.submitButton {
+  @include button-primary;
+}
+
+// ============================================================================
+// LOCATION GRID
+// ============================================================================
+
+.locationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--bc-space-4);
+}
+
+// ============================================================================
+// LOCATION CARD
+// ============================================================================
+
+.locationCard,
+.submissionCard {
+  @include card;
+  padding: var(--bc-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-3);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--bc-space-3);
+}
+
+.locationName {
+  margin: 0;
+  font-size: var(--bc-text-base);
+  font-weight: 600;
+
+  a {
+    color: var(--bc-text-primary);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--bc-accent);
+    }
+  }
+}
+
+.typeBadge {
+  @include badge-default;
+  flex-shrink: 0;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-2);
+}
+
+.locationAddress {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--bc-space-2);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+
+  svg {
+    flex-shrink: 0;
+    color: var(--bc-text-tertiary);
+    margin-top: 2px;
+  }
+}
+
+.distance {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-accent);
+  font-weight: 500;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.websiteLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bc-space-1);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-accent);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.purchaseCount {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  padding-top: var(--bc-space-1);
+}
+
+.cardFooter {
+  margin-top: auto;
+  padding-top: var(--bc-space-2);
+  border-top: 1px solid var(--bc-border-subtle);
+}
+
+.claimButton {
+  @include button-secondary;
+  @include button-sm;
+  width: 100%;
+  opacity: 0.5;
+  cursor: not-allowed;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ============================================================================
+// SUBMISSION CARD SPECIFICS
+// ============================================================================
+
+.statusBadge {
+  @include badge-default;
+  flex-shrink: 0;
+  text-transform: capitalize;
+}
+
+.statuspending {
+  background: rgba(251, 191, 36, 0.15);
+  color: var(--bc-warning);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.statusapproved {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--bc-success);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.statusrejected {
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--bc-danger);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.submittedDate {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+}
+
+.rejectionReason {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: rgba(248, 113, 113, 0.1);
+  border-radius: var(--bc-radius-sm);
+  border-left: 3px solid var(--bc-danger);
+
+  strong {
+    color: var(--bc-danger);
+  }
+}
+
+.viewLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bc-space-1);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-accent);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ============================================================================
+// GEOLOCATION PROMPT
+// ============================================================================
+
+.geoPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--bc-space-10) var(--bc-space-4);
+  text-align: center;
+
+  svg {
+    color: var(--bc-accent);
+    margin-bottom: var(--bc-space-4);
+  }
+
+  h3 {
+    margin: 0 0 var(--bc-space-2);
+    font-size: var(--bc-text-lg);
+    color: var(--bc-text-primary);
+  }
+
+  p {
+    margin: 0 0 var(--bc-space-4);
+    font-size: var(--bc-text-sm);
+    color: var(--bc-text-secondary);
+    max-width: 400px;
+  }
+}
+
+.geoButton {
+  @include button-primary;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+}
+
+.geoError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--bc-space-10) var(--bc-space-4);
+  text-align: center;
+
+  h3 {
+    margin: 0 0 var(--bc-space-2);
+    font-size: var(--bc-text-lg);
+    color: var(--bc-danger);
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--bc-text-sm);
+    color: var(--bc-text-secondary);
+    max-width: 400px;
+  }
+}

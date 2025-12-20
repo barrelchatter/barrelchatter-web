@@ -43,6 +43,9 @@ function AppLayout() {
           <NavLink to="/app/wishlists" className={navClass}>
             Wishlist
           </NavLink>
+          <NavLink to="/app/locations" className={navClass}>
+            Locations
+          </NavLink>
           <NavLink to="/app/tags" className={navClass}>
             Tags
           </NavLink>
@@ -89,9 +92,9 @@ function AppLayout() {
                 </NavLink>
               )}
 
-              {isAdmin && (
+              {isModeratorOrAdmin && (
                 <NavLink to="/app/admin/purchase-locations" className={navClass}>
-                  Purchase Locations
+                  Location Submissions
                 </NavLink>
               )}
 

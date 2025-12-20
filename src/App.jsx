@@ -24,6 +24,8 @@ import AdminTagPacksPage from './pages/AdminTagPacksPage.jsx';
 import AdminTagPackDetailPage from './pages/AdminTagPackDetailPage.jsx';
 import AdminBulkImportPage from './pages/AdminBulkImportPage.jsx';
 import MenusPage from './pages/MenusPage.jsx';
+import PurchaseLocationsPage from './pages/PurchaseLocationsPage.jsx';
+import LocationDetailPage from './pages/LocationDetailPage.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
 import ToastContainer from './components/ToastContainer.jsx';
 
@@ -70,6 +72,10 @@ function App() {
         {/* Menus - shareable menu management */}
         <Route path="menus" element={<MenusPage />} />
 
+        {/* Purchase Locations - catalog for all users */}
+        <Route path="locations" element={<PurchaseLocationsPage />} />
+        <Route path="locations/:id" element={<LocationDetailPage />} />
+
         {/* Moderator/Admin: Bottle Submissions */}
         <Route
           path="admin/bottles-submissions"
@@ -108,7 +114,7 @@ function App() {
         <Route
           path="admin/purchase-locations"
           element={
-            <ProtectedRoute requireRoles={['admin']}>
+            <ProtectedRoute requireRoles={['moderator', 'admin']}>
               <AdminPurchaseLocationsPage />
             </ProtectedRoute>
           }

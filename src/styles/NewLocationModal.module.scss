@@ -1,0 +1,235 @@
+@use 'design-system' as *;
+
+// ============================================================================
+// NEW LOCATION MODAL
+// ============================================================================
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--bc-space-4);
+}
+
+.modal {
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-xl);
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - var(--bc-space-8));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+// ----------------------------------------------------------------------------
+// HEADER
+// ----------------------------------------------------------------------------
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bc-space-4) var(--bc-space-5);
+  border-bottom: 1px solid var(--bc-border-subtle);
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+
+  h2 {
+    font-size: var(--bc-text-lg);
+    font-weight: 600;
+    color: var(--bc-text-primary);
+    margin: 0;
+  }
+
+  svg {
+    color: var(--bc-accent);
+  }
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: var(--bc-radius-sm);
+  color: var(--bc-text-secondary);
+  cursor: pointer;
+  transition: all var(--bc-transition-base);
+
+  &:hover {
+    background: var(--bc-bg-surface);
+    color: var(--bc-text-primary);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// CONTENT
+// ----------------------------------------------------------------------------
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--bc-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-4);
+}
+
+.error {
+  padding: var(--bc-space-3) var(--bc-space-4);
+  background: var(--bc-danger-bg);
+  border: 1px solid var(--bc-danger);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-danger);
+  font-size: var(--bc-text-sm);
+}
+
+.row {
+  display: flex;
+  gap: var(--bc-space-4);
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: var(--bc-space-4);
+  }
+}
+
+.field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-2);
+}
+
+.fieldSmall {
+  flex: 0 0 120px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-2);
+
+  @media (max-width: 480px) {
+    flex: 1;
+  }
+}
+
+.label {
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  color: var(--bc-text-primary);
+}
+
+.required {
+  color: var(--bc-danger);
+}
+
+.input,
+.select {
+  padding: var(--bc-space-3) var(--bc-space-4);
+  background: var(--bc-bg-surface);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-primary);
+  font-size: var(--bc-text-base);
+  transition: border-color var(--bc-transition-base);
+
+  &::placeholder {
+    color: var(--bc-text-tertiary);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--bc-accent);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--bc-space-3) center;
+  padding-right: var(--bc-space-8);
+  cursor: pointer;
+}
+
+.note {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-tertiary);
+  line-height: var(--bc-leading-relaxed);
+  margin: 0;
+  padding: var(--bc-space-3);
+  background: var(--bc-bg-surface);
+  border-radius: var(--bc-radius-md);
+}
+
+// ----------------------------------------------------------------------------
+// FOOTER
+// ----------------------------------------------------------------------------
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-3);
+  padding-top: var(--bc-space-4);
+  margin-top: auto;
+}
+
+.cancelButton {
+  padding: var(--bc-space-2) var(--bc-space-5);
+  background: transparent;
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-secondary);
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--bc-transition-base);
+
+  &:hover:not(:disabled) {
+    background: var(--bc-bg-hover);
+    color: var(--bc-text-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.submitButton {
+  padding: var(--bc-space-2) var(--bc-space-5);
+  background: var(--bc-accent);
+  border: none;
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-inverse);
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--bc-transition-base);
+
+  &:hover:not(:disabled) {
+    background: var(--bc-accent-hover);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
