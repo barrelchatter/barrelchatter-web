@@ -88,6 +88,9 @@ export const purchaseLocationsAPI = {
     api.get('/v1/purchase-locations/my-submissions', { params: { status } }),
   nearby: (lat, lng, radius) =>
     api.get('/v1/purchase-locations/nearby', { params: { lat, lng, radius } }),
+  // Maps integration
+  geocode: (id) => api.post(`/v1/purchase-locations/${id}/geocode`),
+  getMapUrls: (id) => api.get(`/v1/purchase-locations/${id}/map-urls`),
 };
 
 export default api;

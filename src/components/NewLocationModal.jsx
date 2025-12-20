@@ -73,7 +73,7 @@ function NewLocationModal({ onClose, onSuccess }) {
     try {
       const payload = {
         name: form.name.trim(),
-        location_type: form.type,
+        type: form.type,
         city: form.city.trim(),
         state: form.state,
         address_line1: form.address_line1.trim() || undefined,

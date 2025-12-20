@@ -1,0 +1,43 @@
+@import 'variables';
+
+.container {
+  position: relative;
+  width: 100%;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  background: $color-bg-elevated;
+}
+
+.iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-bg-elevated;
+  border-radius: $radius-lg;
+  border: 1px dashed $color-border;
+}
+
+.placeholderContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-3;
+  color: $color-text-tertiary;
+}
+
+.placeholderIcon {
+  width: 48px;
+  height: 48px;
+  opacity: 0.5;
+}
+
+.placeholderText {
+  font-size: $font-size-sm;
+}

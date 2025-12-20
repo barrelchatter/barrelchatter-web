@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { MapPin, ExternalLink, Phone, ArrowLeft, Package } from 'react-feather';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import MapEmbed from '../components/MapEmbed';
+import MapLinks from '../components/MapLinks';
 import styles from '../styles/LocationDetailPage.module.scss';
 
 const LOCATION_TYPES = [
@@ -109,11 +111,8 @@ function LocationDetailPage() {
 
   const addressLines = formatAddress(location);
   const hasCoordinates = location.latitude && location.longitude;
-  const mapsUrl = hasCoordinates
-    ? `https://www.google.com/maps?q=${location.latitude},${location.longitude}`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        [location.name, location.city, location.state].filter(Boolean).join(', ')
-      )}`;
+  const lat = hasCoordinates ? parseFloat(location.latitude) : null;
+  const lng = hasCoordinates ? parseFloat(location.longitude) : null;
 
   return (
     <div className={styles.page}>
@@ -147,15 +146,13 @@ function LocationDetailPage() {
                   ))}
                 </div>
               </div>
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.mapsLink}
-              >
-                <MapPin size={14} />
-                View on Google Maps
-              </a>
+              <MapLinks
+                latitude={lat}
+                longitude={lng}
+                googlePlaceId={location.google_place_id}
+                name={location.name}
+                className={styles.mapLinks}
+              />
             </div>
 
             {/* Contact Info */}
@@ -256,18 +253,12 @@ function LocationDetailPage() {
       {hasCoordinates && (
         <div className={styles.mapSection}>
           <h2 className={styles.mapTitle}>Location</h2>
-          <div className={styles.mapContainer}>
-            <iframe
-              title="Location Map"
-              width="100%"
-              height="300"
-              style={{ border: 0, borderRadius: '8px' }}
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${location.latitude},${location.longitude}&zoom=15`}
-            />
-          </div>
+          <MapEmbed
+            latitude={lat}
+            longitude={lng}
+            height={300}
+            title={`Map of ${location.name}`}
+          />
         </div>
       )}
     </div>
