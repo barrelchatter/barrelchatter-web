@@ -315,6 +315,25 @@ export const adminTagPacksAPI = {
   addTags: (id, nfcUids) =>
     api.post(`/admin/tag-packs/${id}/add-tags`, { nfc_uids: nfcUids }),
 };
+
+export const menusAPI = {
+  list: () => api.get('/menus'),
+  get: (id) => api.get(`/menus/${id}`),
+  create: (data) => api.post('/menus', data),
+  update: (id, data) => api.patch(`/menus/${id}`, data),
+  delete: (id) => api.delete(`/menus/${id}`),
+  regenerateToken: (id) => api.post(`/menus/${id}/regenerate-token`),
+  setLocations: (id, locationIds) =>
+    api.put(`/menus/${id}/locations`, { storage_location_ids: locationIds }),
+};
+
+export const storageLocationsAPI = {
+  list: () => api.get('/storage-locations'),
+};
+
+export const publicMenuAPI = {
+  get: (shareToken) => api.get(`/menu/${shareToken}`),
+};
 ```
 
 ## Routing
@@ -423,6 +442,88 @@ TagsPage.jsx provides user-facing tag management capabilities:
   - **Release** - Return tag to unassigned status (uses DELETE /v1/tags/:id)
 - **Claim & Link** - Claim unassigned tags and assign them to inventory items
 - **Danger Zone** - Clear visual separation for destructive actions (unlink, release)
+
+### Menus Page (Multi-Menu Sharing)
+
+MenusPage.jsx (`/app/menus`) provides menu management for shareable whiskey collection views:
+
+**Components:**
+- `pages/MenusPage.jsx` - Menu management dashboard
+- `components/MenuEditModal.jsx` - Create/edit menu modal
+- `components/MenuPdfExport.jsx` - PDF generation component
+
+**Features:**
+- **Menu List** - Card grid showing all user menus with status, theme, bottle count
+- **Create Menu** - Modal with name, theme selection, storage location filters
+- **Edit Menu** - Update settings, change theme/colors, modify location filters
+- **Share Settings** - Enable/disable public sharing, regenerate share token
+- **Copy Link** - Quick copy share URL to clipboard
+- **Preview** - Open public menu in new tab
+- **PDF Export** - Generate downloadable PDF of menu (uses html2pdf.js)
+- **Delete** - Soft delete with confirmation
+
+**Storage Location Filtering:**
+- Multi-select storage locations to filter which bottles appear
+- "Include child locations" toggle for hierarchical filtering
+- No locations selected = show all bottles
+
+### Menu Theme System
+
+The web app supports multiple display themes for public menus:
+
+**Theme Files:**
+```
+src/styles/menu-themes/
+├── _index.scss      # Theme imports and class definitions
+├── _rustic.scss     # Dark wood, gold accents (default)
+├── _elegant.scss    # Playfair Display, refined serif
+└── _modern.scss     # Clean, minimal sans-serif
+```
+
+**Theme Classes (applied to page root):**
+- `.theme-rustic.mode-dark` / `.theme-rustic.mode-light`
+- `.theme-elegant.mode-dark` / `.theme-elegant.mode-light`
+- `.theme-modern.mode-dark` / `.theme-modern.mode-light`
+
+**CSS Variables (set by themes):**
+```scss
+--menu-bg-base          // Page background
+--menu-bg-surface       // Card/section backgrounds
+--menu-bg-elevated      // Elevated elements
+--menu-text-primary     // Main text color
+--menu-text-secondary   // Secondary text
+--menu-text-tertiary    // Muted text
+--menu-accent           // Brand/accent color
+--menu-border-subtle    // Subtle borders
+--menu-border-accent    // Accent borders
+--menu-font-heading     // Heading font family
+--menu-font-body        // Body font family
+```
+
+**Important:** Theme classes are defined in `global.scss` (not CSS modules) so they remain unhashed and can be applied dynamically.
+
+### PDF Export
+
+PDF generation for menus uses html2pdf.js:
+
+```jsx
+// MenuPdfExport.jsx
+import html2pdf from 'html2pdf.js';
+
+const handleDownload = async () => {
+  const element = contentRef.current;
+  const opt = {
+    margin: [0.5, 0.5, 0.5, 0.5],
+    filename: `${menuTitle}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+  };
+  await html2pdf().set(opt).from(element).save();
+};
+```
+
+**Dependency:** `html2pdf.js` (dynamically imported)
 
 ## Admin Section
 
