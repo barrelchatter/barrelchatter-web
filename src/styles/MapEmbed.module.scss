@@ -1,11 +1,11 @@
-@import 'variables';
+@use './design-system' as *;
 
 .container {
   position: relative;
   width: 100%;
-  border-radius: $radius-lg;
+  border-radius: var(--bc-radius-lg);
   overflow: hidden;
-  background: $color-bg-elevated;
+  background: var(--bc-bg-elevated);
 }
 
 .iframe {
@@ -19,17 +19,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: $color-bg-elevated;
-  border-radius: $radius-lg;
-  border: 1px dashed $color-border;
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-lg);
+  border: 1px dashed var(--bc-border-subtle);
 }
 
 .placeholderContent {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $spacing-3;
-  color: $color-text-tertiary;
+  gap: var(--bc-space-3);
+  color: var(--bc-text-tertiary);
 }
 
 .placeholderIcon {
@@ -39,5 +39,5 @@
 }
 
 .placeholderText {
-  font-size: $font-size-sm;
+  font-size: var(--bc-text-sm);
 }

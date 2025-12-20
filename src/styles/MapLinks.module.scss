@@ -1,18 +1,18 @@
-@import 'variables';
+@use './design-system' as *;
 
 .container {
   display: flex;
   flex-wrap: wrap;
-  gap: $spacing-3;
+  gap: var(--bc-space-3);
 }
 
 .button {
   display: inline-flex;
   align-items: center;
-  gap: $spacing-2;
-  padding: $spacing-2 $spacing-4;
-  border-radius: $radius-md;
-  font-size: $font-size-sm;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-2) var(--bc-space-4);
+  border-radius: var(--bc-radius-md);
+  font-size: var(--bc-text-sm);
   font-weight: 500;
   text-decoration: none;
   transition: all 0.15s ease;
@@ -35,8 +35,8 @@
 
 .appleButton {
   background: rgba(255, 255, 255, 0.1);
-  color: $color-text-primary;
-  border: 1px solid $color-border;
+  color: var(--bc-text-primary);
+  border: 1px solid var(--bc-border-subtle);
 
   &:hover {
     background: rgba(255, 255, 255, 0.15);
@@ -51,7 +51,7 @@
 // Compact mode (icon-only buttons)
 .compactContainer {
   display: flex;
-  gap: $spacing-2;
+  gap: var(--bc-space-2);
 }
 
 .iconButton {
@@ -60,15 +60,15 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: $radius-md;
-  background: $color-bg-elevated;
-  border: 1px solid $color-border;
-  color: $color-text-secondary;
+  border-radius: var(--bc-radius-md);
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-subtle);
+  color: var(--bc-text-secondary);
   transition: all 0.15s ease;
 
   &:hover {
-    background: $color-bg-surface;
-    color: $color-text-primary;
+    background: var(--bc-bg-surface);
+    color: var(--bc-text-primary);
     border-color: rgba(255, 255, 255, 0.2);
   }
 }
