@@ -61,4 +61,22 @@ export const publicMenuAPI = {
   get: (shareToken) => axios.get(`${API_BASE_URL}/v1/menu/${shareToken}`),
 };
 
+// Menus API (multi-menu management)
+export const menusAPI = {
+  list: () => api.get('/v1/menus'),
+  get: (id) => api.get(`/v1/menus/${id}`),
+  create: (data) => api.post('/v1/menus', data),
+  update: (id, data) => api.patch(`/v1/menus/${id}`, data),
+  delete: (id) => api.delete(`/v1/menus/${id}`),
+  regenerateToken: (id) => api.post(`/v1/menus/${id}/regenerate-token`),
+  setLocations: (id, storageLocationIds) =>
+    api.put(`/v1/menus/${id}/locations`, { storage_location_ids: storageLocationIds }),
+};
+
+// Storage Locations API
+export const storageLocationsAPI = {
+  list: (params) => api.get('/v1/storage-locations', { params }),
+  get: (id) => api.get(`/v1/storage-locations/${id}`),
+};
+
 export default api;

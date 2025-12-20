@@ -436,3 +436,50 @@
   display: flex;
   justify-content: flex-end;
 }
+
+// ----------------------------------------------------------------------------
+// SHARING TAB - Redirect Notice
+// ----------------------------------------------------------------------------
+
+.sharingTab {
+  padding: var(--bc-space-4, 16px) 0;
+}
+
+.redirectNotice {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: var(--bc-space-8, 32px);
+  background: var(--bc-bg-surface, rgba(0, 0, 0, 0.25));
+  border: 1px solid var(--bc-border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: var(--bc-radius-xl, 16px);
+  text-align: center;
+
+  h3 {
+    font-size: var(--bc-text-xl, 20px);
+    color: var(--bc-text-primary, #f0e6d6);
+    margin: 0 0 var(--bc-space-3, 12px);
+  }
+
+  p {
+    font-size: var(--bc-text-base, 16px);
+    color: var(--bc-text-secondary, #a89880);
+    line-height: 1.5;
+    margin: 0 0 var(--bc-space-6, 24px);
+  }
+}
+
+.redirectLink {
+  display: inline-block;
+  padding: var(--bc-space-3, 12px) var(--bc-space-6, 24px);
+  background: linear-gradient(135deg, var(--bc-accent, #c9a66b), var(--bc-accent-deep, #5a3e36));
+  color: var(--bc-text-inverse, #1a1612);
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: var(--bc-radius-md, 10px);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(201, 166, 107, 0.3);
+  }
+}

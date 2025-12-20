@@ -105,9 +105,14 @@ function PublicMenuPage() {
 
   const hasActiveFilters = selectedDistillery || selectedType || selectedProofRange !== PROOF_RANGES[0] || searchQuery;
 
+  // Build theme class names
+  const theme = menu?.theme || 'rustic';
+  const colorMode = menu?.color_mode || 'dark';
+  const themeClass = `theme-${theme} mode-${colorMode}`;
+
   if (loading) {
     return (
-      <div className={styles.page}>
+      <div className={`${styles.page} theme-rustic mode-dark`}>
         <div className={styles.loading}>
           <div className={styles.spinner}></div>
           <p>Loading menu...</p>
@@ -118,7 +123,7 @@ function PublicMenuPage() {
 
   if (error) {
     return (
-      <div className={styles.page}>
+      <div className={`${styles.page} theme-rustic mode-dark`}>
         <div className={styles.errorCard}>
           <h1>Menu Not Found</h1>
           <p>{error}</p>
@@ -131,7 +136,7 @@ function PublicMenuPage() {
   }
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${themeClass}`}>
       <header className={styles.header}>
         <div className={styles.brand}>BarrelChatter</div>
         <h1 className={styles.title}>{menu?.title}</h1>

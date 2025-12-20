@@ -1,0 +1,61 @@
+// ============================================================================
+// RUSTIC THEME - Classic bourbon bar aesthetic
+// Warm wood tones, gold accents, traditional feel
+// ============================================================================
+
+.theme-rustic {
+  // ----------------------------------------------------------------------------
+  // DARK MODE (Default)
+  // ----------------------------------------------------------------------------
+  &.mode-dark {
+    --menu-bg-base: #1a1610;
+    --menu-bg-surface: #252018;
+    --menu-bg-elevated: #302820;
+    --menu-bg-hover: #3a3228;
+
+    --menu-text-primary: #f5f0e8;
+    --menu-text-secondary: #b8a890;
+    --menu-text-tertiary: #8a7860;
+    --menu-text-inverse: #1a1610;
+
+    --menu-accent: #d4a03c;
+    --menu-accent-hover: #e8b84c;
+
+    --menu-border-default: #403828;
+    --menu-border-subtle: #352d20;
+    --menu-border-accent: #d4a03c33;
+
+    --menu-font-heading: 'Georgia', 'Times New Roman', serif;
+    --menu-font-body: system-ui, -apple-system, sans-serif;
+
+    // Gradient backgrounds
+    --menu-header-gradient: linear-gradient(180deg, #252018 0%, #1a1610 100%);
+  }
+
+  // ----------------------------------------------------------------------------
+  // LIGHT MODE
+  // ----------------------------------------------------------------------------
+  &.mode-light {
+    --menu-bg-base: #faf8f5;
+    --menu-bg-surface: #f0ebe3;
+    --menu-bg-elevated: #fff;
+    --menu-bg-hover: #e8e0d5;
+
+    --menu-text-primary: #2c2418;
+    --menu-text-secondary: #6b5d4d;
+    --menu-text-tertiary: #9a8a78;
+    --menu-text-inverse: #faf8f5;
+
+    --menu-accent: #8b6914;
+    --menu-accent-hover: #a67d18;
+
+    --menu-border-default: #d8cfc0;
+    --menu-border-subtle: #e8e0d5;
+    --menu-border-accent: #8b691433;
+
+    --menu-font-heading: 'Georgia', 'Times New Roman', serif;
+    --menu-font-body: system-ui, -apple-system, sans-serif;
+
+    --menu-header-gradient: linear-gradient(180deg, #f0ebe3 0%, #faf8f5 100%);
+  }
+}

@@ -1,0 +1,73 @@
+// ============================================================================
+// ELEGANT THEME - Refined, sophisticated aesthetic
+// Playfair Display headings, gold on black, refined serif typography
+// ============================================================================
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap');
+
+.theme-elegant {
+  // ----------------------------------------------------------------------------
+  // DARK MODE (Default)
+  // ----------------------------------------------------------------------------
+  &.mode-dark {
+    --menu-bg-base: #0a0a0a;
+    --menu-bg-surface: #141414;
+    --menu-bg-elevated: #1c1c1c;
+    --menu-bg-hover: #242424;
+
+    --menu-text-primary: #f8f6f0;
+    --menu-text-secondary: #c4bba8;
+    --menu-text-tertiary: #7a7266;
+    --menu-text-inverse: #0a0a0a;
+
+    --menu-accent: #c9a227;
+    --menu-accent-hover: #dbb740;
+
+    --menu-border-default: #2a2a2a;
+    --menu-border-subtle: #1f1f1f;
+    --menu-border-accent: #c9a22740;
+
+    --menu-font-heading: 'Playfair Display', 'Georgia', serif;
+    --menu-font-body: 'Cormorant Garamond', 'Georgia', serif;
+
+    --menu-header-gradient: linear-gradient(180deg, #141414 0%, #0a0a0a 100%);
+  }
+
+  // ----------------------------------------------------------------------------
+  // LIGHT MODE
+  // ----------------------------------------------------------------------------
+  &.mode-light {
+    --menu-bg-base: #fffef8;
+    --menu-bg-surface: #f8f6f0;
+    --menu-bg-elevated: #fff;
+    --menu-bg-hover: #f0ece0;
+
+    --menu-text-primary: #1a1815;
+    --menu-text-secondary: #4a463d;
+    --menu-text-tertiary: #8a847a;
+    --menu-text-inverse: #fffef8;
+
+    --menu-accent: #8b6508;
+    --menu-accent-hover: #a37a0a;
+
+    --menu-border-default: #e0dcd0;
+    --menu-border-subtle: #ece8dc;
+    --menu-border-accent: #8b650840;
+
+    --menu-font-heading: 'Playfair Display', 'Georgia', serif;
+    --menu-font-body: 'Cormorant Garamond', 'Georgia', serif;
+
+    --menu-header-gradient: linear-gradient(180deg, #f8f6f0 0%, #fffef8 100%);
+  }
+
+  // Elegant theme specific overrides
+  .menuTitle {
+    font-style: italic;
+    letter-spacing: 0.05em;
+  }
+
+  .bottleName {
+    font-family: var(--menu-font-heading);
+    font-weight: 500;
+  }
+}

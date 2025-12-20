@@ -23,6 +23,7 @@ import AdminPurchaseLocationsPage from './pages/AdminPurchaseLocationsPage.jsx';
 import AdminTagPacksPage from './pages/AdminTagPacksPage.jsx';
 import AdminTagPackDetailPage from './pages/AdminTagPackDetailPage.jsx';
 import AdminBulkImportPage from './pages/AdminBulkImportPage.jsx';
+import MenusPage from './pages/MenusPage.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
 import ToastContainer from './components/ToastContainer.jsx';
 
@@ -65,6 +66,9 @@ function App() {
         
         {/* Storage Locations - user can manage their own */}
         <Route path="storage-locations" element={<StorageLocationsPage />} />
+
+        {/* Menus - shareable menu management */}
+        <Route path="menus" element={<MenusPage />} />
 
         {/* Moderator/Admin: Bottle Submissions */}
         <Route

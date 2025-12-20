@@ -53,6 +53,9 @@ function AppLayout() {
           <NavLink to="/app/storage-locations" className={navClass}>
             Storage Locations
           </NavLink>
+          <NavLink to="/app/menus" className={navClass}>
+            Menus
+          </NavLink>
 
           {(isModeratorOrAdmin || isAdmin) && (
             <>

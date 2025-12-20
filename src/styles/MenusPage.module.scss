@@ -1,0 +1,361 @@
+@use 'design-system' as *;
+
+// ============================================================================
+// MENUS PAGE - Menu management dashboard
+// ============================================================================
+
+.page {
+  padding: var(--bc-space-6);
+  min-height: 100%;
+}
+
+// ----------------------------------------------------------------------------
+// LOADING & ERROR STATES
+// ----------------------------------------------------------------------------
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bc-space-4);
+  padding: var(--bc-space-16);
+  color: var(--bc-text-secondary);
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--bc-border-default);
+    border-top-color: var(--bc-accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.errorCard {
+  max-width: 400px;
+  margin: var(--bc-space-16) auto;
+  padding: var(--bc-space-8);
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-danger-border);
+  border-radius: var(--bc-radius-xl);
+  text-align: center;
+
+  h2 {
+    color: var(--bc-danger);
+    margin-bottom: var(--bc-space-4);
+  }
+
+  p {
+    color: var(--bc-text-secondary);
+    margin-bottom: var(--bc-space-6);
+  }
+}
+
+.retryButton {
+  padding: var(--bc-space-3) var(--bc-space-6);
+  background: var(--bc-accent);
+  color: var(--bc-text-inverse);
+  border: none;
+  border-radius: var(--bc-radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--bc-transition-base);
+
+  &:hover {
+    background: var(--bc-accent-hover);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// HEADER
+// ----------------------------------------------------------------------------
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--bc-space-8);
+  gap: var(--bc-space-4);
+  flex-wrap: wrap;
+
+  h1 {
+    font-size: var(--bc-text-2xl);
+    color: var(--bc-text-primary);
+    margin: 0;
+  }
+}
+
+.headerContent {
+  flex: 1;
+}
+
+.subtitle {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+  margin: var(--bc-space-1) 0 0;
+}
+
+.createButton {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-3) var(--bc-space-5);
+  background: var(--bc-accent);
+  color: var(--bc-text-inverse);
+  border: none;
+  border-radius: var(--bc-radius-md);
+  font-weight: 500;
+  font-size: var(--bc-text-sm);
+  cursor: pointer;
+  transition: background var(--bc-transition-base);
+
+  &:hover {
+    background: var(--bc-accent-hover);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// EMPTY STATE
+// ----------------------------------------------------------------------------
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--bc-space-16);
+  max-width: 400px;
+  margin: 0 auto;
+
+  h2 {
+    font-size: var(--bc-text-xl);
+    color: var(--bc-text-primary);
+    margin: var(--bc-space-4) 0 var(--bc-space-2);
+  }
+
+  p {
+    color: var(--bc-text-secondary);
+    line-height: var(--bc-leading-relaxed);
+    margin-bottom: var(--bc-space-6);
+  }
+}
+
+.emptyIcon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bc-bg-surface);
+  border-radius: 50%;
+  color: var(--bc-text-tertiary);
+}
+
+// ----------------------------------------------------------------------------
+// MENU GRID
+// ----------------------------------------------------------------------------
+
+.menuGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--bc-space-5);
+}
+
+.menuCard {
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-lg);
+  overflow: hidden;
+  transition: border-color var(--bc-transition-base);
+
+  &:hover {
+    border-color: var(--bc-border-default);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bc-space-4) var(--bc-space-4) var(--bc-space-2);
+  gap: var(--bc-space-3);
+}
+
+.menuName {
+  font-size: var(--bc-text-lg);
+  font-weight: 600;
+  color: var(--bc-text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusBadge {
+  font-size: var(--bc-text-xs);
+  font-weight: 500;
+  padding: var(--bc-space-1) var(--bc-space-2);
+  border-radius: var(--bc-radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+
+  &[data-enabled="true"] {
+    background: var(--bc-success-bg);
+    color: var(--bc-success);
+  }
+
+  &[data-enabled="false"] {
+    background: var(--bc-bg-surface);
+    color: var(--bc-text-tertiary);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// CARD META
+// ----------------------------------------------------------------------------
+
+.cardMeta {
+  padding: var(--bc-space-2) var(--bc-space-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bc-space-3);
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-1);
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}
+
+.metaLabel {
+  color: var(--bc-text-tertiary);
+}
+
+.metaValue {
+  color: var(--bc-text-primary);
+}
+
+.colorMode {
+  color: var(--bc-text-tertiary);
+  margin-left: var(--bc-space-1);
+}
+
+// ----------------------------------------------------------------------------
+// CARD ACTIONS
+// ----------------------------------------------------------------------------
+
+.cardActions {
+  display: flex;
+  gap: var(--bc-space-2);
+  padding: var(--bc-space-3) var(--bc-space-4);
+  background: var(--bc-bg-surface);
+  border-top: 1px solid var(--bc-border-subtle);
+  border-bottom: 1px solid var(--bc-border-subtle);
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-sm);
+  color: var(--bc-text-secondary);
+  cursor: pointer;
+  transition: all var(--bc-transition-base);
+
+  &:hover:not(:disabled) {
+    background: var(--bc-bg-hover);
+    color: var(--bc-text-primary);
+    border-color: var(--bc-border-active);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.deleteButton {
+    &:hover:not(:disabled) {
+      background: var(--bc-danger-bg);
+      color: var(--bc-danger);
+      border-color: var(--bc-danger-border);
+    }
+  }
+}
+
+.spinning {
+  animation: spin 0.8s linear infinite;
+}
+
+// ----------------------------------------------------------------------------
+// CARD FOOTER (Toggle)
+// ----------------------------------------------------------------------------
+
+.cardFooter {
+  padding: var(--bc-space-3) var(--bc-space-4);
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+  cursor: pointer;
+
+  input {
+    display: none;
+  }
+}
+
+.toggleSwitch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background: var(--bc-bg-surface);
+  border: 1px solid var(--bc-border-default);
+  border-radius: 11px;
+  transition: all var(--bc-transition-base);
+  flex-shrink: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: var(--bc-text-tertiary);
+    border-radius: 50%;
+    transition: all var(--bc-transition-base);
+  }
+
+  input:checked + & {
+    background: var(--bc-success-bg);
+    border-color: var(--bc-success);
+
+    &::after {
+      left: 20px;
+      background: var(--bc-success);
+    }
+  }
+
+  input:disabled + & {
+    opacity: 0.5;
+  }
+}
+
+.toggleText {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}

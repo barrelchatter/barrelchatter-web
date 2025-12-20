@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api/client';
 import { useToast } from '../context/ToastContext';
-import MenuSharingSettings from '../components/MenuSharingSettings';
 import styles from '../styles/ProfilePage.module.scss';
 
 function ProfilePage() {
@@ -449,7 +449,16 @@ function ProfilePage() {
 
         {activeTab === 'sharing' && (
           <div className={styles.sharingTab}>
-            <MenuSharingSettings />
+            <div className={styles.redirectNotice}>
+              <h3>Menu Sharing Has Moved</h3>
+              <p>
+                Menu sharing settings have been upgraded! You can now create multiple
+                shareable menus with different themes, storage locations, and more.
+              </p>
+              <Link to="/app/menus" className={styles.redirectLink}>
+                Go to Menus
+              </Link>
+            </div>
           </div>
         )}
       </div>

@@ -1,0 +1,83 @@
+// ============================================================================
+// MODERN THEME - Clean, minimalist aesthetic
+// Inter font, high contrast, geometric design
+// ============================================================================
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+.theme-modern {
+  // ----------------------------------------------------------------------------
+  // DARK MODE (Default)
+  // ----------------------------------------------------------------------------
+  &.mode-dark {
+    --menu-bg-base: #0c0c0c;
+    --menu-bg-surface: #161616;
+    --menu-bg-elevated: #1e1e1e;
+    --menu-bg-hover: #262626;
+
+    --menu-text-primary: #ffffff;
+    --menu-text-secondary: #a0a0a0;
+    --menu-text-tertiary: #666666;
+    --menu-text-inverse: #0c0c0c;
+
+    --menu-accent: #ffffff;
+    --menu-accent-hover: #e0e0e0;
+
+    --menu-border-default: #2a2a2a;
+    --menu-border-subtle: #1f1f1f;
+    --menu-border-accent: #ffffff20;
+
+    --menu-font-heading: 'Inter', system-ui, sans-serif;
+    --menu-font-body: 'Inter', system-ui, sans-serif;
+
+    --menu-header-gradient: linear-gradient(180deg, #161616 0%, #0c0c0c 100%);
+  }
+
+  // ----------------------------------------------------------------------------
+  // LIGHT MODE
+  // ----------------------------------------------------------------------------
+  &.mode-light {
+    --menu-bg-base: #ffffff;
+    --menu-bg-surface: #f5f5f5;
+    --menu-bg-elevated: #ffffff;
+    --menu-bg-hover: #ebebeb;
+
+    --menu-text-primary: #0c0c0c;
+    --menu-text-secondary: #666666;
+    --menu-text-tertiary: #999999;
+    --menu-text-inverse: #ffffff;
+
+    --menu-accent: #0c0c0c;
+    --menu-accent-hover: #333333;
+
+    --menu-border-default: #e0e0e0;
+    --menu-border-subtle: #ebebeb;
+    --menu-border-accent: #0c0c0c20;
+
+    --menu-font-heading: 'Inter', system-ui, sans-serif;
+    --menu-font-body: 'Inter', system-ui, sans-serif;
+
+    --menu-header-gradient: linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+  }
+
+  // Modern theme specific overrides
+  .menuTitle {
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .brand {
+    font-weight: 600;
+    letter-spacing: 0.2em;
+  }
+
+  .type {
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  .proof {
+    font-weight: 500;
+  }
+}
