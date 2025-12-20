@@ -48,4 +48,17 @@ export const inventoryPhotosAPI = {
   delete: (inventoryId, photoId) => api.delete(`/v1/inventory/${inventoryId}/photos/${photoId}`),
 };
 
+// Menu Settings API (authenticated)
+export const menuSettingsAPI = {
+  get: () => api.get('/v1/users/me/menu-settings'),
+  update: (data) => api.patch('/v1/users/me/menu-settings', data),
+  regenerateToken: () => api.post('/v1/users/me/menu-settings/regenerate-token'),
+};
+
+// Public Menu API (no auth required)
+// Note: Uses a separate axios instance without auth interceptor
+export const publicMenuAPI = {
+  get: (shareToken) => axios.get(`${API_BASE_URL}/v1/menu/${shareToken}`),
+};
+
 export default api;

@@ -1,0 +1,405 @@
+@use 'design-system' as *;
+
+// ============================================================================
+// PUBLIC MENU PAGE - Shareable whiskey collection menu
+// ============================================================================
+
+.page {
+  min-height: 100vh;
+  background: var(--bc-bg-base);
+  color: var(--bc-text-primary);
+  font-family: var(--bc-font-sans);
+  display: flex;
+  flex-direction: column;
+}
+
+// ----------------------------------------------------------------------------
+// LOADING STATE
+// ----------------------------------------------------------------------------
+
+.loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bc-space-4);
+  color: var(--bc-text-secondary);
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--bc-border-default);
+    border-top-color: var(--bc-accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ----------------------------------------------------------------------------
+// ERROR STATE
+// ----------------------------------------------------------------------------
+
+.errorCard {
+  max-width: 400px;
+  margin: var(--bc-space-16) auto;
+  padding: var(--bc-space-8);
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-xl);
+  text-align: center;
+
+  h1 {
+    font-size: var(--bc-text-xl);
+    color: var(--bc-text-primary);
+    margin-bottom: var(--bc-space-4);
+  }
+
+  p {
+    color: var(--bc-text-secondary);
+    line-height: var(--bc-leading-relaxed);
+    margin-bottom: var(--bc-space-6);
+  }
+}
+
+.loginLink {
+  display: inline-block;
+  padding: var(--bc-space-3) var(--bc-space-6);
+  background: var(--bc-accent);
+  color: var(--bc-text-inverse);
+  text-decoration: none;
+  border-radius: var(--bc-radius-md);
+  font-weight: 500;
+  transition: background var(--bc-transition-base);
+
+  &:hover {
+    background: var(--bc-accent-hover);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// HEADER
+// ----------------------------------------------------------------------------
+
+.header {
+  text-align: center;
+  padding: var(--bc-space-10) var(--bc-space-6) var(--bc-space-6);
+  border-bottom: 1px solid var(--bc-border-accent);
+  background: linear-gradient(180deg, var(--bc-bg-surface) 0%, var(--bc-bg-base) 100%);
+}
+
+.brand {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-accent);
+  letter-spacing: var(--bc-tracking-widest);
+  text-transform: uppercase;
+  margin-bottom: var(--bc-space-3);
+}
+
+.title {
+  font-size: var(--bc-text-3xl);
+  color: var(--bc-text-primary);
+  letter-spacing: var(--bc-tracking-wide);
+  font-weight: 600;
+  margin: 0 0 var(--bc-space-2);
+}
+
+.subtitle {
+  font-size: var(--bc-text-base);
+  color: var(--bc-text-secondary);
+  margin: 0;
+}
+
+// ----------------------------------------------------------------------------
+// FILTER BAR
+// ----------------------------------------------------------------------------
+
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bc-space-3);
+  padding: var(--bc-space-4) var(--bc-space-6);
+  background: var(--bc-bg-surface);
+  border-bottom: 1px solid var(--bc-border-subtle);
+  align-items: center;
+  justify-content: center;
+
+  @media print {
+    display: none;
+  }
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+  padding: var(--bc-space-2) var(--bc-space-4);
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-primary);
+  font-size: var(--bc-text-sm);
+
+  &::placeholder {
+    color: var(--bc-text-tertiary);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--bc-accent);
+  }
+}
+
+.filterSelect {
+  padding: var(--bc-space-2) var(--bc-space-4);
+  padding-right: var(--bc-space-8);
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-primary);
+  font-size: var(--bc-text-sm);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23b8a890'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+
+  &:focus {
+    outline: none;
+    border-color: var(--bc-accent);
+  }
+}
+
+.proofButtons {
+  display: flex;
+  gap: var(--bc-space-1);
+}
+
+.proofButton {
+  padding: var(--bc-space-2) var(--bc-space-3);
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-default);
+  border-radius: var(--bc-radius-sm);
+  color: var(--bc-text-secondary);
+  font-size: var(--bc-text-xs);
+  cursor: pointer;
+  transition: all var(--bc-transition-base);
+
+  &:hover {
+    background: var(--bc-bg-hover);
+    color: var(--bc-text-primary);
+  }
+
+  &.active {
+    background: var(--bc-accent);
+    color: var(--bc-text-inverse);
+    border-color: var(--bc-accent);
+  }
+}
+
+.clearButton {
+  padding: var(--bc-space-2) var(--bc-space-4);
+  background: transparent;
+  border: 1px solid var(--bc-danger-border);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-danger);
+  font-size: var(--bc-text-sm);
+  cursor: pointer;
+  transition: all var(--bc-transition-base);
+
+  &:hover {
+    background: var(--bc-danger-bg);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// MENU CONTAINER
+// ----------------------------------------------------------------------------
+
+.menuContainer {
+  flex: 1;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--bc-space-6);
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--bc-space-12);
+  color: var(--bc-text-secondary);
+
+  p {
+    margin-bottom: var(--bc-space-4);
+  }
+
+  button {
+    padding: var(--bc-space-2) var(--bc-space-4);
+    background: var(--bc-accent);
+    border: none;
+    border-radius: var(--bc-radius-md);
+    color: var(--bc-text-inverse);
+    font-size: var(--bc-text-sm);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--bc-accent-hover);
+    }
+  }
+}
+
+// ----------------------------------------------------------------------------
+// MENU LIST
+// ----------------------------------------------------------------------------
+
+.menuList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menuItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--bc-space-4) 0;
+  border-bottom: 1px solid var(--bc-border-subtle);
+  gap: var(--bc-space-4);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media print {
+    page-break-inside: avoid;
+  }
+}
+
+.bottleInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.bottleName {
+  font-size: var(--bc-text-md);
+  font-weight: 500;
+  color: var(--bc-text-primary);
+  line-height: var(--bc-leading-tight);
+}
+
+.bottleDistillery {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}
+
+.bottleDetails {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+  flex-shrink: 0;
+}
+
+.age {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}
+
+.proof {
+  font-size: var(--bc-text-base);
+  font-weight: 600;
+  color: var(--bc-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.type {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--bc-tracking-wide);
+  background: var(--bc-bg-surface);
+  padding: var(--bc-space-1) var(--bc-space-2);
+  border-radius: var(--bc-radius-xs);
+}
+
+// ----------------------------------------------------------------------------
+// FOOTER
+// ----------------------------------------------------------------------------
+
+.footer {
+  text-align: center;
+  padding: var(--bc-space-6);
+  border-top: 1px solid var(--bc-border-subtle);
+  background: var(--bc-bg-surface);
+  color: var(--bc-text-tertiary);
+  font-size: var(--bc-text-sm);
+
+  a {
+    color: var(--bc-accent);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  @media print {
+    display: none;
+  }
+}
+
+// ----------------------------------------------------------------------------
+// PRINT STYLES
+// ----------------------------------------------------------------------------
+
+@media print {
+  .page {
+    background: white;
+    color: #1a1a1a;
+  }
+
+  .header {
+    border-bottom-color: #ccc;
+    background: white;
+  }
+
+  .brand {
+    color: #666;
+  }
+
+  .title {
+    color: #1a1a1a;
+  }
+
+  .subtitle {
+    color: #666;
+  }
+
+  .menuItem {
+    border-bottom-color: #eee;
+  }
+
+  .bottleName {
+    color: #1a1a1a;
+  }
+
+  .bottleDistillery,
+  .age {
+    color: #666;
+  }
+
+  .proof {
+    color: #8b6914;
+  }
+
+  .type {
+    color: #666;
+    background: #f0f0f0;
+  }
+}

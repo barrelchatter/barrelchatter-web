@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
+import PublicMenuPage from './pages/PublicMenuPage.jsx';
 import HomePage from './pages/HomePage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import InventoryPage from './pages/InventoryPage.jsx';
@@ -33,6 +34,7 @@ function App() {
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/menu/:shareToken" element={<PublicMenuPage />} />
 
       {/* Top-level: must be authenticated for anything under /app */}
       <Route

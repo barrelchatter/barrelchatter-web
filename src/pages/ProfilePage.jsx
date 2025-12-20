@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../api/client';
 import { useToast } from '../context/ToastContext';
+import MenuSharingSettings from '../components/MenuSharingSettings';
 import styles from '../styles/ProfilePage.module.scss';
 
 function ProfilePage() {
@@ -234,6 +235,12 @@ function ProfilePage() {
         >
           Notifications
         </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'sharing' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('sharing')}
+        >
+          Sharing
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -437,6 +444,12 @@ function ProfilePage() {
                 </div>
               </>
             )}
+          </div>
+        )}
+
+        {activeTab === 'sharing' && (
+          <div className={styles.sharingTab}>
+            <MenuSharingSettings />
           </div>
         )}
       </div>
