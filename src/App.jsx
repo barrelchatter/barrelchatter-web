@@ -29,6 +29,9 @@ import PurchaseLocationsPage from './pages/PurchaseLocationsPage.jsx';
 import LocationDetailPage from './pages/LocationDetailPage.jsx';
 import GroupsPage from './pages/GroupsPage.jsx';
 import GroupDetailPage from './pages/GroupDetailPage.jsx';
+import SubscriptionSettingsPage from './pages/SubscriptionSettingsPage.jsx';
+import SubscriptionSuccessPage from './pages/SubscriptionSuccessPage.jsx';
+import SubscriptionCancelPage from './pages/SubscriptionCancelPage.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
 import ToastContainer from './components/ToastContainer.jsx';
 
@@ -41,6 +44,24 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/menu/:shareToken" element={<PublicMenuPage />} />
+
+      {/* Subscription flow (auth required, but outside app layout) */}
+      <Route
+        path="/subscription/success"
+        element={
+          <ProtectedRoute>
+            <SubscriptionSuccessPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/subscription/cancel"
+        element={
+          <ProtectedRoute>
+            <SubscriptionCancelPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Top-level: must be authenticated for anything under /app */}
       <Route
@@ -82,6 +103,9 @@ function App() {
         {/* Groups */}
         <Route path="groups" element={<GroupsPage />} />
         <Route path="groups/:id" element={<GroupDetailPage />} />
+
+        {/* Settings */}
+        <Route path="settings/subscription" element={<SubscriptionSettingsPage />} />
 
         {/* Moderator/Admin: Bottle Submissions */}
         <Route

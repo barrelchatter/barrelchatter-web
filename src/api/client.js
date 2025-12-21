@@ -127,4 +127,21 @@ export const usersAPI = {
   search: (query) => api.get('/v1/users/search', { params: { q: query } }),
 };
 
+// Subscription API
+export const subscriptionAPI = {
+  // Get current subscription status with usage
+  getStatus: () => api.get('/v1/subscription/status'),
+  // Redeem a promo code
+  redeemPromo: (code) => api.post('/v1/subscription/redeem-promo', { code }),
+};
+
+// Stripe API
+export const stripeAPI = {
+  // Create a Stripe Checkout session and return the URL
+  createCheckoutSession: (tier, interval) =>
+    api.post('/v1/stripe/checkout-session', { tier, interval }),
+  // Create a Stripe Customer Portal session for managing subscription
+  createPortalSession: () => api.post('/v1/stripe/portal-session'),
+};
+
 export default api;

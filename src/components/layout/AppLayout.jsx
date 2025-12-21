@@ -62,6 +62,12 @@ function AppLayout() {
           <NavLink to="/app/menus" className={navClass}>
             Menus
           </NavLink>
+          <NavLink to="/app/settings/subscription" className={navClass}>
+            Subscription
+          </NavLink>
+          <NavLink to="/app/profile" className={navClass}>
+            Profile
+          </NavLink>
 
           {(isModeratorOrAdmin || isAdmin) && (
             <>
