@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Users, ArrowLeft, Settings, Trash2, LogOut, UserPlus, Activity,
-  Wine, Clock, User, UserMinus
+  Package, Clock, User, UserMinus
 } from 'react-feather';
 import { groupsAPI } from '../api/client';
 import { useToast } from '../context/ToastContext';
@@ -338,7 +338,7 @@ function GroupDetailPage() {
               className={`${styles.tab} ${activeTab === 'bottles' ? styles.tabActive : ''}`}
               onClick={() => setActiveTab('bottles')}
             >
-              <Wine size={16} />
+              <Package size={16} />
               Bottles
             </button>
           </nav>
@@ -411,7 +411,7 @@ function GroupDetailPage() {
               <div className={styles.bottlesGrid}>
                 {bottles.length === 0 ? (
                   <div className={styles.emptyState}>
-                    <Wine size={48} className={styles.emptyIcon} />
+                    <Package size={48} className={styles.emptyIcon} />
                     <h3>No Shared Bottles</h3>
                     <p>Members can share bottles from their collection.</p>
                   </div>
