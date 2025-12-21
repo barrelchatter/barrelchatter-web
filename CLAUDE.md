@@ -334,6 +334,34 @@ export const storageLocationsAPI = {
 export const publicMenuAPI = {
   get: (shareToken) => api.get(`/menu/${shareToken}`),
 };
+
+export const groupsAPI = {
+  list: (params) => api.get('/groups', { params }),
+  discover: (params) => api.get('/groups/discover', { params }),
+  invites: () => api.get('/groups/invites'),
+  get: (id) => api.get(`/groups/${id}`),
+  create: (data) => api.post('/groups', data),
+  update: (id, data) => api.patch(`/groups/${id}`, data),
+  delete: (id) => api.delete(`/groups/${id}`),
+  invite: (groupId, userId, message) => api.post(`/groups/${groupId}/invite/${userId}`, { message }),
+  join: (id) => api.post(`/groups/${id}/join`),
+  decline: (id) => api.post(`/groups/${id}/decline`),
+  leave: (id) => api.post(`/groups/${id}/leave`),
+  removeMember: (groupId, userId) => api.delete(`/groups/${groupId}/members/${userId}`),
+  activity: (id, params) => api.get(`/groups/${id}/activity`, { params }),
+  bottles: (id) => api.get(`/groups/${id}/bottles`),
+  shareBottle: (groupId, inventoryId, notes) => api.post(`/groups/${groupId}/bottles`, { inventory_id: inventoryId, notes }),
+  unshareBottle: (groupId, inventoryId) => api.delete(`/groups/${groupId}/bottles/${inventoryId}`),
+};
+
+export const purchaseLocationsAPI = {
+  list: (params) => api.get('/purchase-locations', { params }),
+  get: (id) => api.get(`/purchase-locations/${id}`),
+  create: (data) => api.post('/purchase-locations', data),
+  mySubmissions: (params) => api.get('/purchase-locations/my-submissions', { params }),
+  nearby: (lat, lng, radius) => api.get('/purchase-locations/nearby', { params: { lat, lng, radius } }),
+  getMapUrls: (id) => api.get(`/purchase-locations/${id}/map-urls`),
+};
 ```
 
 ## Routing
@@ -524,6 +552,43 @@ const handleDownload = async () => {
 ```
 
 **Dependency:** `html2pdf.js` (dynamically imported)
+
+### Groups Page
+
+GroupsPage.jsx (`/app/groups`) provides group management for collector groups:
+
+**Components:**
+- `pages/GroupsPage.jsx` - Groups list with tabs
+- `pages/GroupDetailPage.jsx` - Single group view with activity/members/bottles
+- `components/GroupEditModal.jsx` - Create/edit group modal
+- `components/GroupInviteModal.jsx` - Invite members modal
+
+**Features:**
+- **My Groups Tab** - List groups user is a member of, shows role (Owner/Member)
+- **Discover Tab** - Search public groups, see pending invites
+- **Invites Tab** - Pending group invitations with accept/decline
+- **Group Detail** - Activity feed, members list, shared bottles
+- **Owner Controls** - Edit group, remove members, delete group
+- **Member Controls** - Leave group, invite others
+
+### Purchase Locations Page
+
+PurchaseLocationsPage.jsx (`/app/locations`) provides location catalog:
+
+**Components:**
+- `pages/PurchaseLocationsPage.jsx` - 3-tab location browser
+- `pages/LocationDetailPage.jsx` - Single location view with map
+- `components/NewLocationModal.jsx` - Submit new location form
+- `components/MapEmbed.jsx` - Google Maps iframe embed
+- `components/MapLinks.jsx` - External map app links
+
+**Features:**
+- **Browse Tab** - Search/filter by name, type, state
+- **My Submissions Tab** - View submitted locations with status
+- **Nearby Tab** - Geolocation-based discovery with radius selector
+- **Location Detail** - Address, contact, map embed, purchase stats
+
+**Location Types:** Liquor Store, Grocery Store, Bar, Restaurant, Distillery, Online, Other
 
 ## Admin Section
 
