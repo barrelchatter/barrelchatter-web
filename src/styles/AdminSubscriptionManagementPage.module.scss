@@ -1,0 +1,364 @@
+@use './design-system' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-4);
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--bc-space-4);
+
+  h1 {
+    margin: 0;
+    font-size: var(--bc-text-xl);
+  }
+}
+
+.subtitle {
+  margin: var(--bc-space-1) 0 0;
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+}
+
+.accessDenied {
+  @include alert-error;
+}
+
+// ============================================================================
+// TABS
+// ============================================================================
+
+.tabs {
+  display: flex;
+  gap: var(--bc-space-2);
+}
+
+.tab,
+.tabActive {
+  @include button-secondary;
+  @include button-sm;
+}
+
+.tabActive {
+  border-color: var(--bc-border-accent);
+  background: rgba(201, 166, 107, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(201, 166, 107, 0.2);
+}
+
+// ============================================================================
+// PANELS
+// ============================================================================
+
+.panel {
+  @include card;
+  padding: var(--bc-space-4);
+}
+
+.panelHeader {
+  font-size: var(--bc-text-base);
+  font-weight: 600;
+  margin-bottom: var(--bc-space-3);
+  color: var(--bc-text-secondary);
+}
+
+// ============================================================================
+// FORMS
+// ============================================================================
+
+.filters,
+.formRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bc-space-3);
+  align-items: center;
+}
+
+.input {
+  @include input-base;
+  min-width: 200px;
+}
+
+.select {
+  @include select-base;
+  min-width: 160px;
+}
+
+.primaryBtn {
+  @include button-primary;
+}
+
+.secondaryBtn {
+  @include button-secondary;
+}
+
+.dangerBtn {
+  @include button-danger;
+  margin-top: var(--bc-space-3);
+}
+
+.smallBtn {
+  @include button-secondary;
+  @include button-sm;
+}
+
+.smallBtnDanger {
+  @include button-danger;
+  @include button-sm;
+}
+
+// ============================================================================
+// SEARCH RESULTS
+// ============================================================================
+
+.searchResults {
+  margin-top: var(--bc-space-4);
+  border-top: 1px solid var(--bc-border-subtle);
+  padding-top: var(--bc-space-3);
+}
+
+.resultsHeader {
+  font-size: var(--bc-text-sm);
+  font-weight: 600;
+  color: var(--bc-text-secondary);
+  margin-bottom: var(--bc-space-2);
+}
+
+.userResult {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bc-space-3);
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-md);
+  margin-bottom: var(--bc-space-2);
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: var(--bc-bg-surface);
+  }
+}
+
+.userName {
+  font-weight: 600;
+  color: var(--bc-text-primary);
+}
+
+.userEmail {
+  font-size: var(--bc-text-sm);
+  color: var(--bc-text-secondary);
+  margin-top: var(--bc-space-1);
+}
+
+.userRole {
+  display: flex;
+  align-items: center;
+}
+
+// ============================================================================
+// SUBSCRIPTION INFO
+// ============================================================================
+
+.subscriptionInfo {
+  margin-bottom: var(--bc-space-4);
+
+  h3 {
+    font-size: var(--bc-text-base);
+    margin: 0 0 var(--bc-space-3);
+    color: var(--bc-text-secondary);
+  }
+}
+
+.subscriptionCard {
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-md);
+  padding: var(--bc-space-4);
+  border: 1px solid var(--bc-border-subtle);
+}
+
+.subscriptionRow {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+  margin-bottom: var(--bc-space-2);
+
+  &:last-of-type {
+    margin-bottom: var(--bc-space-4);
+  }
+}
+
+.label {
+  font-weight: 600;
+  color: var(--bc-text-secondary);
+  min-width: 100px;
+}
+
+.tierBadge {
+  @include badge-accent;
+  font-weight: 600;
+  font-size: var(--bc-text-sm);
+}
+
+.noSubscription {
+  padding: var(--bc-space-3);
+  background: var(--bc-bg-elevated);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-secondary);
+  text-align: center;
+}
+
+// ============================================================================
+// GRANT SECTION
+// ============================================================================
+
+.grantSection {
+  padding-top: var(--bc-space-4);
+  border-top: 1px solid var(--bc-border-subtle);
+
+  h3 {
+    font-size: var(--bc-text-base);
+    margin: 0 0 var(--bc-space-3);
+    color: var(--bc-text-secondary);
+  }
+}
+
+.grantForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-3);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--bc-space-3);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-1);
+
+  span {
+    font-size: var(--bc-text-xs);
+    color: var(--bc-text-secondary);
+    font-weight: 500;
+  }
+}
+
+// ============================================================================
+// PROMO CODE FORM
+// ============================================================================
+
+.promoForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-3);
+}
+
+// ============================================================================
+// NOTICES & ERRORS
+// ============================================================================
+
+.error {
+  @include alert-error;
+  margin-top: var(--bc-space-3);
+}
+
+.loading,
+.empty {
+  margin-top: var(--bc-space-3);
+  padding: var(--bc-space-4);
+  text-align: center;
+  color: var(--bc-text-secondary);
+}
+
+// ============================================================================
+// TABLE
+// ============================================================================
+
+.tableWrap {
+  margin-top: var(--bc-space-3);
+  @include table-wrapper;
+  overflow-x: auto;
+}
+
+.table {
+  @include table-base;
+  min-width: 900px;
+}
+
+.rowMuted {
+  opacity: 0.5;
+}
+
+.actionsCol {
+  width: 200px;
+}
+
+.badge {
+  @include badge-accent;
+  font-size: var(--bc-text-xs);
+}
+
+.statusActive {
+  color: var(--bc-success);
+  font-weight: 600;
+}
+
+.statusInactive {
+  color: var(--bc-text-tertiary);
+}
+
+.promoDescription {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-secondary);
+  margin-top: var(--bc-space-1);
+}
+
+.dateRange {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-secondary);
+
+  div {
+    margin-bottom: var(--bc-space-1);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// ============================================================================
+// EDIT ROW
+// ============================================================================
+
+.editRow td {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-3);
+}
+
+.editGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--bc-space-3);
+}
+
+.editActions {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+}

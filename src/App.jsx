@@ -23,6 +23,7 @@ import AdminPurchaseLocationsPage from './pages/AdminPurchaseLocationsPage.jsx';
 import AdminTagPacksPage from './pages/AdminTagPacksPage.jsx';
 import AdminTagPackDetailPage from './pages/AdminTagPackDetailPage.jsx';
 import AdminBulkImportPage from './pages/AdminBulkImportPage.jsx';
+import AdminSubscriptionManagementPage from './pages/AdminSubscriptionManagementPage.jsx';
 import MenusPage from './pages/MenusPage.jsx';
 import PurchaseLocationsPage from './pages/PurchaseLocationsPage.jsx';
 import LocationDetailPage from './pages/LocationDetailPage.jsx';
@@ -141,13 +142,21 @@ function App() {
             </ProtectedRoute>
           } 
         />
-        <Route 
-          path="/app/admin/tags/bulk-import" 
+        <Route
+          path="/app/admin/tags/bulk-import"
           element={
             <ProtectedRoute requireRoles={['admin']}>
               <AdminBulkImportPage />
             </ProtectedRoute>
-          } 
+          }
+        />
+        <Route
+          path="/app/admin/subscriptions"
+          element={
+            <ProtectedRoute requireRoles={['admin']}>
+              <AdminSubscriptionManagementPage />
+            </ProtectedRoute>
+          }
         />
       </Route>
       {/* Fallback */}
