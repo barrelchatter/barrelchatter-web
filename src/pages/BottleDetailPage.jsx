@@ -102,6 +102,9 @@ function BottleDetailPage() {
     type: '',
     proof: '',
     age_statement: '',
+    // Bottle size (Migration 025)
+    size_ml: '',
+    size_label: '',
     description: '',
     release_name: '',
     is_single_barrel: false,
@@ -240,6 +243,8 @@ function BottleDetailPage() {
       type: bottle.type || '',
       proof: bottle.proof != null ? String(bottle.proof) : '',
       age_statement: bottle.age_statement || '',
+      size_ml: bottle.size_ml != null ? String(bottle.size_ml) : '',
+      size_label: bottle.size_label || '',
       description: bottle.description || '',
       release_name: bottle.release_name || '',
       is_single_barrel: !!bottle.is_single_barrel,
@@ -299,6 +304,8 @@ function BottleDetailPage() {
         type: bottle.type || '',
         proof: bottle.proof != null ? String(bottle.proof) : '',
         age_statement: bottle.age_statement || '',
+        size_ml: bottle.size_ml != null ? String(bottle.size_ml) : '',
+        size_label: bottle.size_label || '',
         description: bottle.description || '',
         release_name: bottle.release_name || '',
         is_single_barrel: !!bottle.is_single_barrel,
@@ -349,6 +356,8 @@ function BottleDetailPage() {
         type: editForm.type.trim() || undefined,
         proof: editForm.proof ? Number(editForm.proof) : undefined,
         age_statement: editForm.age_statement.trim() || undefined,
+        size_ml: editForm.size_ml ? Number(editForm.size_ml) : null,
+        size_label: editForm.size_label.trim() || null,
         description: editForm.description.trim() || undefined,
         release_name: editForm.release_name.trim() || undefined,
         is_single_barrel: editForm.is_single_barrel,
@@ -536,6 +545,12 @@ function BottleDetailPage() {
                       </div>
                     </div>
                     <div className={styles.infoItem}>
+                      <div className={styles.infoLabel}>Size</div>
+                      <div className={styles.infoValue}>
+                        {bottle.size_label || '—'}
+                      </div>
+                    </div>
+                    <div className={styles.infoItem}>
                       <div className={styles.infoLabel}>Age</div>
                       <div className={styles.infoValue}>
                         {bottle.age_statement || '—'}
@@ -655,6 +670,28 @@ function BottleDetailPage() {
                         name="proof"
                         value={editForm.proof}
                         onChange={handleEditChange}
+                      />
+                    </label>
+                    <label className={styles.editLabel}>
+                      Size (ml)
+                      <input
+                        className={styles.editInput}
+                        type="number"
+                        name="size_ml"
+                        value={editForm.size_ml}
+                        onChange={handleEditChange}
+                        placeholder="e.g. 750"
+                      />
+                    </label>
+                    <label className={styles.editLabel}>
+                      Size Label
+                      <input
+                        className={styles.editInput}
+                        type="text"
+                        name="size_label"
+                        value={editForm.size_label}
+                        onChange={handleEditChange}
+                        placeholder="e.g. 750ml, 1L"
                       />
                     </label>
                     <label className={styles.editLabel}>

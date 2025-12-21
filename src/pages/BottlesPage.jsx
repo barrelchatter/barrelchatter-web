@@ -40,6 +40,9 @@ const INITIAL_FORM = {
   type: '',
   proof: '',
   age_statement: '',
+  // Bottle size (Migration 025)
+  size_ml: '',
+  size_label: '',
   // release details
   release_name: '',
   is_single_barrel: false,
@@ -281,6 +284,9 @@ function BottlesPage() {
         type: form.type.trim() || undefined,
         proof: form.proof ? Number(form.proof) : undefined,
         age_statement: form.age_statement.trim() || undefined,
+        // Bottle size (Migration 025)
+        size_ml: form.size_ml ? Number(form.size_ml) : null,
+        size_label: form.size_label.trim() || null,
         release_name: form.release_name.trim() || undefined,
         is_single_barrel: form.is_single_barrel,
         is_limited_release: form.is_limited_release,
@@ -581,6 +587,28 @@ function BottlesPage() {
                 />
               </label>
               <label className={styles.label}>
+                Size (ml)
+                <input
+                  className={styles.input}
+                  type="number"
+                  name="size_ml"
+                  value={form.size_ml}
+                  onChange={handleFormChange}
+                  placeholder="e.g. 750"
+                />
+              </label>
+              <label className={styles.label}>
+                Size Label
+                <input
+                  className={styles.input}
+                  type="text"
+                  name="size_label"
+                  value={form.size_label}
+                  onChange={handleFormChange}
+                  placeholder="e.g. 750ml, 1L"
+                />
+              </label>
+              <label className={styles.label}>
                 Age Statement
                 <input
                   className={styles.input}
@@ -734,6 +762,7 @@ function BottlesPage() {
                       <th>Brand</th>
                       <th>Distillery</th>
                       <th>Type</th>
+                      <th>Size</th>
                       <th>Proof</th>
                       <th>Age</th>
                       <th>Release</th>
@@ -766,6 +795,7 @@ function BottlesPage() {
                             <td>{bottle.brand || '—'}</td>
                             <td>{bottle.distillery || '—'}</td>
                             <td>{bottle.type || '—'}</td>
+                            <td>{bottle.size_label || '—'}</td>
                             <td>
                               {bottle.proof != null
                                 ? bottle.proof
@@ -970,6 +1000,8 @@ function BottlesPage() {
   
                       <div className={styles.metaRow}>
                         <span className={styles.metaLeft}>
+                          {bottle.size_label && `${bottle.size_label}`}
+                          {bottle.size_label && bottle.proof != null ? ' · ' : ''}
                           {bottle.proof != null
                             ? `${bottle.proof} proof`
                             : ''}
@@ -1062,6 +1094,9 @@ function BottlesPage() {
                         {bottle.brand || 'Unknown Brand'}
                       </div>
                       <div className={styles.galleryMetaRow}>
+                        {bottle.size_label && (
+                          <span>{bottle.size_label}</span>
+                        )}
                         {bottle.type && (
                           <span>{bottle.type}</span>
                         )}
