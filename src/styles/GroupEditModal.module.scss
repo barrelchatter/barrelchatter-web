@@ -1,0 +1,231 @@
+@use './design-system' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--bc-space-4);
+}
+
+.modal {
+  background: var(--bc-bg-elevated);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-xl);
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100vh - var(--bc-space-8));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bc-space-4) var(--bc-space-5);
+  border-bottom: 1px solid var(--bc-border-subtle);
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+
+  h2 {
+    font-size: var(--bc-text-lg);
+    font-weight: 600;
+    color: var(--bc-text-primary);
+    margin: 0;
+  }
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: var(--bc-radius-sm);
+  color: var(--bc-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: var(--bc-bg-surface);
+    color: var(--bc-text-primary);
+  }
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--bc-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-4);
+}
+
+.error {
+  padding: var(--bc-space-3) var(--bc-space-4);
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--bc-radius-md);
+  color: #f87171;
+  font-size: var(--bc-text-sm);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-2);
+}
+
+.label {
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  color: var(--bc-text-primary);
+}
+
+.required {
+  color: #f87171;
+}
+
+.input {
+  padding: var(--bc-space-3) var(--bc-space-4);
+  background: var(--bc-bg-surface);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-primary);
+  font-size: var(--bc-text-base);
+  transition: border-color 0.15s ease;
+
+  &::placeholder {
+    color: var(--bc-text-tertiary);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--bc-accent);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.textarea {
+  padding: var(--bc-space-3) var(--bc-space-4);
+  background: var(--bc-bg-surface);
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-primary);
+  font-size: var(--bc-text-base);
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.15s ease;
+
+  &::placeholder {
+    color: var(--bc-text-tertiary);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--bc-accent);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.hint {
+  font-size: var(--bc-text-xs);
+  color: var(--bc-text-tertiary);
+  margin-top: var(--bc-space-1);
+}
+
+.checkboxField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bc-space-2);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--bc-space-3);
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--bc-accent);
+}
+
+.checkboxText {
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  color: var(--bc-text-primary);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bc-space-3);
+  padding: var(--bc-space-4) var(--bc-space-5);
+  border-top: 1px solid var(--bc-border-subtle);
+  background: var(--bc-bg-surface);
+}
+
+.cancelButton {
+  padding: var(--bc-space-2) var(--bc-space-5);
+  background: transparent;
+  border: 1px solid var(--bc-border-subtle);
+  border-radius: var(--bc-radius-md);
+  color: var(--bc-text-secondary);
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--bc-bg-hover);
+    color: var(--bc-text-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.submitButton {
+  padding: var(--bc-space-2) var(--bc-space-5);
+  background: var(--bc-accent);
+  border: none;
+  border-radius: var(--bc-radius-md);
+  color: #000;
+  font-size: var(--bc-text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--bc-accent-light);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

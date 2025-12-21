@@ -46,6 +46,9 @@ function AppLayout() {
           <NavLink to="/app/locations" className={navClass}>
             Locations
           </NavLink>
+          <NavLink to="/app/groups" className={navClass}>
+            Groups
+          </NavLink>
           <NavLink to="/app/tags" className={navClass}>
             Tags
           </NavLink>

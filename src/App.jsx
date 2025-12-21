@@ -26,6 +26,8 @@ import AdminBulkImportPage from './pages/AdminBulkImportPage.jsx';
 import MenusPage from './pages/MenusPage.jsx';
 import PurchaseLocationsPage from './pages/PurchaseLocationsPage.jsx';
 import LocationDetailPage from './pages/LocationDetailPage.jsx';
+import GroupsPage from './pages/GroupsPage.jsx';
+import GroupDetailPage from './pages/GroupDetailPage.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
 import ToastContainer from './components/ToastContainer.jsx';
 
@@ -75,6 +77,10 @@ function App() {
         {/* Purchase Locations - catalog for all users */}
         <Route path="locations" element={<PurchaseLocationsPage />} />
         <Route path="locations/:id" element={<LocationDetailPage />} />
+
+        {/* Groups */}
+        <Route path="groups" element={<GroupsPage />} />
+        <Route path="groups/:id" element={<GroupDetailPage />} />
 
         {/* Moderator/Admin: Bottle Submissions */}
         <Route

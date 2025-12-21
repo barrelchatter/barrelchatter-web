@@ -93,4 +93,38 @@ export const purchaseLocationsAPI = {
   getMapUrls: (id) => api.get(`/v1/purchase-locations/${id}/map-urls`),
 };
 
+// Groups API
+export const groupsAPI = {
+  // CRUD
+  list: (params) => api.get('/v1/groups', { params }),
+  discover: (params) => api.get('/v1/groups/discover', { params }),
+  get: (id) => api.get(`/v1/groups/${id}`),
+  create: (data) => api.post('/v1/groups', data),
+  update: (id, data) => api.patch(`/v1/groups/${id}`, data),
+  delete: (id) => api.delete(`/v1/groups/${id}`),
+  // Invites
+  invites: () => api.get('/v1/groups/invites'),
+  invite: (groupId, userId, message) =>
+    api.post(`/v1/groups/${groupId}/invite/${userId}`, { message }),
+  join: (groupId) => api.post(`/v1/groups/${groupId}/join`),
+  decline: (groupId) => api.post(`/v1/groups/${groupId}/decline`),
+  leave: (groupId) => api.post(`/v1/groups/${groupId}/leave`),
+  removeMember: (groupId, userId) =>
+    api.delete(`/v1/groups/${groupId}/members/${userId}`),
+  // Activity & Bottles
+  activity: (groupId, params) =>
+    api.get(`/v1/groups/${groupId}/activity`, { params }),
+  bottles: (groupId, params) =>
+    api.get(`/v1/groups/${groupId}/bottles`, { params }),
+  shareBottle: (groupId, inventoryId, notes) =>
+    api.post(`/v1/groups/${groupId}/bottles`, { inventory_id: inventoryId, notes }),
+  unshareBottle: (groupId, inventoryId) =>
+    api.delete(`/v1/groups/${groupId}/bottles/${inventoryId}`),
+};
+
+// Users API (for searching users to invite)
+export const usersAPI = {
+  search: (query) => api.get('/v1/users/search', { params: { q: query } }),
+};
+
 export default api;
