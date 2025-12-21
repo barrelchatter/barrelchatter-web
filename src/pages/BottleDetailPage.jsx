@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api, { API_BASE_URL } from '../api/client';
 import { useAuth } from '../context/AuthContext.jsx';
+import { BOTTLE_SIZES, getBottleSizeLabel } from '../constants/bottleOptions';
 import PhotoUpload from '../components/PhotoUpload';
 import BottlePricingCard from '../components/BottlePricingCard';
 import { BarrelInfoDisplay } from '../components/BarrelTrackingSection';
@@ -104,7 +105,6 @@ function BottleDetailPage() {
     age_statement: '',
     // Bottle size (Migration 025)
     size_ml: '',
-    size_label: '',
     description: '',
     release_name: '',
     is_single_barrel: false,
@@ -244,7 +244,6 @@ function BottleDetailPage() {
       proof: bottle.proof != null ? String(bottle.proof) : '',
       age_statement: bottle.age_statement || '',
       size_ml: bottle.size_ml != null ? String(bottle.size_ml) : '',
-      size_label: bottle.size_label || '',
       description: bottle.description || '',
       release_name: bottle.release_name || '',
       is_single_barrel: !!bottle.is_single_barrel,
@@ -305,7 +304,6 @@ function BottleDetailPage() {
         proof: bottle.proof != null ? String(bottle.proof) : '',
         age_statement: bottle.age_statement || '',
         size_ml: bottle.size_ml != null ? String(bottle.size_ml) : '',
-        size_label: bottle.size_label || '',
         description: bottle.description || '',
         release_name: bottle.release_name || '',
         is_single_barrel: !!bottle.is_single_barrel,
@@ -357,7 +355,6 @@ function BottleDetailPage() {
         proof: editForm.proof ? Number(editForm.proof) : undefined,
         age_statement: editForm.age_statement.trim() || undefined,
         size_ml: editForm.size_ml ? Number(editForm.size_ml) : null,
-        size_label: editForm.size_label.trim() || null,
         description: editForm.description.trim() || undefined,
         release_name: editForm.release_name.trim() || undefined,
         is_single_barrel: editForm.is_single_barrel,
@@ -547,7 +544,7 @@ function BottleDetailPage() {
                     <div className={styles.infoItem}>
                       <div className={styles.infoLabel}>Size</div>
                       <div className={styles.infoValue}>
-                        {bottle.size_label || '—'}
+                        {getBottleSizeLabel(bottle.size_ml) || '—'}
                       </div>
                     </div>
                     <div className={styles.infoItem}>
@@ -673,26 +670,20 @@ function BottleDetailPage() {
                       />
                     </label>
                     <label className={styles.editLabel}>
-                      Size (ml)
-                      <input
+                      Size
+                      <select
                         className={styles.editInput}
-                        type="number"
                         name="size_ml"
                         value={editForm.size_ml}
                         onChange={handleEditChange}
-                        placeholder="e.g. 750"
-                      />
-                    </label>
-                    <label className={styles.editLabel}>
-                      Size Label
-                      <input
-                        className={styles.editInput}
-                        type="text"
-                        name="size_label"
-                        value={editForm.size_label}
-                        onChange={handleEditChange}
-                        placeholder="e.g. 750ml, 1L"
-                      />
+                      >
+                        <option value="">Select size...</option>
+                        {BOTTLE_SIZES.map((size) => (
+                          <option key={size.value} value={size.value}>
+                            {size.label}
+                          </option>
+                        ))}
+                      </select>
                     </label>
                     <label className={styles.editLabel}>
                       Age Statement

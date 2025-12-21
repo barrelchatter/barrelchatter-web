@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api, { API_BASE_URL } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { BOTTLE_SIZES, getBottleSizeLabel } from '../constants/bottleOptions';
 import BarrelTrackingSection from '../components/BarrelTrackingSection';
 import styles from '../styles/BottlesPage.module.scss';
 
@@ -42,7 +43,6 @@ const INITIAL_FORM = {
   age_statement: '',
   // Bottle size (Migration 025)
   size_ml: '',
-  size_label: '',
   // release details
   release_name: '',
   is_single_barrel: false,
@@ -286,7 +286,6 @@ function BottlesPage() {
         age_statement: form.age_statement.trim() || undefined,
         // Bottle size (Migration 025)
         size_ml: form.size_ml ? Number(form.size_ml) : null,
-        size_label: form.size_label.trim() || null,
         release_name: form.release_name.trim() || undefined,
         is_single_barrel: form.is_single_barrel,
         is_limited_release: form.is_limited_release,
@@ -587,26 +586,20 @@ function BottlesPage() {
                 />
               </label>
               <label className={styles.label}>
-                Size (ml)
-                <input
+                Size
+                <select
                   className={styles.input}
-                  type="number"
                   name="size_ml"
                   value={form.size_ml}
                   onChange={handleFormChange}
-                  placeholder="e.g. 750"
-                />
-              </label>
-              <label className={styles.label}>
-                Size Label
-                <input
-                  className={styles.input}
-                  type="text"
-                  name="size_label"
-                  value={form.size_label}
-                  onChange={handleFormChange}
-                  placeholder="e.g. 750ml, 1L"
-                />
+                >
+                  <option value="">Select size...</option>
+                  {BOTTLE_SIZES.map((size) => (
+                    <option key={size.value} value={size.value}>
+                      {size.label}
+                    </option>
+                  ))}
+                </select>
               </label>
               <label className={styles.label}>
                 Age Statement
@@ -795,7 +788,7 @@ function BottlesPage() {
                             <td>{bottle.brand || '—'}</td>
                             <td>{bottle.distillery || '—'}</td>
                             <td>{bottle.type || '—'}</td>
-                            <td>{bottle.size_label || '—'}</td>
+                            <td>{getBottleSizeLabel(bottle.size_ml) || '—'}</td>
                             <td>
                               {bottle.proof != null
                                 ? bottle.proof
@@ -1000,8 +993,8 @@ function BottlesPage() {
   
                       <div className={styles.metaRow}>
                         <span className={styles.metaLeft}>
-                          {bottle.size_label && `${bottle.size_label}`}
-                          {bottle.size_label && bottle.proof != null ? ' · ' : ''}
+                          {bottle.size_ml && getBottleSizeLabel(bottle.size_ml)}
+                          {bottle.size_ml && bottle.proof != null ? ' · ' : ''}
                           {bottle.proof != null
                             ? `${bottle.proof} proof`
                             : ''}
@@ -1094,8 +1087,8 @@ function BottlesPage() {
                         {bottle.brand || 'Unknown Brand'}
                       </div>
                       <div className={styles.galleryMetaRow}>
-                        {bottle.size_label && (
-                          <span>{bottle.size_label}</span>
+                        {bottle.size_ml && (
+                          <span>{getBottleSizeLabel(bottle.size_ml)}</span>
                         )}
                         {bottle.type && (
                           <span>{bottle.type}</span>

@@ -3,6 +3,24 @@
  * Migration 012: Enhanced Tracking & Social Features
  */
 
+// Standard bottle sizes in milliliters
+// Covers American, Scotch, Japanese, Irish, and Canadian whiskey standards
+export const BOTTLE_SIZES = [
+  { value: 50, label: '50ml (Miniature)' },
+  { value: 100, label: '100ml' },
+  { value: 180, label: '180ml' },
+  { value: 200, label: '200ml (Half Pint)' },
+  { value: 350, label: '350ml' },
+  { value: 375, label: '375ml (Pint)' },
+  { value: 500, label: '500ml' },
+  { value: 700, label: '700ml' },
+  { value: 750, label: '750ml (Standard)' },
+  { value: 1000, label: '1L' },
+  { value: 1500, label: '1.5L (Magnum)' },
+  { value: 1750, label: '1.75L (Handle)' },
+  { value: 1800, label: '1.8L' },
+];
+
 // Fill level options for open bottles
 export const FILL_LEVELS = [
   { value: 'full', label: 'Full', percent: 100 },
@@ -181,4 +199,10 @@ export function getPriorityInfo(priority) {
 export function getEventIcon(eventType) {
   const event = EVENT_TYPES.find(e => e.value === eventType);
   return event ? event.icon : '📝';
+}
+
+export function getBottleSizeLabel(sizeMl) {
+  if (!sizeMl) return null;
+  const size = BOTTLE_SIZES.find(s => s.value === sizeMl);
+  return size ? size.label : `${sizeMl}ml`;
 }
