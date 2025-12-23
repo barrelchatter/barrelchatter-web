@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { Download } from 'react-feather';
 import NewBottleSubmissionModal from '../components/NewBottleSubmissionModal';
 import LogTastingModal from '../components/LogTastingModal';
 import StorageLocationSelect from '../components/StorageLocationSelect';
 import PurchaseLocationSelect from '../components/PurchaseLocationSelect';
 import DealBadge from '../components/DealBadge';
-import api, { API_BASE_URL } from '../api/client';
+import api, { API_BASE_URL, inventoryAPI } from '../api/client';
 import styles from '../styles/InventoryPage.module.scss';
 
 const apiBase = (API_BASE_URL || '').replace(/\/$/, '');
@@ -72,6 +73,8 @@ function InventoryPage() {
 
   const [showLogModal, setShowLogModal] = useState(false);
   const [logInventoryId, setLogInventoryId] = useState(null);
+
+  const [exporting, setExporting] = useState(false);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [addForm, setAddForm] = useState({
@@ -332,6 +335,30 @@ function InventoryPage() {
     };
   }
 
+  async function handleExportCSV() {
+    setExporting(true);
+    try {
+      const response = await inventoryAPI.exportCSV();
+      // Create blob from response data
+      const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const dateStr = new Date().toISOString().split('T')[0];
+      link.setAttribute('download', `barrelchatter_collection_${dateStr}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to export CSV:', err);
+      alert('Failed to export collection. Please try again.');
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.headerRow}>
@@ -350,6 +377,10 @@ function InventoryPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className={styles.searchInput}
             />
+            <button type="button" onClick={handleExportCSV} className={styles.submitButton} disabled={exporting || total === 0} title="Export collection as CSV">
+              <Download size={16} />
+              {exporting ? 'Exporting…' : 'Export'}
+            </button>
             <button type="button" onClick={() => setShowAddForm((v) => !v)} className={styles.addButton}>
               {showAddForm ? 'Cancel' : 'Add to Collection'}
             </button>

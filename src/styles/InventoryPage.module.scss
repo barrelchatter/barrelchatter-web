@@ -59,6 +59,14 @@
   @include button-secondary;
   @include button-sm;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bc-space-1);
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .count {

@@ -134,6 +134,7 @@ function NewBottleSubmissionModal({ isOpen, initialName, onClose, onCreated }) {
         try {
           const invRes = await api.post('/v1/inventory', {
             bottle_id: bottle.id,
+            status: 'sealed',
           });
           // depending on your API shape, adjust this line if needed
           inventoryItem =

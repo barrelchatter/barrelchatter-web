@@ -144,4 +144,10 @@ export const stripeAPI = {
   createPortalSession: () => api.post('/v1/stripe/portal-session'),
 };
 
+// Inventory API
+export const inventoryAPI = {
+  // Export collection as CSV
+  exportCSV: () => api.get('/v1/inventory/export/csv', { responseType: 'blob' }),
+};
+
 export default api;
